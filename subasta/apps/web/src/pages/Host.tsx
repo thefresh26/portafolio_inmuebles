@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { Property, PropertyInput } from "@subasta/shared";
 import { useSocket } from "../lib/useSocket.js";
 import { wsUrl } from "../lib/wsUrl.js";
@@ -335,6 +335,25 @@ export default function Host() {
     setIntentoCreacion(true);
   }, [authed, state, datosFmi, intentoCreacion, send]);
 
+  const rondaSectionRef = useRef<HTMLElement>(null);
+  const [rondaPantallaCompleta, setRondaPantallaCompleta] = useState(false);
+
+  useEffect(() => {
+    const onFsChange = () => {
+      setRondaPantallaCompleta(document.fullscreenElement === rondaSectionRef.current);
+    };
+    document.addEventListener("fullscreenchange", onFsChange);
+    return () => document.removeEventListener("fullscreenchange", onFsChange);
+  }, []);
+
+  const toggleRondaPantallaCompleta = useCallback(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      rondaSectionRef.current?.requestFullscreen?.();
+    }
+  }, []);
+
   if (!authed) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-archivo via-navy3 to-archivo text-manila font-body">
@@ -464,7 +483,37 @@ export default function Host() {
       )}
 
       {/* ---------- Ronda actual: el bloque más usado durante el evento ---------- */}
-      <Section titulo="Ronda actual" destacado>
+      <Section
+        titulo="Ronda actual"
+        destacado
+        sectionRef={rondaSectionRef}
+        accion={
+          <button
+            type="button"
+            title={rondaPantallaCompleta ? "Salir de pantalla completa" : "Ver en pantalla completa"}
+            className="inline-flex items-center gap-1.5 pl-3 pr-2.5 py-1.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-archivo/10 border border-manila/20 text-manila/90 transition-all duration-150 ease-out hover:bg-archivo/20 hover:scale-105 active:scale-95"
+            onClick={toggleRondaPantallaCompleta}
+          >
+            {rondaPantallaCompleta ? "Salir" : "Pantalla completa"}
+            <svg
+              viewBox="0 0 20 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-3.5 h-3.5"
+              aria-hidden="true"
+            >
+              {rondaPantallaCompleta ? (
+                <path d="M8 4v2.5A1.5 1.5 0 0 1 6.5 8H4M12 4v2.5A1.5 1.5 0 0 0 13.5 8H16M8 16v-2.5A1.5 1.5 0 0 0 6.5 12H4M12 16v-2.5a1.5 1.5 0 0 1 1.5-1.5H16" />
+              ) : (
+                <path d="M4 7V5a1 1 0 0 1 1-1h2M16 7V5a1 1 0 0 0-1-1h-2M4 13v2a1 1 0 0 0 1 1h2M16 13v2a1 1 0 0 1-1 1h-2" />
+              )}
+            </svg>
+          </button>
+        }
+      >
         {state?.rondaActual ? (
           <>
             <div className="text-center mb-6">
@@ -1007,6 +1056,7 @@ function Section({
   defaultOpen = true,
   destacado = false,
   accion,
+  sectionRef,
 }: {
   titulo: string;
   children: React.ReactNode;
@@ -1014,11 +1064,13 @@ function Section({
   defaultOpen?: boolean;
   destacado?: boolean;
   accion?: React.ReactNode;
+  sectionRef?: React.RefObject<HTMLElement | null>;
 }) {
   const [abierto, setAbierto] = useState(defaultOpen);
   return (
     <section
-      className={`mb-6 rounded-xl p-4 lg:p-5 ${
+      ref={sectionRef}
+      className={`mb-6 rounded-xl p-4 lg:p-5 [&:fullscreen]:mb-0 [&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:flex [&:fullscreen]:flex-col [&:fullscreen]:justify-center [&:fullscreen]:overflow-auto [&:fullscreen]:rounded-none [&:fullscreen]:bg-archivo [&:fullscreen]:p-10 ${
         destacado ? "border-2 border-oro/50 bg-oro/[0.06]" : "border border-manila/10 bg-manila/10"
       }`}
     >
