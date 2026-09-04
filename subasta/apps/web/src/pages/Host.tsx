@@ -681,6 +681,7 @@ export default function Host() {
                   <th className="py-2 pr-4">Resultado</th>
                   <th className="py-2 pr-4">Ganador</th>
                   <th className="py-2 pr-4">Valor final</th>
+                  <th className="py-2 pr-4">Fecha</th>
                 </tr>
               </thead>
               <tbody>
@@ -706,6 +707,12 @@ export default function Host() {
                     <td className="py-2 pr-4">{r.ganador?.nickname ?? "-"}</td>
                     <td className="py-2 pr-4 font-mono tabular text-oro">
                       {r.ganador ? `${r.ganador.valorFinal.toLocaleString("es-CO")} COP` : "-"}
+                    </td>
+                    <td className="py-2 pr-4 text-xs opacity-70 whitespace-nowrap">
+                      {new Date(r.finalizadaEn).toLocaleString("es-CO", {
+                        dateStyle: "short",
+                        timeStyle: "short",
+                      })}
                     </td>
                   </tr>
                 ))}
@@ -1023,10 +1030,22 @@ function Section({
             <button
               type="button"
               aria-expanded={abierto}
-              className="text-sm underline transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+              className="inline-flex items-center gap-1.5 pl-3 pr-2.5 py-1.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-archivo/10 border border-manila/20 text-manila/90 transition-all duration-150 ease-out hover:bg-archivo/20 hover:scale-105 active:scale-95"
               onClick={() => setAbierto((a) => !a)}
             >
               {abierto ? "Ocultar" : "Mostrar"}
+              <svg
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className={`w-3 h-3 transition-transform duration-200 ease-out ${abierto ? "rotate-180" : ""}`}
+                aria-hidden="true"
+              >
+                <path d="M5 7.5 10 12.5 15 7.5" />
+              </svg>
             </button>
           )}
         </div>
