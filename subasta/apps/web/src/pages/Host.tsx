@@ -440,22 +440,75 @@ export default function Host() {
       <Section titulo="Ronda actual" destacado>
         {state?.rondaActual ? (
           <>
-            <div className="text-center mb-4">
-              {state.rondaActual.propiedad.imagenUrl && (
-                <img
-                  src={state.rondaActual.propiedad.imagenUrl}
-                  alt={state.rondaActual.propiedad.nombre}
-                  className="w-full max-w-md h-56 object-cover rounded-xl border-2 border-oro/30 mx-auto mb-2"
-                />
+            <div className="text-center mb-6">
+              <div className="flex items-center justify-center gap-2 mb-4">
+                <span className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em]">
+                  Lote en subasta
+                </span>
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide ${
+                    state.rondaActual.estado === "running"
+                      ? "bg-sello/90 text-manila"
+                      : state.rondaActual.estado === "ended"
+                        ? "bg-manila/15 text-manila/80"
+                        : "bg-oro/90 text-archivo"
+                  }`}
+                >
+                  {state.rondaActual.estado === "running" && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-manila animate-pulse" aria-hidden="true" />
+                  )}
+                  {state.rondaActual.estado === "running"
+                    ? "En vivo"
+                    : state.rondaActual.estado === "ended"
+                      ? "Finalizada"
+                      : "Armada · esperando"}
+                </span>
+              </div>
+
+              <div className="relative w-full max-w-md mx-auto mb-3">
+                {state.rondaActual.propiedad.imagenUrl ? (
+                  <img
+                    src={state.rondaActual.propiedad.imagenUrl}
+                    alt={state.rondaActual.propiedad.nombre}
+                    className="w-full h-64 object-cover rounded-xl border-2 border-oro/60 shadow-lg shadow-black/30"
+                  />
+                ) : (
+                  <div className="w-full h-64 rounded-xl border-2 border-oro/60 bg-navy3/40 flex items-center justify-center text-4xl">
+                    🏛️
+                  </div>
+                )}
+                <span className="absolute top-3 left-3 bg-archivo/85 text-oro font-mono text-xs px-2.5 py-1 rounded-full border border-oro/40">
+                  FMI {state.rondaActual.propiedad.matriculaInmobiliaria}
+                </span>
+              </div>
+
+              <p className="font-display text-2xl font-bold">{state.rondaActual.propiedad.nombre}</p>
+              {state.rondaActual.propiedad.ciudad && (
+                <p className="opacity-60 text-sm mt-1">{state.rondaActual.propiedad.ciudad}</p>
               )}
-              <p className="font-display text-lg">{state.rondaActual.propiedad.nombre}</p>
-              <p className="opacity-70 text-sm mt-1">ronda: {state.rondaActual.estado}</p>
             </div>
+
+            {liveTick && liveTick.roundId === state.rondaActual.roundId && (
+              <div className="text-center mb-6">
+                <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-1">
+                  Puja actual
+                </p>
+                <p
+                  key={liveTick.valorActual}
+                  className={`font-display text-5xl lg:text-6xl font-extrabold tabular text-oro ${
+                    state.rondaActual.estado === "running" ? "winner-glow" : ""
+                  }`}
+                >
+                  {liveTick.valorActual.toLocaleString("es-CO")}
+                </p>
+                <p className="opacity-50 text-xs mt-1">COP · {liveTick.tapsTotales} taps totales</p>
+              </div>
+            )}
 
             {liveTick && liveTick.roundId === state.rondaActual.roundId && liveTick.top.length > 0 && (
               <div
                 ref={rankingFlipRef}
-                className="flex items-end justify-center gap-3 mb-2 bg-gradient-to-b from-navy3/40 to-archivo/40 backdrop-blur-sm rounded-xl border border-manila/10 shadow-lg shadow-black/20 p-6"
+                className="flex items-end justify-center gap-3 mb-4 bg-gradient-to-b from-navy3/40 to-archivo/40 backdrop-blur-sm rounded-xl border border-oro/20 shadow-lg shadow-black/20 p-6"
               >
                 {(() => {
                   const valorMaximo = Math.max(...liveTick.top.map((p) => p.valorPujado), 1);
@@ -497,12 +550,15 @@ export default function Host() {
             )}
 
             {liveTick && liveTick.roundId === state.rondaActual.roundId && (
-              <p className="opacity-70 text-sm text-center mb-4">
-                {Math.ceil(liveTick.remainingMs / 1000)}s · {liveTick.tapsTotales} taps totales
+              <p
+                key={Math.ceil(liveTick.remainingMs / 1000)}
+                className="font-display text-3xl font-bold tabular text-center mb-4 countdown-pop"
+              >
+                {Math.ceil(liveTick.remainingMs / 1000)}s
               </p>
             )}
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-center">
               {state.rondaActual.estado === "ended" ? (
                 <>
                   <button
@@ -541,10 +597,26 @@ export default function Host() {
           <div className="text-center py-8">
             {propiedadPendiente ? (
               <>
-                <p className="opacity-70 mb-4">
-                  Inmueble listo para subastar: FMI <b>{propiedadPendiente.matriculaInmobiliaria}</b>
-                  {propiedadPendiente.nombre ? <> — {propiedadPendiente.nombre}</> : null}
+                <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-4">
+                  Lote listo para subastar
                 </p>
+                <div className="relative w-full max-w-sm mx-auto mb-4">
+                  {propiedadPendiente.imagenUrl ? (
+                    <img
+                      src={propiedadPendiente.imagenUrl}
+                      alt={propiedadPendiente.nombre}
+                      className="w-full h-48 object-cover rounded-xl border-2 border-oro/60 shadow-lg shadow-black/30"
+                    />
+                  ) : (
+                    <div className="w-full h-48 rounded-xl border-2 border-oro/60 bg-navy3/40 flex items-center justify-center text-4xl">
+                      🏛️
+                    </div>
+                  )}
+                  <span className="absolute top-3 left-3 bg-archivo/85 text-oro font-mono text-xs px-2.5 py-1 rounded-full border border-oro/40">
+                    FMI {propiedadPendiente.matriculaInmobiliaria}
+                  </span>
+                </div>
+                <p className="font-display text-xl font-bold mb-4">{propiedadPendiente.nombre}</p>
                 <button
                   type="button"
                   className="bg-gradient-to-r from-azul to-navy3 text-manila px-6 py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
