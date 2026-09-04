@@ -1,0 +1,287 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Fondo con profundidad para /screen y la consola de admin: viñeta suave
+   de navy3 (centro/arriba) hacia archivo (bordes). */
+.bg-escenario {
+  background: radial-gradient(ellipse at 50% 30%, #1E3A68 0%, #0D1F3C 70%);
+}
+
+/* Moneditas que suben y se desvanecen con cada tap en /play.
+   El ángulo final y la duración vienen de variables por moneda
+   (--coin-rot, --coin-duration) para que no se vean todas idénticas. */
+@keyframes coin-float {
+  0% {
+    transform: translateY(0) scale(0.6) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-160px) scale(1.1) rotate(var(--coin-rot, 25deg));
+    opacity: 0;
+  }
+}
+
+.coin-float {
+  animation-name: coin-float;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+  animation-duration: var(--coin-duration, 900ms);
+}
+
+/* Glow pulsante en el botón ¡PUJA! mientras la ronda está corriendo.
+   Solo toca box-shadow: no interfiere con el onPointerDown del tap. */
+@keyframes puja-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 10px rgba(0, 0, 0, 0.08),
+      0 0 0 0 rgba(245, 168, 0, 0.55);
+  }
+  50% {
+    box-shadow:
+      0 0 0 10px rgba(0, 0, 0, 0.08),
+      0 0 46px 18px rgba(245, 168, 0, 0.55);
+  }
+}
+
+.puja-glow {
+  animation: puja-glow 1.6s ease-in-out infinite;
+}
+
+/* Pop de entrada para el número de cuenta regresiva en "armado":
+   se relanza en cada segundo porque el número cambia de key. */
+@keyframes countdown-pop {
+  0% {
+    transform: scale(0.7);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.countdown-pop {
+  animation: countdown-pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Entrada del indicador "vas ganando" / "va ganando X" cada vez que cambia el líder. */
+@keyframes leader-pop {
+  0% {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.leader-pop {
+  animation: leader-pop 300ms ease-out;
+}
+
+/* Entrada con overshoot para resultados de ronda y el sello "ADJUDICADO". */
+@keyframes scale-in-overshoot {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.scale-in-overshoot {
+  animation: scale-in-overshoot 500ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Salto del contador de taps del cliente en cada tap (se relanza por key). */
+@keyframes tap-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.25);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.tap-pop {
+  animation: tap-pop 180ms ease-out;
+}
+
+/* Fade + slide sutil al entrar a cada pantalla completa (join, esperando,
+   armado, corriendo, fin en /play). */
+@keyframes phase-fade-in {
+  0% {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.phase-fade-in {
+  animation: phase-fade-in 350ms ease-out;
+}
+
+/* Fade + scale-in para los modales (fixed inset-0) en vez de aparecer de golpe. */
+@keyframes modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-backdrop-in {
+  animation: modal-backdrop-in 200ms ease-out;
+}
+
+@keyframes modal-panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-panel-in {
+  animation: modal-panel-in 220ms ease-out;
+}
+
+/* Confeti de celebración (ganador en /play y ADJUDICADO en /screen). */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(-24px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(var(--confetti-rot, 360deg));
+    opacity: 0;
+  }
+}
+
+.confetti-piece {
+  animation-name: confetti-fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+  animation-duration: var(--confetti-duration, 1800ms);
+  animation-delay: var(--confetti-delay, 0ms);
+}
+
+/* Brillo dorado pulsante alrededor del nombre del ganador. Finito (3
+   pulsos) para no quedar como movimiento indefinido en pantalla. */
+@keyframes winner-glow-pulse {
+  0%,
+  100% {
+    text-shadow: 0 0 6px rgba(245, 168, 0, 0.35);
+  }
+  50% {
+    text-shadow:
+      0 0 22px rgba(245, 168, 0, 0.95),
+      0 0 42px rgba(245, 168, 0, 0.5);
+  }
+}
+
+.winner-glow {
+  animation: winner-glow-pulse 1s ease-in-out 3;
+}
+
+/* Sacudida sutil del contador de taps cuando el jugador tapea muy rápido. */
+@keyframes tap-shake {
+  0%,
+  100% {
+    transform: translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(-3px) rotate(-3deg);
+  }
+  75% {
+    transform: translateX(3px) rotate(3deg);
+  }
+}
+
+.tap-shake {
+  animation: tap-shake 220ms ease-in-out;
+}
+
+/* Pop del valor de puja en el ranking de /screen cuando sube. */
+@keyframes valor-pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.valor-pop {
+  animation: valor-pop 200ms ease-out;
+}
+
+/* Entrada del trofeo en la pantalla de proyección al adjudicar. */
+@keyframes trophy-bounce {
+  0% {
+    transform: scale(0) translateY(-40px);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2) translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+
+.trophy-bounce {
+  animation: trophy-bounce 550ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Respeta "reducir movimiento" del sistema operativo: neutraliza toda
+   animación y transición (incluida la infinita puja-glow) en vez de
+   dejar que cada componente la implemente por su cuenta. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

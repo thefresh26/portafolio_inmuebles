@@ -1,0 +1,50 @@
+services:
+  # Servidor de juego: Node + Fastify + ws, estado de la ronda en memoria.
+  - type: web
+    name: subasta-server
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install -g pnpm@10 && pnpm install --frozen-lockfile && pnpm --filter @subasta/shared build && pnpm --filter @subasta/server build
+    startCommand: pnpm --filter @subasta/server start
+    healthCheckPath: /health
+    envVars:
+      # Token fijo de respaldo: solo se usa si SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY
+      # no están configurados (modo desarrollo sin base de datos). Con Supabase
+      # configurado, el login del presentador usa email+contraseña y este token
+      # deja de tener efecto.
+      - key: HOST_TOKEN
+        sync: false
+      # Node 22+ trae WebSocket nativo, que @supabase/supabase-js necesita
+      # para su cliente de Realtime (aunque no lo usemos, lo inicializa igual).
+      - key: NODE_VERSION
+        value: 22.11.0
+      # URL del proyecto de Supabase (dato público, seguro en el repo).
+      - key: SUPABASE_URL
+        value: https://vazzjcgcqyxechiwrqjv.supabase.co
+      # Llave service_role: NUNCA se escribe en este archivo ni en el chat.
+      # Se pega directamente en el campo del dashboard de Render (sync: false
+      # significa que Render la pide aparte y no la guarda en el repo).
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+
+  # Web estática: React + Vite, las tres rutas /screen /play /host.
+  - type: web
+    name: subasta-web
+    runtime: static
+    buildCommand: npm install -g pnpm@10 && pnpm install --frozen-lockfile && pnpm --filter @subasta/shared build && pnpm --filter @subasta/web build
+    staticPublishPath: apps/web/dist
+    envVars:
+      # URL real asignada por Render a subasta-server (verificada en el dashboard).
+      - key: VITE_WS_URL
+        value: wss://subasta-server-begz.onrender.com
+      # Llave pública (anon/publishable) de Supabase: segura de exponer en el
+      # navegador, Row Level Security es lo que protege los datos.
+      - key: VITE_SUPABASE_URL
+        value: https://vazzjcgcqyxechiwrqjv.supabase.co
+      - key: VITE_SUPABASE_ANON_KEY
+        value: sb_publishable_XchKwzcsUTDcepEcaw_gqg_B6Q8CBQe
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
