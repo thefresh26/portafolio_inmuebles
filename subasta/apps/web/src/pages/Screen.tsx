@@ -33,7 +33,7 @@ export default function Screen() {
   const [jugadores, setJugadores] = useState<{ playerId: string; nickname: string }[]>([]);
   const [propiedad, setPropiedad] = useState<Property | null>(null);
   const [remainingMs, setRemainingMs] = useState(0);
-  const [duracionMs, setDuracionMs] = useState(30_000);
+  const [duracionMs, setDuracionMs] = useState(20_000);
   const [top5, setTop5] = useState<PlayerSummary[]>([]);
   const [tapsTotales, setTapsTotales] = useState(0);
   const [sello, setSello] = useState<{ ganador: string; valorFinal: number } | null>(null);

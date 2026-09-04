@@ -299,7 +299,7 @@ export type ServerToHostMsg = z.infer<typeof ServerToHostMsg>;
 // ---------- Constantes de juego ----------
 
 export const GAME_CONSTANTS = {
-  ROUND_DURATION_MS: 30_000,
+  ROUND_DURATION_MS: 20_000,
   ARM_LEAD_MS: 3_000,
   GRACE_MS: 600, // ventana extra tras el cierre, ver anti-trampa
   TAP_BATCH_INTERVAL_MS: 150,

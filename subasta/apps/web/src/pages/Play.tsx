@@ -42,7 +42,7 @@ export default function Play() {
 
   const [propiedad, setPropiedad] = useState<Property | null>(null);
   const [startAt, setStartAt] = useState(0);
-  const [duracionMs, setDuracionMs] = useState(30_000);
+  const [duracionMs, setDuracionMs] = useState(20_000);
   const [roundId, setRoundId] = useState<string | null>(null);
   const [countdown, setCountdown] = useState(0);
   const [remainingMs, setRemainingMs] = useState(0);
