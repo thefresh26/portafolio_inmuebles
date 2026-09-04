@@ -12,10 +12,15 @@ body,
   font-variant-numeric: tabular-nums;
 }
 
-/* Fondo con profundidad para /screen y la consola de admin: viñeta suave
-   de navy3 (centro/arriba) hacia archivo (bordes). */
+/* Fondo con profundidad para /screen y la consola de admin: resplandores
+   sutiles de oro y azul (los acentos de marca) sobre un degradado navy,
+   para que no se sienta un solo color plano. */
 .bg-escenario {
-  background: radial-gradient(ellipse at 50% 30%, #1E3A68 0%, #0D1F3C 70%);
+  background:
+    radial-gradient(ellipse 780px 520px at 4% 0%, rgba(245,166,35,0.14) 0%, rgba(245,166,35,0) 60%),
+    radial-gradient(ellipse 900px 640px at 100% 46%, rgba(26,168,221,0.16) 0%, rgba(26,168,221,0) 58%),
+    radial-gradient(ellipse 1000px 700px at 22% 100%, rgba(26,168,221,0.10) 0%, rgba(26,168,221,0) 55%),
+    linear-gradient(165deg, #123457 0%, #0b2a4a 42%, #0a2543 100%);
 }
 
 /* Moneditas que suben y se desvanecen con cada tap en /play.

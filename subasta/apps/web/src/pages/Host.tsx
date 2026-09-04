@@ -456,32 +456,42 @@ export default function Host() {
 
   return (
     <div className="min-h-screen bg-escenario text-manila font-body p-6 lg:p-8">
-      {/* ---------- Header: título + acciones de cuenta ---------- */}
-      <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
-        <div>
-          <h1 className="font-display text-2xl">Consola del presentador</h1>
-          <p className="opacity-70 text-sm mt-1">
-            estado: <span className="font-mono">{state?.estado ?? "-"}</span> · {state?.jugadores.length ?? 0} jugadores
-          </p>
+      {/* ---------- Header: banner con degradado + acciones de cuenta ---------- */}
+      <div
+        className="flex flex-wrap items-center justify-between gap-4 rounded-xl px-6 py-5 mb-6 shadow-lg shadow-black/20"
+        style={{ background: "linear-gradient(100deg, #7a4a12 0%, #173f70 46%, #0d3a63 100%)" }}
+      >
+        <div className="flex items-center gap-4 flex-wrap">
+          <div>
+            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-manila/60 mb-0.5">Subasta Activa</p>
+            <h1 className="font-display text-2xl">Consola del presentador</h1>
+          </div>
+          <div className="hidden sm:block w-px h-9 bg-manila/20" />
+          <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-archivo/40 border border-manila/20">
+            <span className="w-1.5 h-1.5 rounded-full bg-manila/60 shadow-[0_0_0_3px_rgba(234,241,251,0.2)]" />
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-manila/90">{state?.estado ?? "-"}</span>
+            <span className="text-xs text-manila/60">· {state?.jugadores.length ?? 0} jugadores</span>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
-            className="bg-manila/10 border border-manila/30 text-manila px-3 py-1.5 rounded text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+            className="bg-manila text-archivo px-4 py-2.5 rounded-lg text-sm font-display font-bold shadow-md transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
             onClick={() => window.open("/screen", "_blank")}
           >
             Abrir pantalla proyector
           </button>
           <button
             type="button"
-            className="bg-manila/10 border border-manila/30 text-manila px-3 py-1.5 rounded text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+            className="bg-manila/10 border border-manila/30 text-manila px-3.5 py-2.5 rounded-lg text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
             onClick={() => setShowAdminForm(true)}
           >
             + Nuevo administrador
           </button>
+          <div className="w-px h-6 bg-manila/20" />
           <button
             type="button"
-            className="bg-manila/10 border border-manila/30 text-manila px-3 py-1.5 rounded text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+            className="text-manila/60 px-2 py-2 text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95 hover:text-manila/90"
             onClick={logout}
           >
             Cerrar sesión
@@ -503,6 +513,7 @@ export default function Host() {
         </div>
       )}
 
+      <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-5 items-start">
       {/* ---------- Ronda actual: el bloque más usado durante el evento ---------- */}
       <Section
         titulo="Ronda actual"
@@ -783,6 +794,7 @@ export default function Host() {
         )}
       </Section>
 
+      <div className="flex flex-col gap-5">
       {/* ---------- Historial de subastas ---------- */}
       {(() => {
         const filtrarPorFmi = Boolean(fmiParam);
@@ -790,7 +802,7 @@ export default function Host() {
           ? (state?.historial ?? []).filter((r) => r.propiedad.matriculaInmobiliaria === fmiParam)
           : state?.historial ?? [];
         return (
-          <Section titulo="Historial de subastas" collapsible defaultOpen={false}>
+          <Section titulo="Historial de subastas" collapsible defaultOpen={false} tint="azul">
         {historialMostrado.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -851,7 +863,7 @@ export default function Host() {
       })()}
 
       {/* ---------- Jugadores ---------- */}
-      <Section titulo="Jugadores">
+      <Section titulo="Jugadores" tint="sello">
         <div className="flex flex-wrap gap-3">
           <button
             type="button"
@@ -869,6 +881,8 @@ export default function Host() {
           </button>
         </div>
       </Section>
+      </div>
+      </div>
 
       {/* ---------- Modal crear/editar inmueble ---------- */}
       {showForm && (
@@ -1132,6 +1146,7 @@ function Section({
   collapsible = false,
   defaultOpen = true,
   destacado = false,
+  tint,
   accion,
   sectionRef,
 }: {
@@ -1140,6 +1155,7 @@ function Section({
   collapsible?: boolean;
   defaultOpen?: boolean;
   destacado?: boolean;
+  tint?: "azul" | "sello";
   accion?: React.ReactNode;
   sectionRef?: React.RefObject<HTMLElement>;
 }) {
@@ -1147,8 +1163,14 @@ function Section({
   return (
     <section
       ref={sectionRef}
-      className={`mb-6 rounded-xl p-4 lg:p-5 [&:fullscreen]:mb-0 [&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:flex [&:fullscreen]:flex-col [&:fullscreen]:justify-center [&:fullscreen]:overflow-auto [&:fullscreen]:rounded-none [&:fullscreen]:bg-archivo [&:fullscreen]:p-10 [&:fullscreen]:[zoom:1.3] ${
-        destacado ? "border-2 border-oro/50 bg-oro/[0.06]" : "border border-manila/10 bg-manila/10"
+      className={`rounded-xl p-4 lg:p-5 [&:fullscreen]:mb-0 [&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:flex [&:fullscreen]:flex-col [&:fullscreen]:justify-center [&:fullscreen]:overflow-auto [&:fullscreen]:rounded-none [&:fullscreen]:bg-archivo [&:fullscreen]:p-10 [&:fullscreen]:[zoom:1.3] ${
+        destacado
+          ? "border-2 border-oro/50 bg-gradient-to-br from-oro/[0.1] to-oro/[0.02]"
+          : tint === "azul"
+            ? "border border-azul/30 bg-gradient-to-br from-azul/[0.1] to-azul/[0.02]"
+            : tint === "sello"
+              ? "border border-sello/25 bg-gradient-to-br from-sello/[0.08] to-sello/[0.02]"
+              : "border border-manila/10 bg-manila/10"
       }`}
     >
       <div className="flex items-center justify-between border-b border-manila/15 pb-2 mb-4 gap-3">
