@@ -278,6 +278,7 @@ export default function Host() {
     ciudad: string;
     areaM2: number;
     avaluo: number;
+    imagenUrl: string | null;
   } | null>(() => {
     const qs = new URLSearchParams(window.location.search);
     const fmi = qs.get("fmi");
@@ -285,10 +286,11 @@ export default function Host() {
     const ciudad = qs.get("ciudad");
     const areaM2 = Number(qs.get("area"));
     const avaluo = Number(qs.get("avaluo"));
+    const imagenUrl = qs.get("imagen");
     if (!fmi || !nombre || !ciudad || !Number.isFinite(areaM2) || !Number.isFinite(avaluo)) {
       return null;
     }
-    return { fmi, nombre, ciudad, areaM2, avaluo };
+    return { fmi, nombre, ciudad, areaM2, avaluo, imagenUrl };
   });
   const fmiParam = datosFmi?.fmi ?? null;
   const [intentoCreacion, setIntentoCreacion] = useState(false);
@@ -306,6 +308,7 @@ export default function Host() {
         matriculaInmobiliaria: datosFmi.fmi,
         areaM2: datosFmi.areaM2,
         avaluo: datosFmi.avaluo,
+        ...(datosFmi.imagenUrl ? { imagenUrl: datosFmi.imagenUrl } : {}),
       },
     });
     setIntentoCreacion(true);
