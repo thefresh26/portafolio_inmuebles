@@ -911,17 +911,17 @@ export default function Host() {
       </div>
 
       {/* ---------- Footer: firma de marca + estado de conexion en vivo ---------- */}
-      <footer className="mt-8 pt-5 border-t border-manila/10 flex items-center justify-between gap-4 relative overflow-hidden">
+      <footer className="mt-10 pt-7 pb-2 border-t border-manila/15 flex items-center justify-between gap-4 relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-px footer-shimmer" aria-hidden="true" />
-        <div className="flex items-center gap-3">
-          <BrandMark className="w-7 h-7" />
+        <div className="flex items-center gap-4">
+          <BrandMark className="w-12 h-12" />
           <div className="leading-tight">
-            <p className="text-sm font-display">Subasta Activa</p>
-            <p className="text-xs text-manila/50">Activos por Colombia S.A.S.</p>
+            <p className="text-lg font-display font-semibold">Subasta Activa</p>
+            <p className="text-sm text-manila/55">Activos por Colombia S.A.S.</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-xs text-manila/50">
-          <span className={`w-2 h-2 rounded-full ${connected ? "bg-esmeralda live-pulse" : "bg-manila/30"}`} />
+        <div className="flex items-center gap-2.5 text-sm text-manila/60">
+          <span className={`w-3 h-3 rounded-full ${connected ? "bg-esmeralda live-pulse" : "bg-manila/30"}`} />
           {connected ? "Conectado en vivo" : "Reconectando…"}
         </div>
       </footer>
