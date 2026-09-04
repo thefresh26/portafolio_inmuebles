@@ -393,8 +393,15 @@ export default function Host() {
   }
 
   const disponibles = state?.properties.filter((p) => p.estado === "disponible") ?? [];
+  // Busca por FMI entre TODOS los inmuebles (no solo los "disponibles"): es
+  // un juego, si ya se subasto/adjudico antes debe poder volver a subastarse
+  // sin problema con solo presionar "Subastar" de nuevo. Solo se excluye
+  // "en_subasta" porque eso significa que ya hay una ronda corriendo con el
+  // (armRound del servidor rechaza intentar armarlo de nuevo en ese caso).
   const propiedadPendiente = fmiParam
-    ? disponibles.find((p) => p.matriculaInmobiliaria === fmiParam) ?? null
+    ? state?.properties.find(
+        (p) => p.matriculaInmobiliaria === fmiParam && p.estado !== "en_subasta"
+      ) ?? null
     : null;
   const enSubasta = state?.properties.filter((p) => p.estado === "en_subasta") ?? [];
   const adjudicadas = state?.properties.filter((p) => p.estado === "adjudicado") ?? [];
