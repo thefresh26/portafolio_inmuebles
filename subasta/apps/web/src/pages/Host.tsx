@@ -20,7 +20,12 @@ type HostState = {
     conectado?: boolean;
     flagged: boolean;
   }[];
-  rondaActual: { roundId: string; propiedad: Property; estado: string } | null;
+  rondaActual: {
+    roundId: string;
+    propiedad: Property;
+    estado: string;
+    ganador: { playerId: string; nickname: string; valorFinal: number } | null;
+  } | null;
   historial: {
     roundId: string;
     propiedad: { nombre: string; matriculaInmobiliaria: string; ciudad?: string };
@@ -354,6 +359,22 @@ export default function Host() {
     }
   }, []);
 
+  // Al presionar "Terminar" no cerramos la pestaña: guardamos una foto del
+  // resultado para mostrar el ganador, y solo "Abortar" (despues de verlo)
+  // cierra/redirige. Si se arma una ronda nueva sin cerrar la pestaña,
+  // limpiamos esta foto para no tapar la ronda nueva.
+  const [rondaGanador, setRondaGanador] = useState<{
+    roundId: string;
+    propiedad: { nombre: string; ciudad?: string };
+    ganador: { playerId: string; nickname: string; valorFinal: number } | null;
+  } | null>(null);
+
+  useEffect(() => {
+    if (rondaGanador && state?.rondaActual && state.rondaActual.roundId !== rondaGanador.roundId) {
+      setRondaGanador(null);
+    }
+  }, [state?.rondaActual?.roundId, rondaGanador]);
+
   if (!authed) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-archivo via-navy3 to-archivo text-manila font-body">
@@ -514,7 +535,42 @@ export default function Host() {
           </button>
         }
       >
-        {state?.rondaActual ? (
+        {rondaGanador ? (
+          <div className="text-center py-10">
+            <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-4">
+              Subasta finalizada
+            </p>
+            <p className="font-display text-2xl font-bold">{rondaGanador.propiedad.nombre}</p>
+            {rondaGanador.propiedad.ciudad && (
+              <p className="opacity-60 text-sm mt-1 mb-6">{rondaGanador.propiedad.ciudad}</p>
+            )}
+            {rondaGanador.ganador ? (
+              <div className="mt-6">
+                <p className="text-5xl mb-2" aria-hidden="true">
+                  🏆
+                </p>
+                <p className="font-display text-3xl font-extrabold text-oro">{rondaGanador.ganador.nickname}</p>
+                <p className="font-mono tabular text-xl opacity-80 mt-1">
+                  {rondaGanador.ganador.valorFinal.toLocaleString("es-CO")} COP
+                </p>
+              </div>
+            ) : (
+              <p className="opacity-70 text-lg mt-6">Nadie pujó por este inmueble.</p>
+            )}
+            <div className="mt-10">
+              <button
+                type="button"
+                className="bg-sello/80 text-manila px-6 py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                onClick={() => {
+                  setRondaGanador(null);
+                  window.close();
+                }}
+              >
+                Abortar
+              </button>
+            </div>
+          </div>
+        ) : state?.rondaActual ? (
           <>
             <div className="text-center mb-6">
               <div className="flex items-center justify-center gap-2 mb-4">
@@ -641,8 +697,15 @@ export default function Host() {
                     type="button"
                     className="bg-gradient-to-r from-azul to-navy3 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
                     onClick={() => {
+                      setRondaGanador({
+                        roundId: state.rondaActual!.roundId,
+                        propiedad: {
+                          nombre: state.rondaActual!.propiedad.nombre,
+                          ciudad: state.rondaActual!.propiedad.ciudad,
+                        },
+                        ganador: state.rondaActual!.ganador,
+                      });
                       send({ t: "host:close_round" });
-                      window.close();
                     }}
                   >
                     Terminar

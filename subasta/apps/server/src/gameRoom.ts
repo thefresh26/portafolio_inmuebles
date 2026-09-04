@@ -574,6 +574,7 @@ export class GameRoom {
             roundId: this.state.currentRound.roundId,
             propiedad: this.state.currentRound.propiedad,
             estado: this.state.currentRound.estado,
+            ganador: this.state.currentRound.ganador,
           }
         : null,
       historial: this.state.historial,
