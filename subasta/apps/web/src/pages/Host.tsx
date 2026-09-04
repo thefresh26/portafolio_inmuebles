@@ -563,10 +563,10 @@ export default function Host() {
                 className="bg-sello/80 text-manila px-6 py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
                 onClick={() => {
                   setRondaGanador(null);
-                  window.close();
+                  window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
                 }}
               >
-                Abortar
+                Ir a la página
               </button>
             </div>
           </div>
@@ -681,14 +681,16 @@ export default function Host() {
               </div>
             )}
 
-            {liveTick && liveTick.roundId === state.rondaActual.roundId && (
-              <p
-                key={Math.ceil(liveTick.remainingMs / 1000)}
-                className="font-display text-3xl font-bold tabular text-center mb-4 countdown-pop"
-              >
-                {Math.ceil(liveTick.remainingMs / 1000)}s
-              </p>
-            )}
+            <div className="h-12 flex items-center justify-center mb-4">
+              {liveTick && liveTick.roundId === state.rondaActual.roundId && (
+                <p
+                  key={Math.ceil(liveTick.remainingMs / 1000)}
+                  className="font-display text-3xl font-bold tabular countdown-pop"
+                >
+                  {Math.ceil(liveTick.remainingMs / 1000)}s
+                </p>
+              )}
+            </div>
 
             <div className="flex gap-2 justify-center">
               {state.rondaActual.estado === "ended" ? (
@@ -724,10 +726,10 @@ export default function Host() {
                   className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
                   onClick={() => {
                     send({ t: "host:abort" });
-                    window.close();
+                    window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
                   }}
                 >
-                  Abortar
+                  Ir a la página
                 </button>
               )}
             </div>
@@ -1145,7 +1147,7 @@ function Section({
   return (
     <section
       ref={sectionRef}
-      className={`mb-6 rounded-xl p-4 lg:p-5 [&:fullscreen]:mb-0 [&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:flex [&:fullscreen]:flex-col [&:fullscreen]:justify-center [&:fullscreen]:overflow-auto [&:fullscreen]:rounded-none [&:fullscreen]:bg-archivo [&:fullscreen]:p-10 ${
+      className={`mb-6 rounded-xl p-4 lg:p-5 [&:fullscreen]:mb-0 [&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:flex [&:fullscreen]:flex-col [&:fullscreen]:justify-center [&:fullscreen]:overflow-auto [&:fullscreen]:rounded-none [&:fullscreen]:bg-archivo [&:fullscreen]:p-10 [&:fullscreen]:[zoom:1.3] ${
         destacado ? "border-2 border-oro/50 bg-oro/[0.06]" : "border border-manila/10 bg-manila/10"
       }`}
     >
