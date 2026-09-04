@@ -513,7 +513,7 @@ export default function Host() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-5 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-5 items-stretch">
       {/* ---------- Ronda actual: el bloque más usado durante el evento ---------- */}
       <Section
         titulo="Ronda actual"
@@ -732,16 +732,24 @@ export default function Host() {
                   </button>
                 </>
               ) : (
-                <button
-                  type="button"
-                  className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-                  onClick={() => {
-                    send({ t: "host:abort" });
-                    window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
-                  }}
-                >
-                  Ir a la página
-                </button>
+                <>
+                  <button
+                    type="button"
+                    className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                    onClick={() => send({ t: "host:abort" })}
+                  >
+                    Abortar
+                  </button>
+                  <button
+                    type="button"
+                    className="bg-manila/10 border border-manila/30 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                    onClick={() => {
+                      window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
+                    }}
+                  >
+                    Ir a la página
+                  </button>
+                </>
               )}
             </div>
           </>
@@ -794,7 +802,7 @@ export default function Host() {
         )}
       </Section>
 
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-5 h-full">
       {/* ---------- Historial de subastas ---------- */}
       {(() => {
         const filtrarPorFmi = Boolean(fmiParam);
@@ -881,6 +889,26 @@ export default function Host() {
           </button>
         </div>
       </Section>
+
+      {/* Guia rapida: llena el espacio sobrante de la columna derecha con
+          referencia util para el presentador, en vez de dejarlo vacio. */}
+      <section className="rounded-xl p-4 lg:p-5 border border-manila/10 bg-manila/5 flex-1">
+        <h2 className="font-display text-base tracking-wide border-b border-manila/15 pb-2 mb-3">Guía rápida</h2>
+        <ul className="flex flex-col gap-2.5 text-sm text-manila/70">
+          <li className="flex gap-2">
+            <span className="text-oro">•</span>
+            Cada ronda dura 20 segundos desde que arranca la cuenta regresiva.
+          </li>
+          <li className="flex gap-2">
+            <span className="text-azul">•</span>
+            Abre "Abrir pantalla proyector" antes de "Subastar para comenzar" para que los jugadores alcancen a registrarse con el QR.
+          </li>
+          <li className="flex gap-2">
+            <span className="text-sello">•</span>
+            "Terminar" cierra la ronda mostrando el ganador; "Abortar" la cancela sin adjudicar el inmueble.
+          </li>
+        </ul>
+      </section>
       </div>
       </div>
 
