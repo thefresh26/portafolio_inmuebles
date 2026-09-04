@@ -488,6 +488,15 @@ export default function Host() {
           >
             + Nuevo administrador
           </button>
+          <button
+            type="button"
+            className="bg-manila/10 border border-manila/30 text-manila px-3.5 py-2.5 rounded-lg text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+            onClick={() => {
+              window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
+            }}
+          >
+            Ir a la página
+          </button>
           <div className="w-px h-6 bg-manila/20" />
           <button
             type="button"
@@ -732,24 +741,13 @@ export default function Host() {
                   </button>
                 </>
               ) : (
-                <>
-                  <button
-                    type="button"
-                    className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-                    onClick={() => send({ t: "host:abort" })}
-                  >
-                    Abortar
-                  </button>
-                  <button
-                    type="button"
-                    className="bg-manila/10 border border-manila/30 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-                    onClick={() => {
-                      window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
-                    }}
-                  >
-                    Ir a la página
-                  </button>
-                </>
+                <button
+                  type="button"
+                  className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                  onClick={() => send({ t: "host:abort" })}
+                >
+                  Abortar
+                </button>
               )}
             </div>
           </>
@@ -911,6 +909,22 @@ export default function Host() {
       </section>
       </div>
       </div>
+
+      {/* ---------- Footer: firma de marca + estado de conexion en vivo ---------- */}
+      <footer className="mt-8 pt-5 border-t border-manila/10 flex items-center justify-between gap-4 relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-px footer-shimmer" aria-hidden="true" />
+        <div className="flex items-center gap-3">
+          <BrandMark className="w-7 h-7" />
+          <div className="leading-tight">
+            <p className="text-sm font-display">Subasta Activa</p>
+            <p className="text-xs text-manila/50">Activos por Colombia S.A.S.</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-manila/50">
+          <span className={`w-2 h-2 rounded-full ${connected ? "bg-esmeralda live-pulse" : "bg-manila/30"}`} />
+          {connected ? "Conectado en vivo" : "Reconectando…"}
+        </div>
+      </footer>
 
       {/* ---------- Modal crear/editar inmueble ---------- */}
       {showForm && (

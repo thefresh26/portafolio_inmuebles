@@ -23,6 +23,37 @@ body,
     linear-gradient(165deg, #123457 0%, #0b2a4a 42%, #0a2543 100%);
 }
 
+/* Footer animado de la consola de admin: linea shimmer dorada que recorre
+   el borde superior, y un punto verde con pulso cuando hay conexion WS. */
+@keyframes footer-shimmer-move {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.footer-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(245, 166, 35, 0.55) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: footer-shimmer-move 4s linear infinite;
+}
+
+@keyframes live-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(26, 184, 122, 0.55);
+  }
+  50% {
+    box-shadow: 0 0 0 5px rgba(26, 184, 122, 0);
+  }
+}
+
+.live-pulse {
+  animation: live-pulse 1.8s ease-in-out infinite;
+}
+
 /* Moneditas que suben y se desvanecen con cada tap en /play.
    El ángulo final y la duración vienen de variables por moneda
    (--coin-rot, --coin-duration) para que no se vean todas idénticas. */
