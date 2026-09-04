@@ -1158,7 +1158,7 @@ function Section({
   defaultOpen?: boolean;
   destacado?: boolean;
   accion?: React.ReactNode;
-  sectionRef?: React.RefObject<HTMLElement | null>;
+  sectionRef?: React.RefObject<HTMLElement>;
 }) {
   const [abierto, setAbierto] = useState(defaultOpen);
   return (
