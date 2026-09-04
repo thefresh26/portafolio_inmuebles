@@ -393,8 +393,7 @@ export default function Host() {
         <div>
           <h1 className="font-display text-2xl">Consola del presentador</h1>
           <p className="opacity-70 text-sm mt-1">
-            PIN: <span className="font-mono tabular">{pin}</span> · estado:{" "}
-            <span className="font-mono">{state?.estado ?? "-"}</span> · {state?.jugadores.length ?? 0} jugadores
+            estado: <span className="font-mono">{state?.estado ?? "-"}</span> · {state?.jugadores.length ?? 0} jugadores
           </p>
         </div>
         <div className="flex items-center gap-2">
