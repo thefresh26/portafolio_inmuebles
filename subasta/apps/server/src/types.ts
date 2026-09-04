@@ -27,6 +27,15 @@ export interface RoundState {
   abortada?: boolean;
 }
 
+/** Fila resumida y ya persistida (Supabase, tabla rounds_log) para el panel de historial del host. */
+export interface HistorialEntry {
+  roundId: string;
+  propiedad: { nombre: string; matriculaInmobiliaria: string; ciudad?: string };
+  ganador: { playerId: string; nickname: string; valorFinal: number } | null;
+  abortada: boolean;
+  finalizadaEn: number;
+}
+
 export interface RoomState {
   pin: string;
   valorPorTap: number;
@@ -35,6 +44,8 @@ export interface RoomState {
   properties: Property[];
   currentRound: RoundState | null;
   roundHistory: RoundState[];
+  /** Historial persistido (Supabase) para mostrar en el host; sobrevive reinicios del servidor. */
+  historial: HistorialEntry[];
   screens: Set<WebSocket>;
   hosts: Set<WebSocket>;
 }

@@ -13,9 +13,10 @@ import {
   setPropertyEstado,
   logPlayerLogin,
   logRoundResult,
+  fetchHistorial,
   deletePlayerLogins,
 } from "./propertiesRepo.js";
-import type { PlayerConn, RoomState, RoundState } from "./types.js";
+import type { HistorialEntry, PlayerConn, RoomState, RoundState } from "./types.js";
 
 const PIN = "1234"; // fijo por ahora (sala única); las propiedades sí viven en Supabase
 
@@ -33,6 +34,7 @@ export class GameRoom {
     properties: [],
     currentRound: null,
     roundHistory: [],
+    historial: [],
     screens: new Set(),
     hosts: new Set(),
   };
@@ -48,7 +50,44 @@ export class GameRoom {
   async initProperties() {
     this.state.properties = await loadProperties();
     await this.repararPropiedadesEnSubastaHuerfanas();
+    this.state.historial = await fetchHistorial(30);
     this.broadcastHostState();
+  }
+
+  /**
+   * Registra el resultado de una ronda (con o sin ganador, abortada o no) en Supabase
+   * y lo agrega de una vez al historial en memoria, para que el panel del host lo
+   * muestre sin depender de que el insert a la base de datos ya haya vuelto.
+   * Este historial sobrevive reinicios del servidor porque se recarga desde
+   * Supabase en initProperties().
+   */
+  private registrarEnHistorial(round: RoundState, abortada: boolean) {
+    const endedAt = this.now();
+    const entry: HistorialEntry = {
+      roundId: round.roundId,
+      propiedad: {
+        nombre: round.propiedad.nombre,
+        matriculaInmobiliaria: round.propiedad.matriculaInmobiliaria,
+        ciudad: round.propiedad.ciudad,
+      },
+      ganador: round.ganador,
+      abortada,
+      finalizadaEn: endedAt,
+    };
+    this.state.historial = [entry, ...this.state.historial].slice(0, 30);
+
+    logRoundResult({
+      propertyId: round.propiedad.id,
+      propertyNombre: round.propiedad.nombre,
+      propertyFmi: round.propiedad.matriculaInmobiliaria,
+      propertyCiudad: round.propiedad.ciudad,
+      winnerNickname: round.ganador?.nickname ?? null,
+      winnerTaps: round.ganador ? round.counts.get(round.ganador.playerId) ?? 0 : 0,
+      valorFinal: round.ganador?.valorFinal ?? 0,
+      startedAt: round.startAt,
+      endedAt,
+      abortada,
+    }).catch(() => {});
   }
 
   /**
@@ -305,6 +344,7 @@ export class GameRoom {
         round.estado = "ended";
         round.abortada = true;
         this.state.roundHistory.push(round);
+        this.registrarEnHistorial(round, true);
       }
     }
     this.state.currentRound = null;
@@ -367,18 +407,12 @@ export class GameRoom {
       : null;
 
     this.state.roundHistory.push(round);
+    this.registrarEnHistorial(round, false);
 
     // El inmueble queda adjudicado si hubo ganador; si no, vuelve a disponible.
     const nuevoEstado = round.ganador ? "adjudicado" : "disponible";
     this.setLocalPropertyEstado(round.propiedad.id, nuevoEstado);
     setPropertyEstado(round.propiedad.id, nuevoEstado).catch(() => {});
-    logRoundResult({
-      propertyId: round.propiedad.id,
-      winnerNickname: round.ganador?.nickname ?? null,
-      winnerTaps: winner?.taps ?? 0,
-      valorFinal: round.ganador?.valorFinal ?? 0,
-      startedAt: round.startAt,
-    }).catch(() => {});
 
     const positions = this.buildPositions(ranking);
     for (const p of this.state.players.values()) {
@@ -542,20 +576,7 @@ export class GameRoom {
             estado: this.state.currentRound.estado,
           }
         : null,
-      historial: this.state.roundHistory
-        .slice(-30)
-        .reverse()
-        .map((r) => ({
-          roundId: r.roundId,
-          propiedad: {
-            nombre: r.propiedad.nombre,
-            matriculaInmobiliaria: r.propiedad.matriculaInmobiliaria,
-            ciudad: r.propiedad.ciudad,
-          },
-          ganador: r.ganador,
-          abortada: r.abortada === true,
-          finalizadaEn: r.startAt + r.duracionMs,
-        })),
+      historial: this.state.historial,
     };
     for (const h of this.state.hosts) safeSend(h, payload);
   }
