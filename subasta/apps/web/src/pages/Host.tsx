@@ -31,6 +31,25 @@ type LiveTick = {
   valorActual: number;
 };
 
+// Deriva un "tipo" corto para el inmueble a partir de su nombre, cuando llega
+// autocreado desde el portafolio (que no maneja esa categoria por separado).
+function tipoDesdeNombre(nombre: string): string {
+  const n = nombre.toLowerCase();
+  const categorias = [
+    "apartamento",
+    "casa",
+    "lote",
+    "edificio",
+    "parqueadero",
+    "hotel",
+    "local",
+    "finca",
+    "bodega",
+  ];
+  const encontrada = categorias.find((c) => n.includes(c));
+  return encontrada ? encontrada.charAt(0).toUpperCase() + encontrada.slice(1) : "Inmueble";
+}
+
 const EMPTY_FORM: PropertyInput = {
   nombre: "",
   ciudad: "",
@@ -245,13 +264,52 @@ export default function Host() {
 
   // ---------- Pantalla de login ----------
   // --- Detecta el inmueble elegido desde el botón "Subastar" del portafolio
-  // público (?fmi=<matricula>). No arma la ronda solo: el presentador debe
-  // confirmar con el botón "Subastar para comenzar", así da tiempo a que los
-  // jugadores se registren con el QR de "Abrir pantalla proyector" antes de
-  // que arranque la ronda.
-  const [fmiParam] = useState<string | null>(
-    () => new URLSearchParams(window.location.search).get("fmi")
-  );
+  // público (?fmi=<matricula>&nombre=..&ciudad=..&area=..&avaluo=..). No arma
+  // la ronda solo: el presentador debe confirmar con el botón "Subastar para
+  // comenzar", así da tiempo a que los jugadores se registren con el QR de
+  // "Abrir pantalla proyector" antes de que arranque la ronda.
+  //
+  // El portafolio es la fuente de verdad de los inmuebles: si el que llega
+  // por FMI todavía no existe en el juego, se crea solo (una sola vez) con
+  // los datos que trae la URL, sin que nadie tenga que cargarlo a mano.
+  const [datosFmi] = useState<{
+    fmi: string;
+    nombre: string;
+    ciudad: string;
+    areaM2: number;
+    avaluo: number;
+  } | null>(() => {
+    const qs = new URLSearchParams(window.location.search);
+    const fmi = qs.get("fmi");
+    const nombre = qs.get("nombre");
+    const ciudad = qs.get("ciudad");
+    const areaM2 = Number(qs.get("area"));
+    const avaluo = Number(qs.get("avaluo"));
+    if (!fmi || !nombre || !ciudad || !Number.isFinite(areaM2) || !Number.isFinite(avaluo)) {
+      return null;
+    }
+    return { fmi, nombre, ciudad, areaM2, avaluo };
+  });
+  const fmiParam = datosFmi?.fmi ?? null;
+  const [intentoCreacion, setIntentoCreacion] = useState(false);
+
+  useEffect(() => {
+    if (!authed || !state || !datosFmi || intentoCreacion) return;
+    const yaExiste = state.properties.some((p) => p.matriculaInmobiliaria === datosFmi.fmi);
+    if (yaExiste) return;
+    send({
+      t: "host:create_property",
+      data: {
+        nombre: datosFmi.nombre,
+        ciudad: datosFmi.ciudad,
+        tipo: tipoDesdeNombre(datosFmi.nombre),
+        matriculaInmobiliaria: datosFmi.fmi,
+        areaM2: datosFmi.areaM2,
+        avaluo: datosFmi.avaluo,
+      },
+    });
+    setIntentoCreacion(true);
+  }, [authed, state, datosFmi, intentoCreacion, send]);
 
   if (!authed) {
     return (
