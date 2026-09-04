@@ -79,10 +79,15 @@ export default function Screen() {
   const top5FlipRef = useFlip(top5.map((p) => p.playerId));
   const reducedMotion = usePrefersReducedMotion();
 
-  // Genera las posiciones del confeti una sola vez por adjudicación (no en
-  // cada render): se regenera cuando `sello` pasa de null a un valor.
+  // Lanza una tanda de confeti apenas se adjudica, y sigue relanzando una
+  // tanda nueva cada pocos segundos mientras esta pantalla de resultado
+  // siga en cartel (si no, una sola tanda de ~4s se ve y despues la
+  // pantalla queda estatica el resto del tiempo que dure la celebracion).
   useEffect(() => {
-    if (sello) setConfetti(generarConfeti(36));
+    if (!sello) return;
+    setConfetti(generarConfeti(36));
+    const id = window.setInterval(() => setConfetti(generarConfeti(36)), 4000);
+    return () => window.clearInterval(id);
   }, [sello]);
 
   // Detecta, comparando contra el valor anterior de cada jugador (guardado

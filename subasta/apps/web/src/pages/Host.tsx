@@ -31,6 +31,20 @@ type LiveTick = {
   valorActual: number;
 };
 
+// Version compacta del valor pujado (ej. "171.5M" en vez de "171.500.000"),
+// para que quepa en las columnas angostas del ranking de la ronda sin
+// pegarse con el jugador de al lado.
+function formatoCompacto(valor: number): string {
+  if (valor >= 1_000_000) {
+    const millones = valor / 1_000_000;
+    return `${millones.toFixed(millones < 10 ? 1 : 0).replace(/\.0$/, "")}M`;
+  }
+  if (valor >= 1_000) {
+    return `${Math.round(valor / 1_000)}K`;
+  }
+  return valor.toString();
+}
+
 // Deriva un "tipo" corto para el inmueble a partir de su nombre, cuando llega
 // autocreado desde el portafolio (que no maneja esa categoria por separado).
 function tipoDesdeNombre(nombre: string): string {
@@ -538,8 +552,8 @@ export default function Host() {
                             </span>
                           )}
                         </span>
-                        <span className="font-mono tabular text-xs mt-0.5">
-                          {p.valorPujado.toLocaleString("es-CO")} COP
+                        <span className="font-mono tabular text-[11px] mt-0.5 whitespace-nowrap">
+                          {formatoCompacto(p.valorPujado)}
                         </span>
                       </div>
                     );

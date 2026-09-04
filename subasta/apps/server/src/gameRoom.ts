@@ -324,6 +324,12 @@ export class GameRoom {
   closeRound() {
     this.state.currentRound = null;
     this.state.estado = "lobby";
+    // Avisarle tambien a /screen (el proyector): sin esto, la pantalla se
+    // queda pegada mostrando "Ha ganado..." para siempre, porque solo
+    // abortRound() limpiaba esa pantalla, no closeRound().
+    for (const s of this.state.screens) {
+      safeSend(s, { t: "round_end" as const, roundId: "", ganador: null, valorFinal: 0, top5: [] });
+    }
     this.broadcastHostState();
   }
 
