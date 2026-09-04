@@ -297,6 +297,15 @@ export class GameRoom {
         top5,
       };
       for (const s of this.state.screens) safeSend(s, screenPayload);
+
+      // Si la ronda ya habia terminado sola (endRound) y solo estaba
+      // esperando que el host presionara "Terminar", ya quedo registrada
+      // en el historial alla -- no duplicarla aqui.
+      if (round.estado !== "ended") {
+        round.estado = "ended";
+        round.abortada = true;
+        this.state.roundHistory.push(round);
+      }
     }
     this.state.currentRound = null;
   }
@@ -534,7 +543,6 @@ export class GameRoom {
           }
         : null,
       historial: this.state.roundHistory
-        .filter((r) => r.ganador)
         .slice(-30)
         .reverse()
         .map((r) => ({
@@ -545,6 +553,7 @@ export class GameRoom {
             ciudad: r.propiedad.ciudad,
           },
           ganador: r.ganador,
+          abortada: r.abortada === true,
           finalizadaEn: r.startAt + r.duracionMs,
         })),
     };

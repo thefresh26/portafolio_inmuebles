@@ -25,6 +25,7 @@ type HostState = {
     roundId: string;
     propiedad: { nombre: string; matriculaInmobiliaria: string; ciudad?: string };
     ganador: { playerId: string; nickname: string; valorFinal: number } | null;
+    abortada: boolean;
     finalizadaEn: number;
   }[];
 };
@@ -677,6 +678,7 @@ export default function Host() {
                 <tr className="text-left opacity-60 uppercase text-xs tracking-wide">
                   <th className="py-2 pr-4">Inmueble</th>
                   <th className="py-2 pr-4">FMI</th>
+                  <th className="py-2 pr-4">Resultado</th>
                   <th className="py-2 pr-4">Ganador</th>
                   <th className="py-2 pr-4">Valor final</th>
                 </tr>
@@ -686,6 +688,21 @@ export default function Host() {
                   <tr key={r.roundId} className="border-t border-manila/10">
                     <td className="py-2 pr-4 font-display font-semibold">{r.propiedad.nombre}</td>
                     <td className="py-2 pr-4 font-mono text-xs opacity-70">{r.propiedad.matriculaInmobiliaria}</td>
+                    <td className="py-2 pr-4">
+                      {r.ganador ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-esmeralda/20 text-esmeralda">
+                          Adjudicada
+                        </span>
+                      ) : r.abortada ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-sello/20 text-sello">
+                          Abortada
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-manila/10 text-manila/70">
+                          Sin pujas
+                        </span>
+                      )}
+                    </td>
                     <td className="py-2 pr-4">{r.ganador?.nickname ?? "-"}</td>
                     <td className="py-2 pr-4 font-mono tabular text-oro">
                       {r.ganador ? `${r.ganador.valorFinal.toLocaleString("es-CO")} COP` : "-"}

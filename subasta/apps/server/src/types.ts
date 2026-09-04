@@ -24,6 +24,7 @@ export interface RoundState {
   recortados: Map<string, number>; // playerId -> taps descartados
   firstReachedAt: Map<string, number>; // playerId -> ts en que alcanzó su conteo actual (para desempate)
   ganador: { playerId: string; nickname: string; valorFinal: number } | null;
+  abortada?: boolean;
 }
 
 export interface RoomState {
