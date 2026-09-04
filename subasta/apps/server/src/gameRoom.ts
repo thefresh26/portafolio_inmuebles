@@ -533,6 +533,20 @@ export class GameRoom {
             estado: this.state.currentRound.estado,
           }
         : null,
+      historial: this.state.roundHistory
+        .filter((r) => r.ganador)
+        .slice(-30)
+        .reverse()
+        .map((r) => ({
+          roundId: r.roundId,
+          propiedad: {
+            nombre: r.propiedad.nombre,
+            matriculaInmobiliaria: r.propiedad.matriculaInmobiliaria,
+            ciudad: r.propiedad.ciudad,
+          },
+          ganador: r.ganador,
+          finalizadaEn: r.startAt + r.duracionMs,
+        })),
     };
     for (const h of this.state.hosts) safeSend(h, payload);
   }

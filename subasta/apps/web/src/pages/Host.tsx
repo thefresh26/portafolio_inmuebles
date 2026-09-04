@@ -21,6 +21,12 @@ type HostState = {
     flagged: boolean;
   }[];
   rondaActual: { roundId: string; propiedad: Property; estado: string } | null;
+  historial: {
+    roundId: string;
+    propiedad: { nombre: string; matriculaInmobiliaria: string; ciudad?: string };
+    ganador: { playerId: string; nickname: string; valorFinal: number } | null;
+    finalizadaEn: number;
+  }[];
 };
 
 type LiveTick = {
@@ -659,6 +665,38 @@ export default function Host() {
               </>
             )}
           </div>
+        )}
+      </Section>
+
+      {/* ---------- Historial de subastas ---------- */}
+      <Section titulo="Historial de subastas" collapsible defaultOpen={false}>
+        {state?.historial && state.historial.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left opacity-60 uppercase text-xs tracking-wide">
+                  <th className="py-2 pr-4">Inmueble</th>
+                  <th className="py-2 pr-4">FMI</th>
+                  <th className="py-2 pr-4">Ganador</th>
+                  <th className="py-2 pr-4">Valor final</th>
+                </tr>
+              </thead>
+              <tbody>
+                {state.historial.map((r) => (
+                  <tr key={r.roundId} className="border-t border-manila/10">
+                    <td className="py-2 pr-4 font-display font-semibold">{r.propiedad.nombre}</td>
+                    <td className="py-2 pr-4 font-mono text-xs opacity-70">{r.propiedad.matriculaInmobiliaria}</td>
+                    <td className="py-2 pr-4">{r.ganador?.nickname ?? "-"}</td>
+                    <td className="py-2 pr-4 font-mono tabular text-oro">
+                      {r.ganador ? `${r.ganador.valorFinal.toLocaleString("es-CO")} COP` : "-"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="opacity-60 text-sm">Todavía no hay subastas finalizadas con ganador.</p>
         )}
       </Section>
 
