@@ -566,7 +566,7 @@ export default function Host() {
                     className="bg-gradient-to-r from-azul to-navy3 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
                     onClick={() => {
                       send({ t: "host:close_round" });
-                      window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
+                      window.close();
                     }}
                   >
                     Terminar
@@ -585,7 +585,7 @@ export default function Host() {
                   className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
                   onClick={() => {
                     send({ t: "host:abort" });
-                    window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
+                    window.close();
                   }}
                 >
                   Abortar
