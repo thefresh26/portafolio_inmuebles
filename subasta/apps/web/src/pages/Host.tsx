@@ -375,6 +375,10 @@ export default function Host() {
     }
   }, [state?.rondaActual?.roundId, rondaGanador]);
 
+  // Cuando se llega desde un FMI especifico (boton "Subastar" del portafolio),
+  // el historial arranca filtrado a ese inmueble; el host puede expandirlo a todos.
+  const [historialSoloEsteInmueble, setHistorialSoloEsteInmueble] = useState(true);
+
   if (!authed) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-archivo via-navy3 to-archivo text-manila font-body">
@@ -782,8 +786,29 @@ export default function Host() {
       </Section>
 
       {/* ---------- Historial de subastas ---------- */}
-      <Section titulo="Historial de subastas" collapsible defaultOpen={false}>
-        {state?.historial && state.historial.length > 0 ? (
+      {(() => {
+        const filtrarPorFmi = Boolean(fmiParam) && historialSoloEsteInmueble;
+        const historialMostrado = filtrarPorFmi
+          ? (state?.historial ?? []).filter((r) => r.propiedad.matriculaInmobiliaria === fmiParam)
+          : state?.historial ?? [];
+        return (
+          <Section
+            titulo="Historial de subastas"
+            collapsible
+            defaultOpen={false}
+            accion={
+              fmiParam ? (
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-archivo/10 border border-manila/20 text-manila/90 transition-all duration-150 ease-out hover:bg-archivo/20 hover:scale-105 active:scale-95"
+                  onClick={() => setHistorialSoloEsteInmueble((v) => !v)}
+                >
+                  {historialSoloEsteInmueble ? "Solo este inmueble" : "Ver todo"}
+                </button>
+              ) : undefined
+            }
+          >
+        {historialMostrado.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -797,7 +822,7 @@ export default function Host() {
                 </tr>
               </thead>
               <tbody>
-                {state.historial.map((r) => (
+                {historialMostrado.map((r) => (
                   <tr key={r.roundId} className="border-t border-manila/10">
                     <td className="py-2 pr-4 font-display font-semibold">{r.propiedad.nombre}</td>
                     <td className="py-2 pr-4 font-mono text-xs opacity-70">{r.propiedad.matriculaInmobiliaria}</td>
@@ -832,9 +857,15 @@ export default function Host() {
             </table>
           </div>
         ) : (
-          <p className="opacity-60 text-sm">Todavía no hay subastas finalizadas con ganador.</p>
+          <p className="opacity-60 text-sm">
+            {filtrarPorFmi
+              ? "Todavía no hay subastas registradas para este inmueble."
+              : "Todavía no hay subastas finalizadas con ganador."}
+          </p>
         )}
-      </Section>
+          </Section>
+        );
+      })()}
 
       {/* ---------- Jugadores ---------- */}
       <Section titulo="Jugadores">
