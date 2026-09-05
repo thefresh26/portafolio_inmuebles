@@ -183,7 +183,7 @@ export default function Screen() {
   // Ronda en vivo: la foto queda fija arriba como "meta" y las barras
   // verticales de puja crecen hacia ella; tiempo y taps van debajo.
   return (
-    <div className="min-h-screen bg-gradient-to-br from-archivo via-navy3 to-archivo text-manila font-body flex items-center justify-center p-6 lg:p-10">
+    <div className="min-h-screen bg-escenario text-manila font-body flex items-center justify-center p-6 lg:p-10">
       <FullscreenButton />
       <div className="w-full max-w-3xl flex flex-col items-center text-center">
         <p className="font-mono text-sm uppercase opacity-70">{propiedad.matriculaInmobiliaria}</p>

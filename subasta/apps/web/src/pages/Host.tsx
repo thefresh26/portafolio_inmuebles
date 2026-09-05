@@ -455,7 +455,7 @@ export default function Host() {
   const pin = state?.pin ?? "----";
 
   return (
-    <div className="min-h-screen bg-escenario text-manila font-body p-6 lg:p-8">
+    <div className="min-h-screen bg-escenario text-manila font-body p-6 lg:p-8 flex flex-col">
       {/* ---------- Header: banner con degradado + acciones de cuenta ---------- */}
       <div
         className="flex flex-wrap items-center justify-between gap-4 rounded-xl px-6 py-5 mb-6 shadow-lg shadow-black/20"
@@ -592,10 +592,22 @@ export default function Host() {
           </div>
         ) : state?.rondaActual ? (
           <>
-            <div className="text-center mb-6">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <span className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em]">
-                  Lote en subasta
+            <div className="relative w-full mb-6 rounded-xl overflow-hidden shadow-lg shadow-black/30 border-2 border-oro/60">
+              {state.rondaActual.propiedad.imagenUrl ? (
+                <img
+                  src={state.rondaActual.propiedad.imagenUrl}
+                  alt={state.rondaActual.propiedad.nombre}
+                  className="w-full h-72 sm:h-80 lg:h-[26rem] object-cover"
+                />
+              ) : (
+                <div className="w-full h-72 sm:h-80 lg:h-[26rem] bg-navy3/40 flex items-center justify-center text-6xl">
+                  🏛️
+                </div>
+              )}
+              <div className="absolute inset-0 bg-gradient-to-t from-archivo via-archivo/15 to-transparent" />
+              <div className="absolute top-4 inset-x-4 flex items-start justify-between gap-3">
+                <span className="bg-archivo/85 text-oro font-mono text-xs px-2.5 py-1 rounded-full border border-oro/40">
+                  FMI {state.rondaActual.propiedad.matriculaInmobiliaria}
                 </span>
                 <span
                   className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide ${
@@ -616,28 +628,15 @@ export default function Host() {
                       : "Armada · esperando"}
                 </span>
               </div>
-
-              <div className="relative w-full max-w-md mx-auto mb-3">
-                {state.rondaActual.propiedad.imagenUrl ? (
-                  <img
-                    src={state.rondaActual.propiedad.imagenUrl}
-                    alt={state.rondaActual.propiedad.nombre}
-                    className="w-full h-64 object-cover rounded-xl border-2 border-oro/60 shadow-lg shadow-black/30"
-                  />
-                ) : (
-                  <div className="w-full h-64 rounded-xl border-2 border-oro/60 bg-navy3/40 flex items-center justify-center text-4xl">
-                    🏛️
-                  </div>
+              <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 text-left">
+                <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-2">
+                  Lote en subasta
+                </p>
+                <p className="font-display text-2xl sm:text-3xl font-bold">{state.rondaActual.propiedad.nombre}</p>
+                {state.rondaActual.propiedad.ciudad && (
+                  <p className="opacity-70 text-sm mt-1">{state.rondaActual.propiedad.ciudad}</p>
                 )}
-                <span className="absolute top-3 left-3 bg-archivo/85 text-oro font-mono text-xs px-2.5 py-1 rounded-full border border-oro/40">
-                  FMI {state.rondaActual.propiedad.matriculaInmobiliaria}
-                </span>
               </div>
-
-              <p className="font-display text-2xl font-bold">{state.rondaActual.propiedad.nombre}</p>
-              {state.rondaActual.propiedad.ciudad && (
-                <p className="opacity-60 text-sm mt-1">{state.rondaActual.propiedad.ciudad}</p>
-              )}
             </div>
 
             {liveTick && liveTick.roundId === state.rondaActual.roundId && (
@@ -755,34 +754,39 @@ export default function Host() {
           <div className="text-center py-8">
             {propiedadPendiente ? (
               <>
-                <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-4">
-                  Lote listo para subastar
-                </p>
-                <div className="relative w-full max-w-sm mx-auto mb-4">
+                <div className="relative w-full mb-4 rounded-xl overflow-hidden shadow-lg shadow-black/30 border-2 border-oro/60">
                   {propiedadPendiente.imagenUrl ? (
                     <img
                       src={propiedadPendiente.imagenUrl}
                       alt={propiedadPendiente.nombre}
-                      className="w-full h-48 object-cover rounded-xl border-2 border-oro/60 shadow-lg shadow-black/30"
+                      className="w-full h-72 sm:h-80 lg:h-[26rem] object-cover"
                     />
                   ) : (
-                    <div className="w-full h-48 rounded-xl border-2 border-oro/60 bg-navy3/40 flex items-center justify-center text-4xl">
+                    <div className="w-full h-72 sm:h-80 lg:h-[26rem] bg-navy3/40 flex items-center justify-center text-6xl">
                       🏛️
                     </div>
                   )}
-                  <span className="absolute top-3 left-3 bg-archivo/85 text-oro font-mono text-xs px-2.5 py-1 rounded-full border border-oro/40">
+                  <div className="absolute inset-0 bg-gradient-to-t from-archivo via-archivo/15 to-transparent" />
+                  <span className="absolute top-4 left-4 bg-archivo/85 text-oro font-mono text-xs px-2.5 py-1 rounded-full border border-oro/40">
                     FMI {propiedadPendiente.matriculaInmobiliaria}
                   </span>
+                  <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                    <div className="text-left">
+                      <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-2">
+                        Lote listo para subastar
+                      </p>
+                      <p className="font-display text-2xl sm:text-3xl font-bold">{propiedadPendiente.nombre}</p>
+                    </div>
+                    <button
+                      type="button"
+                      className="bg-gradient-to-r from-azul to-navy3 text-manila px-6 py-3 rounded-lg font-display font-bold shadow-lg shadow-black/30 shrink-0 transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                      onClick={() => send({ t: "host:arm", propertyId: propiedadPendiente.id })}
+                    >
+                      Subastar para comenzar
+                    </button>
+                  </div>
                 </div>
-                <p className="font-display text-xl font-bold mb-4">{propiedadPendiente.nombre}</p>
-                <button
-                  type="button"
-                  className="bg-gradient-to-r from-azul to-navy3 text-manila px-6 py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-                  onClick={() => send({ t: "host:arm", propertyId: propiedadPendiente.id })}
-                >
-                  Subastar para comenzar
-                </button>
-                <p className="opacity-50 text-sm mt-3">
+                <p className="opacity-50 text-sm text-center">
                   Abre "Abrir pantalla proyector" para que los jugadores se registren con el QR antes de empezar.
                 </p>
               </>
@@ -910,8 +914,8 @@ export default function Host() {
       </div>
       </div>
 
-      {/* ---------- Footer: firma de marca + estado de conexion en vivo ---------- */}
-      <footer className="mt-10 pt-7 pb-2 border-t border-manila/15 flex items-center justify-between gap-4 relative overflow-hidden">
+      {/* ---------- Footer: firma de marca + estado de conexion en vivo (fijo al fondo, aunque el contenido sea corto) ---------- */}
+      <footer className="mt-auto pt-7 pb-2 border-t border-manila/15 flex items-center justify-between gap-4 relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-px footer-shimmer" aria-hidden="true" />
         <div className="flex items-center gap-4">
           <BrandMark className="w-12 h-12" />

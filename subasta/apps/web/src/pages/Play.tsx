@@ -316,51 +316,64 @@ export default function Play() {
 
   if (fase === "join") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-archivo via-navy3 to-archivo px-6 phase-fade-in">
-        <div className="bg-manila text-archivo rounded-xl p-8 w-full max-w-sm font-body">
-          <BrandMark className="w-12 h-12 mb-3" />
-          <h1 className="font-display text-2xl mb-1">Subasta Activa</h1>
-          <p className="text-sm mb-6 opacity-70">Completa tus datos para participar en la subasta.</p>
-
-          <label className="block text-xs uppercase tracking-wide mb-1">Nombre</label>
-          <input
-            className="w-full mb-4 px-3 py-2 rounded border border-archivo/30"
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-            placeholder="Tu nombre en pantalla"
-          />
-
-          <label className="block text-xs uppercase tracking-wide mb-1">Celular</label>
-          <input
-            className="w-full mb-4 px-3 py-2 rounded border border-archivo/30"
-            value={telefono}
-            onChange={(e) => setTelefono(e.target.value)}
-            placeholder="300 123 4567"
-            inputMode="tel"
-          />
-
-          <label className="block text-xs uppercase tracking-wide mb-1">Correo</label>
-          <input
-            className="w-full mb-6 px-3 py-2 rounded border border-archivo/30"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
-            placeholder="correo@empresa.com"
-            type="email"
-          />
-
-          {joinError && (
-            <p role="alert" className="text-sm text-archivo bg-sello/10 border border-sello/40 rounded px-3 py-2 mb-3">
-              {joinError}
-            </p>
-          )}
-
-          <button
-            className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100 disabled:active:scale-100"
-            disabled={!puedeEntrar}
-            onClick={onJoin}
+      <div className="min-h-screen flex items-center justify-center bg-escenario sm:px-6 phase-fade-in">
+        <div className="w-full max-w-sm min-h-screen sm:min-h-0 sm:rounded-2xl overflow-hidden shadow-2xl shadow-black/30 flex flex-col font-body">
+          {/* Banner con el mismo degradado del header de la consola de admin */}
+          <div
+            className="px-7 pt-14 pb-8 sm:pt-10"
+            style={{ background: "linear-gradient(100deg, #7a4a12 0%, #173f70 46%, #0d3a63 100%)" }}
           >
-            {connected ? "Entrar" : "Conectando..."}
-          </button>
+            <BrandMark className="w-11 h-11 mb-3.5" />
+            <h1 className="font-display text-2xl text-manila mb-1.5">Subasta Activa</h1>
+            <p className="text-sm text-manila/75 leading-relaxed">Completa tus datos para participar en la subasta.</p>
+          </div>
+
+          <div className="flex-1 bg-manila text-archivo px-6 pt-7 pb-8 flex flex-col">
+            <label className="block text-xs uppercase tracking-wide mb-1">Nombre</label>
+            <input
+              className="w-full mb-4 px-3 py-2 rounded border border-archivo/30"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="Tu nombre en pantalla"
+            />
+
+            <label className="block text-xs uppercase tracking-wide mb-1">Celular</label>
+            <input
+              className="w-full mb-4 px-3 py-2 rounded border border-archivo/30"
+              value={telefono}
+              onChange={(e) => setTelefono(e.target.value)}
+              placeholder="300 123 4567"
+              inputMode="tel"
+            />
+
+            <label className="block text-xs uppercase tracking-wide mb-1">Correo</label>
+            <input
+              className="w-full mb-6 px-3 py-2 rounded border border-archivo/30"
+              value={correo}
+              onChange={(e) => setCorreo(e.target.value)}
+              placeholder="correo@empresa.com"
+              type="email"
+            />
+
+            {joinError && (
+              <p role="alert" className="text-sm text-archivo bg-sello/10 border border-sello/40 rounded px-3 py-2 mb-3">
+                {joinError}
+              </p>
+            )}
+
+            <button
+              className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100 disabled:active:scale-100"
+              disabled={!puedeEntrar}
+              onClick={onJoin}
+            >
+              {connected ? "Entrar" : "Conectando..."}
+            </button>
+
+            <div className="mt-auto pt-6 flex items-center justify-center gap-1.5 text-archivo/40 text-[11px]">
+              <span className="w-1.5 h-1.5 rounded-full bg-esmeralda" />
+              Activos por Colombia S.A.S.
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -493,7 +506,7 @@ export default function Play() {
 
 function Centered({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center text-center bg-gradient-to-br from-archivo via-navy3 to-archivo text-manila px-6 font-body phase-fade-in">
+    <div className="min-h-screen flex flex-col items-center justify-center text-center bg-escenario text-manila px-6 font-body phase-fade-in">
       {children}
     </div>
   );
