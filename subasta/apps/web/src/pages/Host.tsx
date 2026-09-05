@@ -340,7 +340,7 @@ export default function Host() {
     setIntentoCreacion(true);
   }, [authed, state, datosFmi, intentoCreacion, send]);
 
-  const rondaSectionRef = useRef<HTMLElement>(null);
+  const rondaSectionRef = useRef<HTMLDivElement>(null);
   const [rondaPantallaCompleta, setRondaPantallaCompleta] = useState(false);
 
   useEffect(() => {
@@ -453,51 +453,38 @@ export default function Host() {
   const enSubasta = state?.properties.filter((p) => p.estado === "en_subasta") ?? [];
   const adjudicadas = state?.properties.filter((p) => p.estado === "adjudicado") ?? [];
   const pin = state?.pin ?? "----";
+  const heroPropiedad = state?.rondaActual?.propiedad ?? propiedadPendiente ?? null;
 
   return (
-    <div className="min-h-screen bg-escenario text-manila font-body p-6 lg:p-8 flex flex-col">
-      {/* ---------- Header: banner con degradado + acciones de cuenta ---------- */}
-      <div
-        className="flex flex-wrap items-center justify-between gap-4 rounded-xl px-6 py-5 mb-6 shadow-lg shadow-black/20"
-        style={{ background: "linear-gradient(100deg, #7a4a12 0%, #173f70 46%, #0d3a63 100%)" }}
-      >
-        <div className="flex items-center gap-4 flex-wrap">
-          <div>
-            <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-manila/60 mb-0.5">Subasta Activa</p>
-            <h1 className="font-display text-2xl">Consola del presentador</h1>
-          </div>
-          <div className="hidden sm:block w-px h-9 bg-manila/20" />
-          <div className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-archivo/40 border border-manila/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-manila/60 shadow-[0_0_0_3px_rgba(234,241,251,0.2)]" />
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-manila/90">{state?.estado ?? "-"}</span>
-            <span className="text-xs text-manila/60">· {state?.jugadores.length ?? 0} jugadores</span>
-          </div>
-        </div>
+    <div className="min-h-screen bg-escenario text-manila font-body flex flex-col">
+      {/* ---------- Header: barra flotante minimalista ---------- */}
+      <div className="flex flex-wrap items-center justify-between gap-4 px-6 lg:px-10 pt-6 pb-4">
+        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-manila/70">Subasta Activa</p>
         <div className="flex items-center gap-2.5">
           <button
             type="button"
-            className="bg-manila text-archivo px-4 py-2.5 rounded-lg text-sm font-display font-bold shadow-md transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+            className="bg-manila text-archivo px-4 py-2 rounded-full text-sm font-display font-bold shadow-md transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
             onClick={() => window.open("/screen", "_blank")}
           >
             Abrir pantalla proyector
           </button>
           <button
             type="button"
-            className="bg-manila/10 border border-manila/30 text-manila px-3.5 py-2.5 rounded-lg text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+            className="bg-manila/10 border border-manila/25 text-manila px-3.5 py-2 rounded-full text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
             onClick={() => setShowAdminForm(true)}
           >
             + Nuevo administrador
           </button>
           <button
             type="button"
-            className="bg-manila/10 border border-manila/30 text-manila px-3.5 py-2.5 rounded-lg text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+            className="bg-manila/10 border border-manila/25 text-manila px-3.5 py-2 rounded-full text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
             onClick={() => {
               window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
             }}
           >
             Ir a la página
           </button>
-          <div className="w-px h-6 bg-manila/20" />
+          <div className="w-px h-5 bg-manila/20" />
           <button
             type="button"
             className="text-manila/60 px-2 py-2 text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95 hover:text-manila/90"
@@ -509,7 +496,7 @@ export default function Host() {
       </div>
 
       {actionError && (
-        <div role="alert" className="bg-sello/90 text-manila rounded-lg px-4 py-2 mb-6 flex items-center justify-between gap-3">
+        <div role="alert" className="bg-sello/90 text-manila rounded-lg px-4 py-2 mx-6 lg:mx-10 mb-4 flex items-center justify-between gap-3">
           <span>{actionError}</span>
           <button
             type="button"
@@ -522,396 +509,387 @@ export default function Host() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-[1.7fr_1fr] gap-5 items-stretch">
-      {/* ---------- Ronda actual: el bloque más usado durante el evento ---------- */}
-      <Section
-        titulo="Ronda actual"
-        destacado
-        sectionRef={rondaSectionRef}
-        accion={
-          <button
-            type="button"
-            title={rondaPantallaCompleta ? "Salir de pantalla completa" : "Ver en pantalla completa"}
-            className="inline-flex items-center gap-1.5 pl-3 pr-2.5 py-1.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-archivo/10 border border-manila/20 text-manila/90 transition-all duration-150 ease-out hover:bg-archivo/20 hover:scale-105 active:scale-95"
-            onClick={toggleRondaPantallaCompleta}
-          >
-            {rondaPantallaCompleta ? "Salir" : "Pantalla completa"}
-            <svg
-              viewBox="0 0 20 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-3.5 h-3.5"
-              aria-hidden="true"
-            >
-              {rondaPantallaCompleta ? (
-                <path d="M8 4v2.5A1.5 1.5 0 0 1 6.5 8H4M12 4v2.5A1.5 1.5 0 0 0 13.5 8H16M8 16v-2.5A1.5 1.5 0 0 0 6.5 12H4M12 16v-2.5a1.5 1.5 0 0 1 1.5-1.5H16" />
-              ) : (
-                <path d="M4 7V5a1 1 0 0 1 1-1h2M16 7V5a1 1 0 0 0-1-1h-2M4 13v2a1 1 0 0 0 1 1h2M16 13v2a1 1 0 0 1-1 1h-2" />
-              )}
-            </svg>
-          </button>
-        }
+      {/* ---------- Ronda actual: foto grande a todo el ancho + contenido en vivo (capturable en pantalla completa) ---------- */}
+      <div
+        ref={rondaSectionRef}
+        className="[&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:overflow-auto [&:fullscreen]:bg-archivo [&:fullscreen]:flex [&:fullscreen]:flex-col [&:fullscreen]:justify-center [&:fullscreen]:[zoom:1.2]"
       >
-        {rondaGanador ? (
-          <div className="text-center py-10">
-            <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-4">
-              Subasta finalizada
-            </p>
-            <p className="font-display text-2xl font-bold">{rondaGanador.propiedad.nombre}</p>
-            {rondaGanador.propiedad.ciudad && (
-              <p className="opacity-60 text-sm mt-1 mb-6">{rondaGanador.propiedad.ciudad}</p>
-            )}
-            {rondaGanador.ganador ? (
-              <div className="mt-6">
-                <p className="text-5xl mb-2" aria-hidden="true">
-                  🏆
-                </p>
-                <p className="font-display text-3xl font-extrabold text-oro">{rondaGanador.ganador.nickname}</p>
-                <p className="font-mono tabular text-xl opacity-80 mt-1">
-                  {rondaGanador.ganador.valorFinal.toLocaleString("es-CO")} COP
-                </p>
-              </div>
-            ) : (
-              <p className="opacity-70 text-lg mt-6">Nadie pujó por este inmueble.</p>
-            )}
-            <div className="mt-10">
-              <button
-                type="button"
-                className="bg-sello/80 text-manila px-6 py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-                onClick={() => {
-                  setRondaGanador(null);
-                  window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
-                }}
-              >
-                Ir a la página
-              </button>
+        <div className="relative w-full h-80 sm:h-96 lg:h-[26rem]">
+          {heroPropiedad?.imagenUrl ? (
+            <img src={heroPropiedad.imagenUrl} alt={heroPropiedad.nombre} className="w-full h-full object-cover" />
+          ) : (
+            <div
+              className="w-full h-full flex items-center justify-center text-7xl"
+              style={{ background: "linear-gradient(135deg, #6b451c 0%, #173f70 55%, #0b2a4a 100%)" }}
+            >
+              🏛️
             </div>
+          )}
+          <div className="absolute inset-0 bg-gradient-to-t from-archivo via-archivo/20 to-transparent" />
+
+          <div className="absolute top-4 inset-x-6 lg:inset-x-10 flex items-start justify-between gap-3">
+            <span className="bg-archivo/85 text-oro font-mono text-xs px-2.5 py-1 rounded-full border border-oro/40">
+              {heroPropiedad ? `FMI ${heroPropiedad.matriculaInmobiliaria}` : "Sin lote activo"}
+            </span>
+            <button
+              type="button"
+              title={rondaPantallaCompleta ? "Salir de pantalla completa" : "Ver en pantalla completa"}
+              className="inline-flex items-center gap-1.5 pl-3 pr-2.5 py-1.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-archivo/60 border border-manila/25 text-manila/90 transition-all duration-150 ease-out hover:bg-archivo/80 hover:scale-105 active:scale-95"
+              onClick={toggleRondaPantallaCompleta}
+            >
+              {rondaPantallaCompleta ? "Salir" : "Pantalla completa"}
+              <svg
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-3.5 h-3.5"
+                aria-hidden="true"
+              >
+                {rondaPantallaCompleta ? (
+                  <path d="M8 4v2.5A1.5 1.5 0 0 1 6.5 8H4M12 4v2.5A1.5 1.5 0 0 0 13.5 8H16M8 16v-2.5A1.5 1.5 0 0 0 6.5 12H4M12 16v-2.5a1.5 1.5 0 0 1 1.5-1.5H16" />
+                ) : (
+                  <path d="M4 7V5a1 1 0 0 1 1-1h2M16 7V5a1 1 0 0 0-1-1h-2M4 13v2a1 1 0 0 0 1 1h2M16 13v2a1 1 0 0 1-1 1h-2" />
+                )}
+              </svg>
+            </button>
           </div>
-        ) : state?.rondaActual ? (
-          <>
-            <div className="relative w-full mb-6 rounded-xl overflow-hidden shadow-lg shadow-black/30 border-2 border-oro/60">
-              {state.rondaActual.propiedad.imagenUrl ? (
-                <img
-                  src={state.rondaActual.propiedad.imagenUrl}
-                  alt={state.rondaActual.propiedad.nombre}
-                  className="w-full h-72 sm:h-80 lg:h-[26rem] object-cover"
-                />
-              ) : (
-                <div className="w-full h-72 sm:h-80 lg:h-[26rem] bg-navy3/40 flex items-center justify-center text-6xl">
-                  🏛️
-                </div>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-archivo via-archivo/15 to-transparent" />
-              <div className="absolute top-4 inset-x-4 flex items-start justify-between gap-3">
-                <span className="bg-archivo/85 text-oro font-mono text-xs px-2.5 py-1 rounded-full border border-oro/40">
-                  FMI {state.rondaActual.propiedad.matriculaInmobiliaria}
-                </span>
-                <span
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide ${
-                    state.rondaActual.estado === "running"
-                      ? "bg-sello/90 text-manila"
-                      : state.rondaActual.estado === "ended"
-                        ? "bg-manila/15 text-manila/80"
-                        : "bg-oro/90 text-archivo"
-                  }`}
-                >
-                  {state.rondaActual.estado === "running" && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-manila animate-pulse" aria-hidden="true" />
-                  )}
-                  {state.rondaActual.estado === "running"
-                    ? "En vivo"
-                    : state.rondaActual.estado === "ended"
-                      ? "Finalizada"
-                      : "Armada · esperando"}
-                </span>
+
+          <div className="absolute inset-x-0 bottom-0 p-6 lg:p-10">
+            {rondaGanador ? (
+              <div className="text-left">
+                <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-2">Subasta finalizada</p>
+                <p className="font-display text-2xl sm:text-3xl font-bold">{rondaGanador.propiedad.nombre}</p>
+                {rondaGanador.propiedad.ciudad && (
+                  <p className="opacity-70 text-sm mt-1">{rondaGanador.propiedad.ciudad}</p>
+                )}
               </div>
-              <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 text-left">
-                <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-2">
-                  Lote en subasta
-                </p>
+            ) : state?.rondaActual ? (
+              <div className="text-left">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em]">Lote en subasta</span>
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide ${
+                      state.rondaActual.estado === "running"
+                        ? "bg-sello/90 text-manila"
+                        : state.rondaActual.estado === "ended"
+                          ? "bg-manila/15 text-manila/80"
+                          : "bg-oro/90 text-archivo"
+                    }`}
+                  >
+                    {state.rondaActual.estado === "running" && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-manila animate-pulse" aria-hidden="true" />
+                    )}
+                    {state.rondaActual.estado === "running"
+                      ? "En vivo"
+                      : state.rondaActual.estado === "ended"
+                        ? "Finalizada"
+                        : "Armada · esperando"}
+                  </span>
+                </div>
                 <p className="font-display text-2xl sm:text-3xl font-bold">{state.rondaActual.propiedad.nombre}</p>
                 {state.rondaActual.propiedad.ciudad && (
                   <p className="opacity-70 text-sm mt-1">{state.rondaActual.propiedad.ciudad}</p>
                 )}
               </div>
-            </div>
-
-            {liveTick && liveTick.roundId === state.rondaActual.roundId && (
-              <div className="text-center mb-6">
-                <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-1">
-                  Puja actual
-                </p>
-                <p
-                  key={liveTick.valorActual}
-                  className={`font-display text-5xl lg:text-6xl font-extrabold tabular text-oro ${
-                    state.rondaActual.estado === "running" ? "winner-glow" : ""
-                  }`}
-                >
-                  {liveTick.valorActual.toLocaleString("es-CO")}
-                </p>
-                <p className="opacity-50 text-xs mt-1">COP · {liveTick.tapsTotales} taps totales</p>
-              </div>
-            )}
-
-            {liveTick && liveTick.roundId === state.rondaActual.roundId && liveTick.top.length > 0 && (
-              <div
-                ref={rankingFlipRef}
-                className="flex items-end justify-center gap-3 mb-4 bg-gradient-to-b from-navy3/40 to-archivo/40 backdrop-blur-sm rounded-xl border border-oro/20 shadow-lg shadow-black/20 p-6"
-              >
-                {(() => {
-                  const valorMaximo = Math.max(...liveTick.top.map((p) => p.valorPujado), 1);
-                  return liveTick.top.map((p, i) => {
-                    const pct = (p.valorPujado / valorMaximo) * 100;
-                    const esLider = i === 0;
-                    return (
-                      <div key={p.playerId} data-flip-key={p.playerId} className="flex flex-col items-center w-12 shrink-0">
-                        <div className="w-12 h-40 flex flex-col items-center justify-end">
-                          {esLider && (
-                            <span className="text-lg mb-1" aria-hidden="true">
-                              🏆
-                            </span>
-                          )}
-                          <div
-                            className={`w-12 rounded-t-lg bg-azul/70 transition-all duration-300 ease-out ${
-                              esLider ? "border-2 border-oro" : ""
-                            }`}
-                            style={{ height: `${pct}%` }}
-                          />
-                        </div>
-                        <span className="text-xs mt-2 w-12 truncate text-center" title={p.nickname}>
-                          {p.nickname}
-                          {p.flagged && (
-                            <span aria-label="marcado como sospechoso" title="Marcado como sospechoso">
-                              {" "}
-                              ⚠
-                            </span>
-                          )}
-                        </span>
-                        <span className="font-mono tabular text-[11px] mt-0.5 whitespace-nowrap">
-                          {formatoCompacto(p.valorPujado)}
-                        </span>
-                      </div>
-                    );
-                  });
-                })()}
-              </div>
-            )}
-
-            <div className="h-12 flex items-center justify-center mb-4">
-              {liveTick && liveTick.roundId === state.rondaActual.roundId && (
-                <p
-                  key={Math.ceil(liveTick.remainingMs / 1000)}
-                  className="font-display text-3xl font-bold tabular countdown-pop"
-                >
-                  {Math.ceil(liveTick.remainingMs / 1000)}s
-                </p>
-              )}
-            </div>
-
-            <div className="flex gap-2 justify-center">
-              {state.rondaActual.estado === "ended" ? (
-                <>
-                  <button
-                    type="button"
-                    className="bg-gradient-to-r from-azul to-navy3 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-                    onClick={() => {
-                      setRondaGanador({
-                        roundId: state.rondaActual!.roundId,
-                        propiedad: {
-                          nombre: state.rondaActual!.propiedad.nombre,
-                          ciudad: state.rondaActual!.propiedad.ciudad,
-                        },
-                        ganador: state.rondaActual!.ganador,
-                      });
-                      send({ t: "host:close_round" });
-                    }}
-                  >
-                    Terminar
-                  </button>
-                  <button
-                    type="button"
-                    className="bg-manila/10 border border-manila/30 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-                    onClick={() => send({ t: "host:repeat", roundId: state.rondaActual!.roundId })}
-                  >
-                    Repetir ronda
-                  </button>
-                </>
-              ) : (
+            ) : propiedadPendiente ? (
+              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+                <div className="text-left">
+                  <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-2">Lote listo para subastar</p>
+                  <p className="font-display text-2xl sm:text-3xl font-bold">{propiedadPendiente.nombre}</p>
+                </div>
                 <button
                   type="button"
-                  className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-                  onClick={() => send({ t: "host:abort" })}
+                  className="bg-gradient-to-r from-azul to-navy3 text-manila px-6 py-3 rounded-lg font-display font-bold shadow-lg shadow-black/30 shrink-0 transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                  onClick={() => send({ t: "host:arm", propertyId: propiedadPendiente.id })}
                 >
-                  Abortar
+                  Subastar para comenzar
                 </button>
-              )}
-            </div>
-          </>
-        ) : (
-          <div className="text-center py-8">
-            {propiedadPendiente ? (
-              <>
-                <div className="relative w-full mb-4 rounded-xl overflow-hidden shadow-lg shadow-black/30 border-2 border-oro/60">
-                  {propiedadPendiente.imagenUrl ? (
-                    <img
-                      src={propiedadPendiente.imagenUrl}
-                      alt={propiedadPendiente.nombre}
-                      className="w-full h-72 sm:h-80 lg:h-[26rem] object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-72 sm:h-80 lg:h-[26rem] bg-navy3/40 flex items-center justify-center text-6xl">
-                      🏛️
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-archivo via-archivo/15 to-transparent" />
-                  <span className="absolute top-4 left-4 bg-archivo/85 text-oro font-mono text-xs px-2.5 py-1 rounded-full border border-oro/40">
-                    FMI {propiedadPendiente.matriculaInmobiliaria}
-                  </span>
-                  <div className="absolute inset-x-0 bottom-0 p-5 sm:p-6 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-                    <div className="text-left">
-                      <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-2">
-                        Lote listo para subastar
-                      </p>
-                      <p className="font-display text-2xl sm:text-3xl font-bold">{propiedadPendiente.nombre}</p>
-                    </div>
-                    <button
-                      type="button"
-                      className="bg-gradient-to-r from-azul to-navy3 text-manila px-6 py-3 rounded-lg font-display font-bold shadow-lg shadow-black/30 shrink-0 transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-                      onClick={() => send({ t: "host:arm", propertyId: propiedadPendiente.id })}
-                    >
-                      Subastar para comenzar
-                    </button>
-                  </div>
-                </div>
-                <p className="opacity-50 text-sm text-center">
-                  Abre "Abrir pantalla proyector" para que los jugadores se registren con el QR antes de empezar.
-                </p>
-              </>
+              </div>
             ) : (
-              <>
-                <p className="opacity-70">
-                  Selecciona un inmueble para subastar desde el botón "Subastar" del portafolio público.
-                </p>
-                <p className="opacity-50 text-sm mt-2">
-                  Cuando entres desde ese enlace, aparecerá aquí el botón para confirmar y empezar la ronda.
-                </p>
-              </>
+              <p className="opacity-70 text-sm max-w-md">
+                Selecciona un inmueble para subastar desde el botón "Subastar" del portafolio público.
+              </p>
             )}
           </div>
-        )}
-      </Section>
-
-      <div className="flex flex-col gap-5 h-full">
-      {/* ---------- Historial de subastas ---------- */}
-      {(() => {
-        const filtrarPorFmi = Boolean(fmiParam);
-        const historialMostrado = filtrarPorFmi
-          ? (state?.historial ?? []).filter((r) => r.propiedad.matriculaInmobiliaria === fmiParam)
-          : state?.historial ?? [];
-        return (
-          <Section titulo="Historial de subastas" collapsible defaultOpen={false} tint="azul">
-        {historialMostrado.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left opacity-60 uppercase text-xs tracking-wide">
-                  <th className="py-2 pr-4">Inmueble</th>
-                  <th className="py-2 pr-4">FMI</th>
-                  <th className="py-2 pr-4">Resultado</th>
-                  <th className="py-2 pr-4">Ganador</th>
-                  <th className="py-2 pr-4">Valor final</th>
-                  <th className="py-2 pr-4">Fecha</th>
-                </tr>
-              </thead>
-              <tbody>
-                {historialMostrado.map((r) => (
-                  <tr key={r.roundId} className="border-t border-manila/10">
-                    <td className="py-2 pr-4 font-display font-semibold">{r.propiedad.nombre}</td>
-                    <td className="py-2 pr-4 font-mono text-xs opacity-70">{r.propiedad.matriculaInmobiliaria}</td>
-                    <td className="py-2 pr-4">
-                      {r.ganador ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-esmeralda/20 text-esmeralda">
-                          Adjudicada
-                        </span>
-                      ) : r.abortada ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-sello/20 text-sello">
-                          Abortada
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-manila/10 text-manila/70">
-                          Sin pujas
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-2 pr-4">{r.ganador?.nickname ?? "-"}</td>
-                    <td className="py-2 pr-4 font-mono tabular text-oro">
-                      {r.ganador ? `${r.ganador.valorFinal.toLocaleString("es-CO")} COP` : "-"}
-                    </td>
-                    <td className="py-2 pr-4 text-xs opacity-70 whitespace-nowrap">
-                      {new Date(r.finalizadaEn).toLocaleString("es-CO", {
-                        dateStyle: "short",
-                        timeStyle: "short",
-                      })}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <p className="opacity-60 text-sm">
-            {filtrarPorFmi
-              ? "Todavía no hay subastas registradas para este inmueble."
-              : "Todavía no hay subastas finalizadas con ganador."}
-          </p>
-        )}
-          </Section>
-        );
-      })()}
-
-      {/* ---------- Jugadores ---------- */}
-      <Section titulo="Jugadores" tint="sello">
-        <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            className="bg-manila/10 border border-manila/30 px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-            onClick={() => setShowJugadores(true)}
-          >
-            Ver participantes ({state?.jugadores.length ?? 0})
-          </button>
-          <button
-            type="button"
-            className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-            onClick={reiniciarJugadores}
-          >
-            Reiniciar jugadores
-          </button>
         </div>
-      </Section>
 
-      {/* Guia rapida: llena el espacio sobrante de la columna derecha con
-          referencia util para el presentador, en vez de dejarlo vacio. */}
-      <section className="rounded-xl p-4 lg:p-5 border border-manila/10 bg-manila/5 flex-1">
-        <h2 className="font-display text-base tracking-wide border-b border-manila/15 pb-2 mb-3">Guía rápida</h2>
-        <ul className="flex flex-col gap-2.5 text-sm text-manila/70">
-          <li className="flex gap-2">
-            <span className="text-oro">•</span>
-            Cada ronda dura 20 segundos desde que arranca la cuenta regresiva.
-          </li>
-          <li className="flex gap-2">
-            <span className="text-azul">•</span>
-            Abre "Abrir pantalla proyector" antes de "Subastar para comenzar" para que los jugadores alcancen a registrarse con el QR.
-          </li>
-          <li className="flex gap-2">
-            <span className="text-sello">•</span>
-            "Terminar" cierra la ronda mostrando el ganador; "Abortar" la cancela sin adjudicar el inmueble.
-          </li>
-        </ul>
-      </section>
+        <div className="px-6 lg:px-10 pt-6">
+          {rondaGanador ? (
+            <div className="text-center py-4">
+              {rondaGanador.ganador ? (
+                <div>
+                  <p className="text-5xl mb-2" aria-hidden="true">
+                    🏆
+                  </p>
+                  <p className="font-display text-3xl font-extrabold text-oro">{rondaGanador.ganador.nickname}</p>
+                  <p className="font-mono tabular text-xl opacity-80 mt-1">
+                    {rondaGanador.ganador.valorFinal.toLocaleString("es-CO")} COP
+                  </p>
+                </div>
+              ) : (
+                <p className="opacity-70 text-lg">Nadie pujó por este inmueble.</p>
+              )}
+              <div className="mt-8">
+                <button
+                  type="button"
+                  className="bg-sello/80 text-manila px-6 py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                  onClick={() => {
+                    setRondaGanador(null);
+                    window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
+                  }}
+                >
+                  Ir a la página
+                </button>
+              </div>
+            </div>
+          ) : state?.rondaActual ? (
+            <>
+              {liveTick && liveTick.roundId === state.rondaActual.roundId && (
+                <div className="text-center mb-6">
+                  <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-1">
+                    Puja actual
+                  </p>
+                  <p
+                    key={liveTick.valorActual}
+                    className={`font-display text-5xl lg:text-6xl font-extrabold tabular text-oro ${
+                      state.rondaActual.estado === "running" ? "winner-glow" : ""
+                    }`}
+                  >
+                    {liveTick.valorActual.toLocaleString("es-CO")}
+                  </p>
+                  <p className="opacity-50 text-xs mt-1">COP · {liveTick.tapsTotales} taps totales</p>
+                </div>
+              )}
+
+              {liveTick && liveTick.roundId === state.rondaActual.roundId && liveTick.top.length > 0 && (
+                <div
+                  ref={rankingFlipRef}
+                  className="flex items-end justify-center gap-3 mb-4 bg-gradient-to-b from-navy3/40 to-archivo/40 backdrop-blur-sm rounded-xl border border-oro/20 shadow-lg shadow-black/20 p-6"
+                >
+                  {(() => {
+                    const valorMaximo = Math.max(...liveTick.top.map((p) => p.valorPujado), 1);
+                    return liveTick.top.map((p, i) => {
+                      const pct = (p.valorPujado / valorMaximo) * 100;
+                      const esLider = i === 0;
+                      return (
+                        <div key={p.playerId} data-flip-key={p.playerId} className="flex flex-col items-center w-12 shrink-0">
+                          <div className="w-12 h-40 flex flex-col items-center justify-end">
+                            {esLider && (
+                              <span className="text-lg mb-1" aria-hidden="true">
+                                🏆
+                              </span>
+                            )}
+                            <div
+                              className={`w-12 rounded-t-lg bg-azul/70 transition-all duration-300 ease-out ${
+                                esLider ? "border-2 border-oro" : ""
+                              }`}
+                              style={{ height: `${pct}%` }}
+                            />
+                          </div>
+                          <span className="text-xs mt-2 w-12 truncate text-center" title={p.nickname}>
+                            {p.nickname}
+                            {p.flagged && (
+                              <span aria-label="marcado como sospechoso" title="Marcado como sospechoso">
+                                {" "}
+                                ⚠
+                              </span>
+                            )}
+                          </span>
+                          <span className="font-mono tabular text-[11px] mt-0.5 whitespace-nowrap">
+                            {formatoCompacto(p.valorPujado)}
+                          </span>
+                        </div>
+                      );
+                    });
+                  })()}
+                </div>
+              )}
+
+              <div className="h-12 flex items-center justify-center mb-4">
+                {liveTick && liveTick.roundId === state.rondaActual.roundId && (
+                  <p
+                    key={Math.ceil(liveTick.remainingMs / 1000)}
+                    className="font-display text-3xl font-bold tabular countdown-pop"
+                  >
+                    {Math.ceil(liveTick.remainingMs / 1000)}s
+                  </p>
+                )}
+              </div>
+
+              <div className="flex gap-2 justify-center pb-2">
+                {state.rondaActual.estado === "ended" ? (
+                  <>
+                    <button
+                      type="button"
+                      className="bg-gradient-to-r from-azul to-navy3 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                      onClick={() => {
+                        setRondaGanador({
+                          roundId: state.rondaActual!.roundId,
+                          propiedad: {
+                            nombre: state.rondaActual!.propiedad.nombre,
+                            ciudad: state.rondaActual!.propiedad.ciudad,
+                          },
+                          ganador: state.rondaActual!.ganador,
+                        });
+                        send({ t: "host:close_round" });
+                      }}
+                    >
+                      Terminar
+                    </button>
+                    <button
+                      type="button"
+                      className="bg-manila/10 border border-manila/30 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                      onClick={() => send({ t: "host:repeat", roundId: state.rondaActual!.roundId })}
+                    >
+                      Repetir ronda
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                    onClick={() => send({ t: "host:abort" })}
+                  >
+                    Abortar
+                  </button>
+                )}
+              </div>
+            </>
+          ) : propiedadPendiente ? (
+            <p className="opacity-50 text-sm text-center pb-4">
+              Abre "Abrir pantalla proyector" para que los jugadores se registren con el QR antes de empezar.
+            </p>
+          ) : (
+            <p className="opacity-50 text-sm text-center pb-4">
+              Cuando entres desde el enlace "Subastar" del portafolio público, aparecerá aquí el botón para confirmar y empezar la ronda.
+            </p>
+          )}
+        </div>
       </div>
+
+      <div className="px-6 lg:px-10 pb-6 lg:pb-8 flex flex-col flex-1">
+        {/* ---------- Franja de estado ---------- */}
+        <div className="flex flex-wrap items-center gap-2 py-4 mt-2 mb-6 text-sm text-manila/70 border-b border-manila/10">
+          <span className="w-1.5 h-1.5 rounded-full bg-manila/50 shrink-0" />
+          <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-manila/90">{state?.estado ?? "-"}</span>
+          <span className="text-manila/25">·</span>
+          <span>{state?.jugadores.length ?? 0} jugadores</span>
+          <span className="ml-auto inline-flex items-center gap-1.5">
+            <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-esmeralda live-pulse" : "bg-manila/30"}`} />
+            {connected ? "Conectado en vivo" : "Reconectando…"}
+          </span>
+        </div>
+
+        {/* ---------- Historial / Jugadores / Guía rápida: tres columnas, sin tarjetas ---------- */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-0 lg:divide-x divide-manila/10">
+          {(() => {
+            const filtrarPorFmi = Boolean(fmiParam);
+            const historialMostrado = filtrarPorFmi
+              ? (state?.historial ?? []).filter((r) => r.propiedad.matriculaInmobiliaria === fmiParam)
+              : state?.historial ?? [];
+            return (
+              <div className="lg:pr-8">
+                <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-oro mb-3">Historial de subastas</h2>
+                {historialMostrado.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="text-left opacity-60 uppercase text-xs tracking-wide">
+                          <th className="py-2 pr-4">Inmueble</th>
+                          <th className="py-2 pr-4">FMI</th>
+                          <th className="py-2 pr-4">Resultado</th>
+                          <th className="py-2 pr-4">Ganador</th>
+                          <th className="py-2 pr-4">Valor final</th>
+                          <th className="py-2 pr-4">Fecha</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {historialMostrado.map((r) => (
+                          <tr key={r.roundId} className="border-t border-manila/10">
+                            <td className="py-2 pr-4 font-display font-semibold">{r.propiedad.nombre}</td>
+                            <td className="py-2 pr-4 font-mono text-xs opacity-70">{r.propiedad.matriculaInmobiliaria}</td>
+                            <td className="py-2 pr-4">
+                              {r.ganador ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-esmeralda/20 text-esmeralda">
+                                  Adjudicada
+                                </span>
+                              ) : r.abortada ? (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-sello/20 text-sello">
+                                  Abortada
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-display font-bold uppercase tracking-wide bg-manila/10 text-manila/70">
+                                  Sin pujas
+                                </span>
+                              )}
+                            </td>
+                            <td className="py-2 pr-4">{r.ganador?.nickname ?? "-"}</td>
+                            <td className="py-2 pr-4 font-mono tabular text-oro">
+                              {r.ganador ? `${r.ganador.valorFinal.toLocaleString("es-CO")} COP` : "-"}
+                            </td>
+                            <td className="py-2 pr-4 text-xs opacity-70 whitespace-nowrap">
+                              {new Date(r.finalizadaEn).toLocaleString("es-CO", {
+                                dateStyle: "short",
+                                timeStyle: "short",
+                              })}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="opacity-60 text-sm">
+                    {filtrarPorFmi
+                      ? "Todavía no hay subastas registradas para este inmueble."
+                      : "Todavía no hay subastas finalizadas con ganador."}
+                  </p>
+                )}
+              </div>
+            );
+          })()}
+
+          <div className="lg:px-8">
+            <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-azul mb-3">Jugadores</h2>
+            <div className="flex flex-wrap gap-3">
+              <button
+                type="button"
+                className="bg-manila/10 border border-manila/30 px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                onClick={() => setShowJugadores(true)}
+              >
+                Ver participantes ({state?.jugadores.length ?? 0})
+              </button>
+              <button
+                type="button"
+                className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                onClick={reiniciarJugadores}
+              >
+                Reiniciar jugadores
+              </button>
+            </div>
+          </div>
+
+          <div className="lg:pl-8">
+            <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-sello mb-3">Guía rápida</h2>
+            <ul className="flex flex-col gap-2.5 text-sm text-manila/70">
+              <li className="flex gap-2">
+                <span className="text-oro">•</span>
+                Cada ronda dura 20 segundos desde que arranca la cuenta regresiva.
+              </li>
+              <li className="flex gap-2">
+                <span className="text-azul">•</span>
+                Abre "Abrir pantalla proyector" antes de "Subastar para comenzar" para que los jugadores alcancen a registrarse con el QR.
+              </li>
+              <li className="flex gap-2">
+                <span className="text-sello">•</span>
+                "Terminar" cierra la ronda mostrando el ganador; "Abortar" la cancela sin adjudicar el inmueble.
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
 
       {/* ---------- Footer: firma de marca + estado de conexion en vivo (fijo al fondo, aunque el contenido sea corto) ---------- */}
