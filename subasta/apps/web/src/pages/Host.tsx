@@ -117,6 +117,7 @@ export default function Host() {
   const [liveTick, setLiveTick] = useState<LiveTick | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [showJugadores, setShowJugadores] = useState(false);
+  const [mostrarHistorial, setMostrarHistorial] = useState(false); // el historial de subastas siempre arranca oculto
 
   // --- Formulario de propiedades (crear / editar) ---
   const [showForm, setShowForm] = useState(false);
@@ -910,8 +911,17 @@ export default function Host() {
               : state?.historial ?? [];
             return (
               <div className="lg:pr-8">
-                <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-oro mb-3">Historial de subastas</h2>
-                {historialMostrado.length > 0 ? (
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-oro">Historial de subastas</h2>
+                  <button
+                    type="button"
+                    className="text-xs font-display px-2 py-1 rounded bg-manila/10 border border-manila/30 transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                    onClick={() => setMostrarHistorial((v) => !v)}
+                  >
+                    {mostrarHistorial ? "Ocultar historial" : "Ver historial"}
+                  </button>
+                </div>
+                {!mostrarHistorial ? null : historialMostrado.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
