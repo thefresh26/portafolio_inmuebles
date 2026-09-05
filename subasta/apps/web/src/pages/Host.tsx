@@ -4,6 +4,7 @@ import { useSocket } from "../lib/useSocket.js";
 import { wsUrl } from "../lib/wsUrl.js";
 import { supabase } from "../lib/supabaseClient.js";
 import { useFlip } from "../lib/useFlip.js";
+import { usePrefersReducedMotion } from "../lib/useReducedMotion.js";
 import BrandMark from "../components/BrandMark.js";
 
 const WS_URL = wsUrl("/ws/host");
@@ -55,6 +56,21 @@ function formatoCompacto(valor: number): string {
     return `${Math.round(valor / 1_000)}K`;
   }
   return valor.toString();
+}
+
+type PiezaConfeti = { id: number; left: number; delay: number; duracion: number; rot: number; color: string };
+
+const CONFETTI_COLORES = ["bg-oro", "bg-azul", "bg-esmeralda", "bg-manila"];
+
+function generarConfeti(cantidad: number): PiezaConfeti[] {
+  return Array.from({ length: cantidad }, (_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    delay: Math.random() * 700,
+    duracion: 2200 + Math.random() * 1400,
+    rot: Math.random() * 360,
+    color: CONFETTI_COLORES[i % CONFETTI_COLORES.length],
+  }));
 }
 
 // Deriva un "tipo" corto para el inmueble a partir de su nombre, cuando llega
@@ -375,6 +391,20 @@ export default function Host() {
     }
   }, [state?.rondaActual?.roundId, rondaGanador]);
 
+  const [confetti, setConfetti] = useState<PiezaConfeti[]>([]);
+  const reducedMotion = usePrefersReducedMotion();
+
+  // Mientras se muestre la foto del ganador (desde "Terminar" hasta que se
+  // presione "Ir a la pagina" u otra ronda la reemplace), relanza una tanda
+  // de confeti cada pocos segundos para que la celebracion se sienta
+  // continua en vez de un solo destello.
+  useEffect(() => {
+    if (!rondaGanador?.ganador) return;
+    setConfetti(generarConfeti(36));
+    const id = window.setInterval(() => setConfetti(generarConfeti(36)), 4000);
+    return () => window.clearInterval(id);
+  }, [rondaGanador]);
+
   if (!authed) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-archivo via-navy3 to-archivo text-manila font-body">
@@ -618,31 +648,53 @@ export default function Host() {
 
         <div className="px-6 lg:px-10 pt-6">
           {rondaGanador ? (
-            <div className="text-center py-4">
-              {rondaGanador.ganador ? (
-                <div>
-                  <p className="text-5xl mb-2" aria-hidden="true">
-                    🏆
-                  </p>
-                  <p className="font-display text-3xl font-extrabold text-oro">{rondaGanador.ganador.nickname}</p>
-                  <p className="font-mono tabular text-xl opacity-80 mt-1">
-                    {rondaGanador.ganador.valorFinal.toLocaleString("es-CO")} COP
-                  </p>
+            <div className="relative text-center py-4">
+              {rondaGanador.ganador && !reducedMotion && (
+                <div className="absolute inset-0 -top-6 overflow-hidden pointer-events-none z-0" aria-hidden="true">
+                  {confetti.map((p) => (
+                    <span
+                      key={p.id}
+                      className={`confetti-piece absolute top-0 w-2 h-3 rounded-sm ${p.color}`}
+                      style={
+                        {
+                          left: `${p.left}%`,
+                          "--confetti-duration": `${p.duracion}ms`,
+                          "--confetti-delay": `${p.delay}ms`,
+                          "--confetti-rot": `${p.rot}deg`,
+                        } as React.CSSProperties
+                      }
+                    />
+                  ))}
                 </div>
-              ) : (
-                <p className="opacity-70 text-lg">Nadie pujó por este inmueble.</p>
               )}
-              <div className="mt-8">
-                <button
-                  type="button"
-                  className="bg-sello/80 text-manila px-6 py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-                  onClick={() => {
-                    setRondaGanador(null);
-                    window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
-                  }}
-                >
-                  Ir a la página
-                </button>
+              <div className="relative z-10">
+                {rondaGanador.ganador ? (
+                  <div>
+                    <p className={`text-5xl mb-2 ${!reducedMotion ? "trophy-bounce" : ""}`} aria-hidden="true">
+                      🏆
+                    </p>
+                    <p className={`font-display text-3xl font-extrabold text-oro ${!reducedMotion ? "winner-glow" : ""}`}>
+                      {rondaGanador.ganador.nickname}
+                    </p>
+                    <p className="font-mono tabular text-xl opacity-80 mt-1">
+                      {rondaGanador.ganador.valorFinal.toLocaleString("es-CO")} COP
+                    </p>
+                  </div>
+                ) : (
+                  <p className="opacity-70 text-lg">Nadie pujó por este inmueble.</p>
+                )}
+                <div className="mt-8">
+                  <button
+                    type="button"
+                    className="bg-sello/80 text-manila px-6 py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                    onClick={() => {
+                      setRondaGanador(null);
+                      window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
+                    }}
+                  >
+                    Ir a la página
+                  </button>
+                </div>
               </div>
             </div>
           ) : state?.rondaActual ? (
