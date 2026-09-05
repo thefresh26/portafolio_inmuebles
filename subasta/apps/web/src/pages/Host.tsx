@@ -407,63 +407,101 @@ export default function Host() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-archivo via-navy3 to-archivo text-manila font-body">
-        <div className="bg-manila text-archivo rounded-xl p-8 w-full max-w-sm">
-          <BrandMark className="w-12 h-12 mb-3" />
-          <h1 className="font-display text-2xl mb-4">Consola del presentador</h1>
+      <div
+        className="min-h-screen flex items-center justify-center p-6 font-body"
+        style={{
+          background:
+            "radial-gradient(780px 520px at 4% 0%, rgba(245,166,35,0.14), rgba(245,166,35,0) 60%), radial-gradient(900px 640px at 100% 46%, rgba(26,168,221,0.16), rgba(26,168,221,0) 58%), radial-gradient(1000px 700px at 22% 100%, rgba(26,168,221,0.10), rgba(26,168,221,0) 55%), linear-gradient(165deg, #123457 0%, #0B2A4A 42%, #0A2543 100%)",
+        }}
+      >
+        <div className="w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl shadow-black/30 flex flex-col">
+          <div
+            className="px-7 pt-10 pb-8"
+            style={{ background: "linear-gradient(100deg, #7A4A12 0%, #173F70 46%, #0D3A63 100%)" }}
+          >
+            <BrandMark className="w-12 h-12 mb-3" />
+            <h1 className="font-display text-2xl mb-1.5" style={{ color: "#EAF1FB" }}>
+              Consola del presentador
+            </h1>
+            <p className="text-sm" style={{ color: "rgba(234,241,251,0.75)" }}>
+              Ingresa tus credenciales para administrar la subasta.
+            </p>
+          </div>
 
-          {supabase ? (
-            <>
-              <input
-                className="w-full mb-3 px-3 py-2 rounded border border-archivo/30"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="correo@empresa.com"
-                autoComplete="username"
-              />
-              <input
-                className="w-full mb-4 px-3 py-2 rounded border border-archivo/30"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Contraseña"
-                autoComplete="current-password"
-                onKeyDown={(e) => e.key === "Enter" && loginConSupabase()}
-              />
-              {loginError && (
-                <p role="alert" className="text-sm text-archivo bg-sello/10 border border-sello/40 rounded px-3 py-2 mb-3">
-                  {loginError}
+          <div className="flex-1 px-6 pt-7 pb-8 flex flex-col" style={{ background: "#EAF1FB", color: "#0B2A4A" }}>
+            {supabase ? (
+              <>
+                <label className="block text-xs uppercase tracking-wide mb-1">Correo</label>
+                <input
+                  className="w-full mb-4 px-3 py-2 rounded border"
+                  style={{ borderColor: "rgba(11,42,74,0.3)" }}
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="correo@empresa.com"
+                  autoComplete="username"
+                />
+                <label className="block text-xs uppercase tracking-wide mb-1">Contraseña</label>
+                <input
+                  className="w-full mb-6 px-3 py-2 rounded border"
+                  style={{ borderColor: "rgba(11,42,74,0.3)" }}
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Contraseña"
+                  autoComplete="current-password"
+                  onKeyDown={(e) => e.key === "Enter" && loginConSupabase()}
+                />
+                {loginError && (
+                  <p
+                    role="alert"
+                    className="text-sm rounded px-3 py-2 mb-3"
+                    style={{ color: "#0B2A4A", background: "rgba(224,53,53,0.1)", border: "1px solid rgba(224,53,53,0.4)" }}
+                  >
+                    {loginError}
+                  </p>
+                )}
+                <button
+                  className="w-full py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:active:scale-100"
+                  style={{ background: "linear-gradient(to right, #1AA8DD, #173F70)", color: "#EAF1FB" }}
+                  disabled={!connected || loggingIn || !email || !password}
+                  onClick={loginConSupabase}
+                >
+                  {loggingIn ? "Entrando..." : "Entrar"}
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm opacity-70 mb-3">
+                  Supabase no está configurado en este entorno; usando token de desarrollo.
                 </p>
-              )}
-              <button
-                className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:active:scale-100"
-                disabled={!connected || loggingIn || !email || !password}
-                onClick={loginConSupabase}
-              >
-                {loggingIn ? "Entrando..." : "Entrar"}
-              </button>
-            </>
-          ) : (
-            <>
-              <p className="text-sm opacity-70 mb-3">
-                Supabase no está configurado en este entorno; usando token de desarrollo.
-              </p>
-              <input
-                className="w-full mb-4 px-3 py-2 rounded border border-archivo/30"
-                value={devToken}
-                onChange={(e) => setDevToken(e.target.value)}
-                placeholder="Token"
-              />
-              <button
-                className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:active:scale-100"
-                disabled={!connected}
-                onClick={loginConToken}
-              >
-                Entrar
-              </button>
-            </>
-          )}
+                <label className="block text-xs uppercase tracking-wide mb-1">Token</label>
+                <input
+                  className="w-full mb-6 px-3 py-2 rounded border"
+                  style={{ borderColor: "rgba(11,42,74,0.3)" }}
+                  value={devToken}
+                  onChange={(e) => setDevToken(e.target.value)}
+                  placeholder="Token"
+                />
+                <button
+                  className="w-full py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:active:scale-100"
+                  style={{ background: "linear-gradient(to right, #1AA8DD, #173F70)", color: "#EAF1FB" }}
+                  disabled={!connected}
+                  onClick={loginConToken}
+                >
+                  Entrar
+                </button>
+              </>
+            )}
+
+            <div
+              className="flex items-center justify-center gap-1.5 mt-6 text-xs"
+              style={{ color: "rgba(11,42,74,0.55)" }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ background: "#1AB87A" }} />
+              Activos por Colombia S.A.S.
+            </div>
+          </div>
         </div>
       </div>
     );
