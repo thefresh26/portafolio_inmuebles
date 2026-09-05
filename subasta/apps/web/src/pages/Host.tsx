@@ -665,46 +665,74 @@ export default function Host() {
               )}
 
               {liveTick && liveTick.roundId === state.rondaActual.roundId && liveTick.top.length > 0 && (
-                <div
-                  ref={rankingFlipRef}
-                  className="flex items-end justify-center gap-3 mb-4 bg-gradient-to-b from-navy3/40 to-archivo/40 backdrop-blur-sm rounded-xl border border-oro/20 shadow-lg shadow-black/20 p-6"
-                >
-                  {(() => {
-                    const valorMaximo = Math.max(...liveTick.top.map((p) => p.valorPujado), 1);
-                    return liveTick.top.map((p, i) => {
-                      const pct = (p.valorPujado / valorMaximo) * 100;
-                      const esLider = i === 0;
-                      return (
-                        <div key={p.playerId} data-flip-key={p.playerId} className="flex flex-col items-center w-12 shrink-0">
-                          <div className="w-12 h-40 flex flex-col items-center justify-end">
+                <div className="mb-4 bg-gradient-to-b from-navy3/40 to-archivo/40 backdrop-blur-sm rounded-xl border border-oro/20 shadow-lg shadow-black/20 px-4 pt-9 pb-5 overflow-x-auto">
+                  <div ref={rankingFlipRef} className="flex items-end justify-center gap-4 min-w-min mx-auto w-fit">
+                    {(() => {
+                      const valorMaximo = Math.max(...liveTick.top.map((p) => p.valorPujado), 1);
+                      return liveTick.top.map((p, i) => {
+                        const pct = (p.valorPujado / valorMaximo) * 100;
+                        const esLider = i === 0;
+                        const iniciales = p.nickname
+                          .trim()
+                          .split(/\s+/)
+                          .slice(0, 2)
+                          .map((parte) => parte[0]?.toUpperCase() ?? "")
+                          .join("") || "?";
+                        return (
+                          <div key={p.playerId} data-flip-key={p.playerId} className="relative flex flex-col items-center w-16 shrink-0">
                             {esLider && (
-                              <span className="text-lg mb-1" aria-hidden="true">
+                              <span className="absolute -top-7 left-1/2 -translate-x-1/2 text-lg" aria-hidden="true">
                                 🏆
                               </span>
                             )}
-                            <div
-                              className={`w-12 rounded-t-lg bg-azul/70 transition-all duration-300 ease-out ${
-                                esLider ? "border-2 border-oro" : ""
+                            <span
+                              className={`font-mono tabular text-[11px] mb-1.5 whitespace-nowrap ${
+                                esLider ? "text-oro font-bold" : "text-manila/75"
                               }`}
-                              style={{ height: `${pct}%` }}
-                            />
-                          </div>
-                          <span className="text-xs mt-2 w-12 truncate text-center" title={p.nickname}>
-                            {p.nickname}
-                            {p.flagged && (
-                              <span aria-label="marcado como sospechoso" title="Marcado como sospechoso">
-                                {" "}
-                                ⚠
+                            >
+                              {formatoCompacto(p.valorPujado)}
+                            </span>
+                            <div className="w-16 h-36 flex flex-col items-center justify-end">
+                              <div
+                                className={`w-full rounded-t-md rounded-b-[3px] transition-all duration-300 ease-out ${
+                                  esLider
+                                    ? "shadow-[0_0_0_2px_rgba(11,42,74,1),0_0_0_3px_rgba(245,166,35,0.6)] bg-gradient-to-b from-oro/90 via-oro/70 to-oro/40"
+                                    : "bg-gradient-to-b from-azul/90 via-azul/70 to-azul/30"
+                                }`}
+                                style={{ height: `${pct}%` }}
+                              />
+                            </div>
+                            <div className="flex items-center gap-1.5 mt-2.5 max-w-full">
+                              <span
+                                className={`shrink-0 w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold ${
+                                  esLider ? "bg-oro text-archivo" : "bg-manila/10 text-manila/80"
+                                }`}
+                                aria-hidden="true"
+                              >
+                                {iniciales}
                               </span>
-                            )}
-                          </span>
-                          <span className="font-mono tabular text-[11px] mt-0.5 whitespace-nowrap">
-                            {formatoCompacto(p.valorPujado)}
-                          </span>
-                        </div>
-                      );
-                    });
-                  })()}
+                              <span
+                                className={`text-xs truncate ${esLider ? "text-manila font-semibold" : "text-manila/70"}`}
+                                style={{ maxWidth: "3.25rem" }}
+                                title={p.nickname}
+                              >
+                                {p.nickname}
+                              </span>
+                              {p.flagged && (
+                                <span
+                                  className="shrink-0 text-sello text-[11px]"
+                                  aria-label="marcado como sospechoso"
+                                  title="Marcado como sospechoso"
+                                >
+                                  ⚠
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      });
+                    })()}
+                  </div>
                 </div>
               )}
 
@@ -893,7 +921,7 @@ export default function Host() {
       </div>
 
       {/* ---------- Footer: firma de marca + estado de conexion en vivo (fijo al fondo, aunque el contenido sea corto) ---------- */}
-      <footer className="mt-auto pt-7 pb-2 border-t border-manila/15 flex items-center justify-between gap-4 relative overflow-hidden">
+      <footer className="mt-auto pt-7 pb-2 px-6 lg:px-10 border-t border-manila/15 flex items-center justify-between gap-4 relative overflow-hidden">
         <div className="absolute top-0 left-0 right-0 h-px footer-shimmer" aria-hidden="true" />
         <div className="flex items-center gap-4">
           <BrandMark className="w-12 h-12" />
