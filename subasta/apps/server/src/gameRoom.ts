@@ -18,16 +18,24 @@ import {
 } from "./propertiesRepo.js";
 import type { HistorialEntry, PlayerConn, RoomState, RoundState } from "./types.js";
 
-const PIN = "1234"; // fijo por ahora (sala única); las propiedades sí viven en Supabase
-
 function safeSend(socket: WebSocket | null, payload: unknown) {
   if (!socket || socket.readyState !== WebSocket.OPEN) return;
   socket.send(JSON.stringify(payload));
 }
 
+/**
+ * PIN de 6 dígitos para el QR de la subasta actual. Se genera uno nuevo cada
+ * vez que el admin "reinicia jugadores" (arranca una subasta nueva), para que
+ * el QR/enlace de una subasta anterior deje de servir y los clientes que se
+ * registraron con ese QR viejo nunca se mezclen con los de la subasta nueva.
+ */
+function generarPin(): string {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
 export class GameRoom {
   state: RoomState = {
-    pin: PIN,
+    pin: generarPin(),
     valorPorTap: GAME_CONSTANTS.DEFAULT_VALOR_POR_TAP,
     estado: "lobby",
     players: new Map(),
@@ -433,15 +441,24 @@ export class GameRoom {
     this.broadcastHostState();
   }
 
-  /** El admin borra a todos los jugadores registrados y los manda de vuelta al registro. */
+  /**
+   * El admin borra a todos los jugadores registrados, los manda de vuelta al
+   * registro y arranca una subasta nueva con su propio PIN/QR. Así, el QR
+   * anterior deja de servir para entrar (el servidor rechaza el PIN viejo) y
+   * nadie que se haya registrado con él puede aparecer mezclado en la lista
+   * de jugadores de esta subasta nueva.
+   */
   resetPlayers() {
+    const pinAnterior = this.state.pin;
     this.abortCurrentRound();
     for (const p of this.state.players.values()) {
       if (p.socket) safeSend(p.socket, { t: "reset" });
     }
     this.state.players.clear();
     this.state.estado = "lobby";
-    deletePlayerLogins(this.state.pin).catch(() => {});
+    this.state.pin = generarPin();
+    deletePlayerLogins(pinAnterior).catch(() => {});
+    this.broadcastLobby();
     this.broadcastHostState();
   }
 

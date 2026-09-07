@@ -293,6 +293,13 @@ export default function Host() {
   };
 
   const reiniciarJugadores = () => {
+    if (
+      !window.confirm(
+        "Esto expulsa a todos los jugadores actuales y genera un QR nuevo para la siguiente subasta -- el QR anterior deja de servir para entrar. ¿Continuar?"
+      )
+    ) {
+      return;
+    }
     send({ t: "host:reset_players" });
   };
 
@@ -1006,8 +1013,9 @@ export default function Host() {
                 type="button"
                 className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
                 onClick={reiniciarJugadores}
+                title="Expulsa a los jugadores actuales y genera un QR nuevo; el QR anterior deja de servir"
               >
-                Reiniciar jugadores
+                Reiniciar jugadores (QR nuevo)
               </button>
             </div>
           </div>
