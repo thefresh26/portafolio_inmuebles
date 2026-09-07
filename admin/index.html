@@ -19,17 +19,12 @@
     --esmeralda:#1AB87A;
     --oro:#f5a623;
     --azul:#1aa8dd;
-    --card-bg:#0f3660;
-    --card-border:rgba(234,241,251,0.10);
   }
   *{box-sizing:border-box;}
+  html, body{ overflow-x:hidden; max-width:100%; }
   body{
     margin:0;
-    background:
-      radial-gradient(ellipse 780px 520px at 4% 0%, rgba(245,166,35,0.14) 0%, rgba(245,166,35,0) 60%),
-      radial-gradient(ellipse 900px 640px at 100% 46%, rgba(26,168,221,0.16) 0%, rgba(26,168,221,0) 58%),
-      radial-gradient(ellipse 1000px 700px at 22% 100%, rgba(26,168,221,0.10) 0%, rgba(26,168,221,0) 55%),
-      linear-gradient(165deg, #123457 0%, var(--archivo) 42%, #0a2543 100%);
+    background:#081d33;
     color:var(--manila);
     font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
     -webkit-font-smoothing:antialiased;
@@ -41,18 +36,22 @@
 
   .topbar{
     position:sticky; top:0; z-index:10;
-    display:flex; align-items:center; justify-content:space-between; gap:16px;
-    padding:16px 24px;
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 16px;
+    padding:14px 20px;
     background:rgba(11,42,74,0.85);
     backdrop-filter: blur(8px);
-    border-bottom:1px solid var(--card-border);
+    border-bottom:1px solid rgba(234,241,251,0.10);
   }
   .brand{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:0.02em;}
-  .brand .dot{width:8px; height:8px; border-radius:999px; background:var(--sello);}
+  .brand .dot{width:8px; height:8px; border-radius:999px; background:var(--esmeralda);}
   .badge-interno{
-    font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;
-    padding:4px 10px; border-radius:999px;
+    font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;
+    padding:4px 10px; border-radius:999px; white-space:nowrap;
     background:rgba(224,53,53,0.15); color:#ff9d9d; border:1px solid rgba(224,53,53,0.4);
+  }
+  @media (max-width:480px){
+    .badge-interno{ font-size:9.5px; letter-spacing:0.02em; padding:3px 8px; }
+    .hero, .grid{ padding-left:16px; padding-right:16px; }
   }
 
   .hero{padding:40px 24px 8px; max-width:1200px; margin:0 auto;}
@@ -62,52 +61,41 @@
 
   .grid{
     max-width:1200px; margin:0 auto; padding:24px 24px 64px;
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:18px;
   }
-  .card{
-    background:var(--card-bg);
-    border:1px solid var(--card-border);
-    border-radius:16px;
-    overflow:hidden;
-    display:flex; flex-direction:column;
-    transition:transform .15s ease, box-shadow .15s ease;
+  .tile{
+    position:relative; aspect-ratio:3/4; border-radius:16px; overflow:hidden;
+    box-shadow:0 10px 26px -12px rgba(0,0,0,.5);
+    background:#0a2543;
   }
-  .card:hover{transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,0,0,0.35);}
-  .media{position:relative; aspect-ratio:4/3; background:#0a2543; overflow:hidden;}
-  .media img{width:100%; height:100%; object-fit:cover;}
+  .tile img{width:100%; height:100%; object-fit:cover; position:absolute; inset:0;}
+  .scrim{position:absolute; inset:0; background:linear-gradient(180deg, rgba(8,29,51,0) 35%, rgba(8,29,51,.92) 100%);}
   .fmi-badge{
-    position:absolute; top:10px; left:10px;
+    position:absolute; top:10px; left:10px; z-index:2;
     font-family:'Courier New',monospace; font-size:11px;
     background:rgba(11,42,74,0.85); color:var(--oro);
     padding:3px 9px; border-radius:999px; border:1px solid rgba(245,166,35,0.4);
   }
-  .body{padding:16px 16px 18px; display:flex; flex-direction:column; gap:6px; flex:1;}
-  .loc{font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--azul);}
-  .body h3{font-size:17px; font-weight:700;}
-  .highlight{font-size:12.5px; color:rgba(234,241,251,0.55); min-height:16px;}
-  .specs{display:flex; gap:8px; flex-wrap:wrap; margin-top:2px;}
-  .spec{font-size:12.5px; color:rgba(234,241,251,0.7);}
-  .price-row{margin-top:6px;}
-  .price{font-size:18px; font-weight:800; color:var(--oro);}
-  .btn-row{display:flex; gap:8px; margin-top:12px;}
+  .info{position:absolute; left:0; right:0; bottom:0; padding:16px; z-index:2;}
+  .loc{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--azul); margin-bottom:3px;}
+  .nombre{font-weight:700; font-size:15.5px; margin-bottom:2px;}
+  .highlight{font-size:12px; color:rgba(234,241,251,0.55); margin-bottom:8px; min-height:15px;}
+  .row-bottom{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .price{font-weight:800; color:var(--oro); font-size:15px;}
   .cta{
-    flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
-    padding:10px 12px; border-radius:9px; font-size:13px; font-weight:700;
+    display:flex; align-items:center; gap:6px;
+    padding:9px 16px; border-radius:8px; font-size:13px; font-weight:700;
     font-family:inherit;
-  }
-  .cta svg{width:15px; height:15px;}
-  .cta.ghost{background:rgba(234,241,251,0.08); border:1px solid rgba(234,241,251,0.2); color:var(--manila);}
-  .cta.ghost:hover{background:rgba(234,241,251,0.14);}
-  .cta.primary{
     background:linear-gradient(90deg, var(--azul) 0%, var(--navy3) 100%);
     color:var(--manila);
     box-shadow:0 6px 16px rgba(26,168,221,0.28);
   }
-  .cta.primary:hover{filter:brightness(1.08);}
+  .cta:hover{filter:brightness(1.08);}
+  .cta svg{width:14px; height:14px;}
 
   footer{
     padding:24px; text-align:center; font-size:12px; color:rgba(234,241,251,0.4);
-    border-top:1px solid var(--card-border);
+    border-top:1px solid rgba(234,241,251,0.10);
   }
 </style>
 </head>
@@ -125,392 +113,265 @@
   </div>
 
   <div class="grid">
-      <article class="card">
-        <div class="media">
-          <img src="../images/50C-30092.jpg" alt="Lote con construcción" loading="lazy" />
-          <span class="fmi-badge">FMI 50C-30092</span>
-        </div>
-        <div class="body">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50C-30092&amp;nombre=Lote%20con%20construcci%C3%B3n&amp;ciudad=Bogot%C3%A1%20D.C.&amp;area=5226.15&amp;avaluo=47332239056&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-30092.jpg">
+        <img src="../images/50C-30092.jpg" alt="Lote con construcción" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 50C-30092</span>
+        <div class="info">
           <div class="loc">Bogotá D.C.</div>
-          <h3>Lote con construcción</h3>
-          <p class="highlight">El de mayor valor del portafolio</p>
-          <div class="specs">
-            <span class="spec"><b>5.226,15 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 47.332.239.056</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=50C-30092&nombre=Lote%20con%20construcci%C3%B3n&ciudad=Bogot%C3%A1%20D.C.&area=5226.15&avaluo=47332239056&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-30092.jpg">
-              Subastar
+          <div class="nombre">Lote con construcción</div>
+          <div class="highlight">El de mayor valor del portafolio</div>
+          <div class="row-bottom">
+            <span class="price">$ 47.332.239.056</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/001-160898.jpg" alt="Lote con construcción" loading="lazy" />
-          <span class="fmi-badge">FMI 001-160898</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-160898&amp;nombre=Lote%20con%20construcci%C3%B3n&amp;ciudad=Medell%C3%ADn%2C%20Antioquia&amp;area=8599.66&amp;avaluo=20245229044&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-160898.jpg">
+        <img src="../images/001-160898.jpg" alt="Lote con construcción" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 001-160898</span>
+        <div class="info">
           <div class="loc">Medellín, Antioquia</div>
-          <h3>Lote con construcción</h3>
-          <p class="highlight">Sector La Chula</p>
-          <div class="specs">
-            <span class="spec"><b>8.599,66 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 20.245.229.044</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=001-160898&nombre=Lote%20con%20construcci%C3%B3n&ciudad=Medell%C3%ADn%2C%20Antioquia&area=8599.66&avaluo=20245229044&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-160898.jpg">
-              Subastar
+          <div class="nombre">Lote con construcción</div>
+          <div class="highlight">Sector La Chula</div>
+          <div class="row-bottom">
+            <span class="price">$ 20.245.229.044</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/50N-316804.jpg" alt="Parqueadero comercial" loading="lazy" />
-          <span class="fmi-badge">FMI 50N-316804</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50N-316804&amp;nombre=Parqueadero%20comercial&amp;ciudad=Suba%20%C2%B7%20Bogot%C3%A1%20D.C.&amp;area=10800&amp;avaluo=32554727000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50N-316804.jpg">
+        <img src="../images/50N-316804.jpg" alt="Parqueadero comercial" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 50N-316804</span>
+        <div class="info">
           <div class="loc">Suba · Bogotá D.C.</div>
-          <h3>Parqueadero comercial</h3>
-          <p class="highlight">Lote de 10.800 m²</p>
-          <div class="specs">
-            <span class="spec"><b>10.800 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 32.554.727.000</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=50N-316804&nombre=Parqueadero%20comercial&ciudad=Suba%20%C2%B7%20Bogot%C3%A1%20D.C.&area=10800&avaluo=32554727000&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50N-316804.jpg">
-              Subastar
+          <div class="nombre">Parqueadero comercial</div>
+          <div class="highlight">Lote de 10.800 m²</div>
+          <div class="row-bottom">
+            <span class="price">$ 32.554.727.000</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/001-1040680.jpg" alt="Edificación para hotel" loading="lazy" />
-          <span class="fmi-badge">FMI 001-1040680</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-1040680&amp;nombre=Edificaci%C3%B3n%20para%20hotel&amp;ciudad=Medell%C3%ADn%2C%20Antioquia&amp;area=1923.12&amp;avaluo=13350515000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-1040680.jpg">
+        <img src="../images/001-1040680.jpg" alt="Edificación para hotel" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 001-1040680</span>
+        <div class="info">
           <div class="loc">Medellín, Antioquia</div>
-          <h3>Edificación para hotel</h3>
-          <p class="highlight">Sector Mall 10</p>
-          <div class="specs">
-            <span class="spec"><b>1.923,12 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 13.350.515.000</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=001-1040680&nombre=Edificaci%C3%B3n%20para%20hotel&ciudad=Medell%C3%ADn%2C%20Antioquia&area=1923.12&avaluo=13350515000&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-1040680.jpg">
-              Subastar
+          <div class="nombre">Edificación para hotel</div>
+          <div class="highlight">Sector Mall 10</div>
+          <div class="row-bottom">
+            <span class="price">$ 13.350.515.000</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/370-247541.jpg" alt="Lote" loading="lazy" />
-          <span class="fmi-badge">FMI 370-247541</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=370-247541&amp;nombre=Lote&amp;ciudad=Las%20Vegas%20%C2%B7%20Cali%2C%20Valle%20del%20Cauca&amp;area=11689.31&amp;avaluo=11971214829&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F370-247541.jpg">
+        <img src="../images/370-247541.jpg" alt="Lote" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 370-247541</span>
+        <div class="info">
           <div class="loc">Las Vegas · Cali, Valle del Cauca</div>
-          <h3>Lote</h3>
-          <p class="highlight">Lote de 11.689,31 m² en Cali</p>
-          <div class="specs">
-            <span class="spec"><b>11.689,31 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 11.971.214.829</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=370-247541&nombre=Lote&ciudad=Las%20Vegas%20%C2%B7%20Cali%2C%20Valle%20del%20Cauca&area=11689.31&avaluo=11971214829&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F370-247541.jpg">
-              Subastar
+          <div class="nombre">Lote</div>
+          <div class="highlight">Lote de 11.689,31 m² en Cali</div>
+          <div class="row-bottom">
+            <span class="price">$ 11.971.214.829</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/001-197443.jpg" alt="Hotel / Motel" loading="lazy" />
-          <span class="fmi-badge">FMI 001-197443</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-197443&amp;nombre=Hotel%20/%20Motel&amp;ciudad=San%20Agust%C3%ADn%20%C2%B7%20La%20Estrella%2C%20Antioquia&amp;area=14186.82&amp;avaluo=30051637115&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-197443.jpg">
+        <img src="../images/001-197443.jpg" alt="Hotel / Motel" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 001-197443</span>
+        <div class="info">
           <div class="loc">San Agustín · La Estrella, Antioquia</div>
-          <h3>Hotel / Motel</h3>
-          <p class="highlight">Motel La Estrella — 95 habitaciones</p>
-          <div class="specs">
-            <span class="spec"><b>14.186,82 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 30.051.637.115</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=001-197443&nombre=Hotel%20/%20Motel&ciudad=San%20Agust%C3%ADn%20%C2%B7%20La%20Estrella%2C%20Antioquia&area=14186.82&avaluo=30051637115&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-197443.jpg">
-              Subastar
+          <div class="nombre">Hotel / Motel</div>
+          <div class="highlight">Motel La Estrella — 95 habitaciones</div>
+          <div class="row-bottom">
+            <span class="price">$ 30.051.637.115</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/060-100108.jpg" alt="Lotes" loading="lazy" />
-          <span class="fmi-badge">FMI 060-100108</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=060-100108&amp;nombre=Lotes&amp;ciudad=Altamira%20%C2%B7%20Cartagena%2C%20Bol%C3%ADvar&amp;area=4300.87&amp;avaluo=200000000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F060-100108.jpg">
+        <img src="../images/060-100108.jpg" alt="Lotes" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 060-100108</span>
+        <div class="info">
           <div class="loc">Altamira · Cartagena, Bolívar</div>
-          <h3>Lotes</h3>
-          <p class="highlight">4.300,87 m² en Cartagena</p>
-          <div class="specs">
-            <span class="spec"><b>4.300,87 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">+ 200 MIL MILLONES</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=060-100108&nombre=Lotes&ciudad=Altamira%20%C2%B7%20Cartagena%2C%20Bol%C3%ADvar&area=4300.87&avaluo=200000000000&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F060-100108.jpg">
-              Subastar
+          <div class="nombre">Lotes</div>
+          <div class="highlight">4.300,87 m² en Cartagena</div>
+          <div class="row-bottom">
+            <span class="price">+ 200 MIL MILLONES</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/020-14105.jpg" alt="Lote" loading="lazy" />
-          <span class="fmi-badge">FMI 020-14105</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=020-14105&amp;nombre=Lote&amp;ciudad=Rionegro%2C%20Antioquia&amp;area=186229&amp;avaluo=24023541000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F020-14105.jpg">
+        <img src="../images/020-14105.jpg" alt="Lote" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 020-14105</span>
+        <div class="info">
           <div class="loc">Rionegro, Antioquia</div>
-          <h3>Lote</h3>
-          <p class="highlight">186.229 m² en Rionegro</p>
-          <div class="specs">
-            <span class="spec"><b>186.229 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 24.023.541.000</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=020-14105&nombre=Lote&ciudad=Rionegro%2C%20Antioquia&area=186229&avaluo=24023541000&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F020-14105.jpg">
-              Subastar
+          <div class="nombre">Lote</div>
+          <div class="highlight">186.229 m² en Rionegro</div>
+          <div class="row-bottom">
+            <span class="price">$ 24.023.541.000</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/01N-8734.jpg" alt="Lote con construcción" loading="lazy" />
-          <span class="fmi-badge">FMI 01N-8734</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=01N-8734&amp;nombre=Lote%20con%20construcci%C3%B3n&amp;ciudad=Bello%2C%20Antioquia&amp;area=968.55&amp;avaluo=23483696878&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F01N-8734.jpg">
+        <img src="../images/01N-8734.jpg" alt="Lote con construcción" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 01N-8734</span>
+        <div class="info">
           <div class="loc">Bello, Antioquia</div>
-          <h3>Lote con construcción</h3>
-          <p class="highlight">968,55 m² en Bello</p>
-          <div class="specs">
-            <span class="spec"><b>968,55 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 23.483.696.878</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=01N-8734&nombre=Lote%20con%20construcci%C3%B3n&ciudad=Bello%2C%20Antioquia&area=968.55&avaluo=23483696878&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F01N-8734.jpg">
-              Subastar
+          <div class="nombre">Lote con construcción</div>
+          <div class="highlight">968,55 m² en Bello</div>
+          <div class="row-bottom">
+            <span class="price">$ 23.483.696.878</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/50C-338126.jpg" alt="Edificio" loading="lazy" />
-          <span class="fmi-badge">FMI 50C-338126</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50C-338126&amp;nombre=Edificio&amp;ciudad=Bogot%C3%A1%20D.C.&amp;area=11689.31&amp;avaluo=3547392018&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-338126.jpg">
+        <img src="../images/50C-338126.jpg" alt="Edificio" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 50C-338126</span>
+        <div class="info">
           <div class="loc">Bogotá D.C.</div>
-          <h3>Edificio</h3>
-          <p class="highlight">Edificio en venta en Bogotá</p>
-          <div class="specs">
-            <span class="spec"><b>11.689,31 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 3.547.392.018</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=50C-338126&nombre=Edificio&ciudad=Bogot%C3%A1%20D.C.&area=11689.31&avaluo=3547392018&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-338126.jpg">
-              Subastar
+          <div class="nombre">Edificio</div>
+          <div class="highlight">Edificio en venta en Bogotá</div>
+          <div class="row-bottom">
+            <span class="price">$ 3.547.392.018</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/001-794653.jpg" alt="Casa" loading="lazy" />
-          <span class="fmi-badge">FMI 001-794653</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-794653&amp;nombre=Casa&amp;ciudad=Medell%C3%ADn%2C%20Antioquia&amp;area=729.61&amp;avaluo=2488792972&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-794653.jpg">
+        <img src="../images/001-794653.jpg" alt="Casa" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 001-794653</span>
+        <div class="info">
           <div class="loc">Medellín, Antioquia</div>
-          <h3>Casa</h3>
-          <p class="highlight">La alternativa más accesible del listado</p>
-          <div class="specs">
-            <span class="spec"><b>729,61 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 2.488.792.972</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=001-794653&nombre=Casa&ciudad=Medell%C3%ADn%2C%20Antioquia&area=729.61&avaluo=2488792972&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-794653.jpg">
-              Subastar
+          <div class="nombre">Casa</div>
+          <div class="highlight">La alternativa más accesible del listado</div>
+          <div class="row-bottom">
+            <span class="price">$ 2.488.792.972</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/50C-790912.jpg" alt="Apartamento" loading="lazy" />
-          <span class="fmi-badge">FMI 50C-790912</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50C-790912&amp;nombre=Apartamento&amp;ciudad=Centro%20Oriente%20%C2%B7%20Bogot%C3%A1%20D.C.&amp;area=104.17&amp;avaluo=630176833&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-790912.jpg">
+        <img src="../images/50C-790912.jpg" alt="Apartamento" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 50C-790912</span>
+        <div class="info">
           <div class="loc">Centro Oriente · Bogotá D.C.</div>
-          <h3>Apartamento</h3>
-          <p class="highlight">104,17 m² en Bogotá D.C.</p>
-          <div class="specs">
-            <span class="spec"><b>104,17 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 630.176.833</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=50C-790912&nombre=Apartamento&ciudad=Centro%20Oriente%20%C2%B7%20Bogot%C3%A1%20D.C.&area=104.17&avaluo=630176833&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-790912.jpg">
-              Subastar
+          <div class="nombre">Apartamento</div>
+          <div class="highlight">104,17 m² en Bogotá D.C.</div>
+          <div class="row-bottom">
+            <span class="price">$ 630.176.833</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/200-180041.png" alt="Casa" loading="lazy" />
-          <span class="fmi-badge">FMI 200-180041</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=200-180041&amp;nombre=Casa&amp;ciudad=Sur%20%C2%B7%20Neiva%2C%20Huila&amp;area=221.04&amp;avaluo=483834605&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F200-180041.png">
+        <img src="../images/200-180041.png" alt="Casa" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 200-180041</span>
+        <div class="info">
           <div class="loc">Sur · Neiva, Huila</div>
-          <h3>Casa</h3>
-          <p class="highlight">221,04 m² en Neiva</p>
-          <div class="specs">
-            <span class="spec"><b>221,04 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 483.834.605</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=200-180041&nombre=Casa&ciudad=Sur%20%C2%B7%20Neiva%2C%20Huila&area=221.04&avaluo=483834605&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F200-180041.png">
-              Subastar
+          <div class="nombre">Casa</div>
+          <div class="highlight">221,04 m² en Neiva</div>
+          <div class="row-bottom">
+            <span class="price">$ 483.834.605</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/260-283218.jpg" alt="Apartamento" loading="lazy" />
-          <span class="fmi-badge">FMI 260-283218</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=260-283218&amp;nombre=Apartamento&amp;ciudad=Centro%20Oriente%20%C2%B7%20San%20Jos%C3%A9%20de%20C%C3%BAcuta%2C%20Norte%20de%20Santander&amp;area=120&amp;avaluo=226993000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F260-283218.jpg">
+        <img src="../images/260-283218.jpg" alt="Apartamento" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 260-283218</span>
+        <div class="info">
           <div class="loc">Centro Oriente · San José de Cúcuta, Norte de Santander</div>
-          <h3>Apartamento</h3>
-          <p class="highlight">120 m² en Cúcuta</p>
-          <div class="specs">
-            <span class="spec"><b>120 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 226.993.000</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=260-283218&nombre=Apartamento&ciudad=Centro%20Oriente%20%C2%B7%20San%20Jos%C3%A9%20de%20C%C3%BAcuta%2C%20Norte%20de%20Santander&area=120&avaluo=226993000&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F260-283218.jpg">
-              Subastar
+          <div class="nombre">Apartamento</div>
+          <div class="highlight">120 m² en Cúcuta</div>
+          <div class="row-bottom">
+            <span class="price">$ 226.993.000</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/230-4310.jpg" alt="Casa" loading="lazy" />
-          <span class="fmi-badge">FMI 230-4310</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=230-4310&amp;nombre=Casa&amp;ciudad=Centro%20Oriente%20%C2%B7%20Villavicencio%2C%20Meta&amp;area=339&amp;avaluo=373249234&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F230-4310.jpg">
+        <img src="../images/230-4310.jpg" alt="Casa" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 230-4310</span>
+        <div class="info">
           <div class="loc">Centro Oriente · Villavicencio, Meta</div>
-          <h3>Casa</h3>
-          <p class="highlight">339 m² en Villavicencio</p>
-          <div class="specs">
-            <span class="spec"><b>339 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 373.249.234</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=230-4310&nombre=Casa&ciudad=Centro%20Oriente%20%C2%B7%20Villavicencio%2C%20Meta&area=339&avaluo=373249234&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F230-4310.jpg">
-              Subastar
+          <div class="nombre">Casa</div>
+          <div class="highlight">339 m² en Villavicencio</div>
+          <div class="row-bottom">
+            <span class="price">$ 373.249.234</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
-
-      <article class="card">
-        <div class="media">
-          <img src="../images/060-84329.jpg" alt="Apartamento" loading="lazy" />
-          <span class="fmi-badge">FMI 060-84329</span>
-        </div>
-        <div class="body">
+      </a>
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=060-84329&amp;nombre=Apartamento&amp;ciudad=Caribe%20%C2%B7%20Cartagena%20de%20Indias%2C%20Bol%C3%ADvar&amp;area=116&amp;avaluo=1068160072&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F060-84329.jpg">
+        <img src="../images/060-84329.jpg" alt="Apartamento" loading="lazy" />
+        <div class="scrim"></div>
+        <span class="fmi-badge">FMI 060-84329</span>
+        <div class="info">
           <div class="loc">Caribe · Cartagena de Indias, Bolívar</div>
-          <h3>Apartamento</h3>
-          <p class="highlight">116 m² en Cartagena de Indias</p>
-          <div class="specs">
-            <span class="spec"><b>116 m²</b></span>
-          </div>
-          <div class="price-row">
-            <div class="price">$ 1.068.160.072</div>
-          </div>
-          <div class="btn-row">
-            <a class="cta primary" href="https://subasta-web.onrender.com/host?fmi=060-84329&nombre=Apartamento&ciudad=Caribe%20%C2%B7%20Cartagena%20de%20Indias%2C%20Bol%C3%ADvar&area=116&avaluo=1068160072&imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F060-84329.jpg">
-              Subastar
+          <div class="nombre">Apartamento</div>
+          <div class="highlight">116 m² en Cartagena de Indias</div>
+          <div class="row-bottom">
+            <span class="price">$ 1.068.160.072</span>
+            <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-            </a>
+            </span>
           </div>
         </div>
-      </article>
+      </a>
   </div>
 
-  <footer>Activos por Colombia S.A.S. -- uso interno</footer>
+  <footer>Activos por Colombia S.A.S. · Panel interno de subasta</footer>
 
 </body>
 </html>
