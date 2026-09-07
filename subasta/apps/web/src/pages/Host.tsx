@@ -407,63 +407,117 @@ export default function Host() {
 
   if (!authed) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-archivo via-navy3 to-archivo text-manila font-body">
-        <div className="bg-manila text-archivo rounded-xl p-8 w-full max-w-sm">
-          <BrandMark className="w-12 h-12 mb-3" />
-          <h1 className="font-display text-2xl mb-4">Consola del presentador</h1>
+      <div className="min-h-screen flex items-center justify-center bg-escenario text-manila font-body sm:px-6 phase-fade-in">
+        <div className="w-full max-w-sm sm:rounded-2xl overflow-hidden shadow-2xl shadow-black/30 flex flex-col font-body">
+          <div
+            className="px-7 pt-12 pb-8 sm:pt-10"
+            style={{ background: "linear-gradient(100deg, #7a4a12 0%, #173f70 46%, #0d3a63 100%)" }}
+          >
+            <div className="w-10 h-10 rounded-[10px] bg-manila flex items-center justify-center mb-3.5">
+              <BrandMark className="w-6 h-6" />
+            </div>
+            <h1 className="font-display text-2xl text-manila mb-1.5">Consola del presentador</h1>
+            <p className="text-sm text-manila/75 leading-relaxed">Inicia sesión para administrar la subasta.</p>
+          </div>
 
-          {supabase ? (
-            <>
-              <input
-                className="w-full mb-3 px-3 py-2 rounded border border-archivo/30"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="correo@empresa.com"
-                autoComplete="username"
-              />
-              <input
-                className="w-full mb-4 px-3 py-2 rounded border border-archivo/30"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Contraseña"
-                autoComplete="current-password"
-                onKeyDown={(e) => e.key === "Enter" && loginConSupabase()}
-              />
-              {loginError && (
-                <p role="alert" className="text-sm text-archivo bg-sello/10 border border-sello/40 rounded px-3 py-2 mb-3">
-                  {loginError}
+          <div className="flex-1 bg-manila text-archivo px-6 pt-7 pb-8 flex flex-col">
+            {supabase ? (
+              <>
+                <label className="block text-[11px] font-bold uppercase tracking-wide text-archivo/50 mb-1.5">
+                  Correo
+                </label>
+                <div className="relative mb-4">
+                  <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <rect x="2" y="4" width="20" height="16" rx="2" />
+                    <path d="m2 7 10 6 10-6" />
+                  </svg>
+                  <input
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="correo@empresa.com"
+                    autoComplete="username"
+                  />
+                </div>
+
+                <label className="block text-[11px] font-bold uppercase tracking-wide text-archivo/50 mb-1.5">
+                  Contraseña
+                </label>
+                <div className="relative mb-4">
+                  <svg
+                    className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    aria-hidden="true"
+                  >
+                    <rect x="5" y="11" width="14" height="9" rx="2" />
+                    <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                  </svg>
+                  <input
+                    className="w-full pl-9 pr-3.5 py-2.5 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    onKeyDown={(e) => e.key === "Enter" && loginConSupabase()}
+                  />
+                </div>
+
+                {loginError && (
+                  <p role="alert" className="text-sm text-archivo bg-sello/10 border border-sello/40 rounded-lg px-3 py-2 mb-4">
+                    {loginError}
+                  </p>
+                )}
+
+                <button
+                  className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-3 rounded-[10px] font-display font-bold shadow-lg shadow-azul/20 transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:active:scale-100"
+                  disabled={!connected || loggingIn || !email || !password}
+                  onClick={loginConSupabase}
+                >
+                  {loggingIn ? "Entrando..." : "Entrar"}
+                </button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm opacity-70 mb-3">
+                  Supabase no está configurado en este entorno; usando token de desarrollo.
                 </p>
-              )}
-              <button
-                className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:active:scale-100"
-                disabled={!connected || loggingIn || !email || !password}
-                onClick={loginConSupabase}
-              >
-                {loggingIn ? "Entrando..." : "Entrar"}
-              </button>
-            </>
-          ) : (
-            <>
-              <p className="text-sm opacity-70 mb-3">
-                Supabase no está configurado en este entorno; usando token de desarrollo.
-              </p>
-              <input
-                className="w-full mb-4 px-3 py-2 rounded border border-archivo/30"
-                value={devToken}
-                onChange={(e) => setDevToken(e.target.value)}
-                placeholder="Token"
-              />
-              <button
-                className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:active:scale-100"
-                disabled={!connected}
-                onClick={loginConToken}
-              >
-                Entrar
-              </button>
-            </>
-          )}
+                <input
+                  className="w-full mb-4 px-3.5 py-2.5 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
+                  value={devToken}
+                  onChange={(e) => setDevToken(e.target.value)}
+                  placeholder="Token"
+                />
+                <button
+                  className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-3 rounded-[10px] font-display font-bold shadow-lg shadow-azul/20 transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-50 disabled:hover:scale-100 disabled:active:scale-100"
+                  disabled={!connected}
+                  onClick={loginConToken}
+                >
+                  Entrar
+                </button>
+              </>
+            )}
+
+            <div className="mt-6 flex items-center justify-center gap-1.5 text-archivo/40 text-[11px]">
+              <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-esmeralda" : "bg-archivo/25"}`} />
+              {connected ? "Conectado" : "Conectando..."}
+            </div>
+          </div>
         </div>
       </div>
     );

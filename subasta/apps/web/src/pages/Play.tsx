@@ -329,40 +329,85 @@ export default function Play() {
           </div>
 
           <div className="flex-1 bg-manila text-archivo px-6 pt-7 pb-8 flex flex-col">
-            <label className="block text-xs uppercase tracking-wide mb-1">Nombre</label>
-            <input
-              className="w-full mb-4 px-3 py-2 rounded border border-archivo/30"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              placeholder="Tu nombre en pantalla"
-            />
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-archivo/50 mb-1.5">Nombre</label>
+            <div className="relative mb-4">
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
+              </svg>
+              <input
+                className="w-full pl-9 pr-3.5 py-2.5 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
+                value={nickname}
+                onChange={(e) => setNickname(e.target.value)}
+                placeholder="Tu nombre en pantalla"
+              />
+            </div>
 
-            <label className="block text-xs uppercase tracking-wide mb-1">Celular</label>
-            <input
-              className="w-full mb-4 px-3 py-2 rounded border border-archivo/30"
-              value={telefono}
-              onChange={(e) => setTelefono(e.target.value)}
-              placeholder="300 123 4567"
-              inputMode="tel"
-            />
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-archivo/50 mb-1.5">Celular</label>
+            <div className="relative mb-4">
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <rect x="7" y="2" width="10" height="20" rx="2" />
+                <path d="M11 18h2" />
+              </svg>
+              <input
+                className="w-full pl-9 pr-3.5 py-2.5 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                placeholder="300 123 4567"
+                inputMode="tel"
+              />
+            </div>
 
-            <label className="block text-xs uppercase tracking-wide mb-1">Correo</label>
-            <input
-              className="w-full mb-6 px-3 py-2 rounded border border-archivo/30"
-              value={correo}
-              onChange={(e) => setCorreo(e.target.value)}
-              placeholder="correo@empresa.com"
-              type="email"
-            />
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-archivo/50 mb-1.5">Correo</label>
+            <div className="relative mb-6">
+              <svg
+                className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                aria-hidden="true"
+              >
+                <rect x="2" y="4" width="20" height="16" rx="2" />
+                <path d="m2 7 10 6 10-6" />
+              </svg>
+              <input
+                className="w-full pl-9 pr-3.5 py-2.5 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
+                value={correo}
+                onChange={(e) => setCorreo(e.target.value)}
+                placeholder="correo@empresa.com"
+                type="email"
+              />
+            </div>
 
             {joinError && (
-              <p role="alert" className="text-sm text-archivo bg-sello/10 border border-sello/40 rounded px-3 py-2 mb-3">
+              <p role="alert" className="text-sm text-archivo bg-sello/10 border border-sello/40 rounded-lg px-3 py-2 mb-3">
                 {joinError}
               </p>
             )}
 
             <button
-              className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100 disabled:active:scale-100"
+              className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-3 rounded-[10px] font-display font-bold shadow-lg shadow-azul/20 transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100 disabled:active:scale-100"
               disabled={!puedeEntrar}
               onClick={onJoin}
             >
@@ -370,8 +415,8 @@ export default function Play() {
             </button>
 
             <div className="mt-auto pt-6 flex items-center justify-center gap-1.5 text-archivo/40 text-[11px]">
-              <span className="w-1.5 h-1.5 rounded-full bg-esmeralda" />
-              Activos por Colombia S.A.S.
+              <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-esmeralda" : "bg-archivo/25"}`} />
+              {connected ? "Activos por Colombia S.A.S." : "Conectando..."}
             </div>
           </div>
         </div>
@@ -437,14 +482,15 @@ export default function Play() {
             <BarraTiempo remainingMs={remainingMs} duracionMs={duracionMs} />
           </div>
           <span className="text-manila/85 text-xs mt-1">posición #{miPosicion || "-"} · servidor: {servidorTaps}</span>
-          {lider && (
-            <span
-              key={lider.nickname}
-              className={`text-sm mt-3 font-display leader-pop ${voyGanando ? "text-oro" : "text-manila/90"}`}
-            >
-              {voyGanando ? "🏆 ¡Vas ganando!" : `🏆 Va ganando: ${lider.nickname}`}
-            </span>
-          )}
+          {/* Reserva el espacio de esta linea siempre (aunque no haya lider
+              todavia) para que el bloque no cambie de alto y la pantalla no
+              "salte" verticalmente en cada tick mientras se puja en el celular. */}
+          <span
+            key={lider ? lider.nickname : "sin-lider"}
+            className={`text-sm mt-3 font-display h-5 ${lider ? "leader-pop" : "invisible"} ${voyGanando ? "text-oro" : "text-manila/90"}`}
+          >
+            {lider ? (voyGanando ? "🏆 ¡Vas ganando!" : `🏆 Va ganando: ${lider.nickname}`) : "\u00a0"}
+          </span>
         </div>
 
         <button
