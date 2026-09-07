@@ -202,10 +202,56 @@ export class GameRoom {
       return;
     }
 
+    // ---------- Anti-trampa: autoclickers ----------
+    // Límite de velocidad físico: cada jugador tiene un balde de taps que se
+    // recarga a un ritmo humano posible (GAME_CONSTANTS.TOKEN_BUCKET_*). No
+    // importa si el toque viene de un dedo real o de una app de autoclick en
+    // el celular (que genera toques "de verdad" a nivel del sistema operativo
+    // y por lo tanto no se puede filtrar en el navegador) -- si la tasa
+    // sostenida supera lo que un pulgar puede hacer, el exceso simplemente no
+    // suma puntos, igual que los taps fuera de la ventana de tiempo.
+    const ahora = this.now();
+    const ultimaRecarga = round.tokensUpdatedAt.get(playerId) ?? ahora;
+    const segundosTranscurridos = Math.max(0, (ahora - ultimaRecarga) / 1000);
+    const tokensPrevios = round.tokens.get(playerId) ?? GAME_CONSTANTS.TOKEN_BUCKET_CAPACITY;
+    const tokensRecargados = Math.min(
+      GAME_CONSTANTS.TOKEN_BUCKET_CAPACITY,
+      tokensPrevios + segundosTranscurridos * GAME_CONSTANTS.TOKEN_BUCKET_REFILL_PER_SEC
+    );
+    const aceptados = Math.min(msg.count, Math.floor(tokensRecargados));
+    const rechazadosPorVelocidad = msg.count - aceptados;
+    round.tokens.set(playerId, tokensRecargados - aceptados);
+    round.tokensUpdatedAt.set(playerId, ahora);
+    if (rechazadosPorVelocidad > 0) {
+      const rec = round.recortados.get(playerId) ?? 0;
+      round.recortados.set(playerId, rec + rechazadosPorVelocidad);
+    }
+
+    // Detección por regularidad: un humano tocando rápido varía sus tiempos
+    // entre taps (jitter); un autoclicker por software tiende a intervalos
+    // casi idénticos. Si llegan varios lotes seguidos con jitter
+    // sospechosamente bajo (y suficientes taps para que el dato sea
+    // confiable), se marca al jugador como sospechoso -- se ve en el ranking
+    // del host con una bandera, sin bloquearlo, para no perder por falso
+    // positivo a alguien con el pulso muy parejo.
+    if (msg.count >= 3) {
+      if (msg.jitter < GAME_CONSTANTS.JITTER_MIN_MS) {
+        const racha = (round.jitterStreak.get(playerId) ?? 0) + 1;
+        round.jitterStreak.set(playerId, racha);
+        if (racha >= GAME_CONSTANTS.JITTER_FLAG_STREAK) {
+          round.flaggedPlayers.add(playerId);
+        }
+      } else {
+        round.jitterStreak.set(playerId, 0);
+      }
+    }
+
+    if (aceptados === 0) return;
+
     const prev = round.counts.get(playerId) ?? 0;
-    const next = prev + msg.count;
+    const next = prev + aceptados;
     round.counts.set(playerId, next);
-    round.firstReachedAt.set(playerId, this.now());
+    round.firstReachedAt.set(playerId, ahora);
   }
 
   // ---------- Administración de inmuebles (admin) ----------
@@ -268,6 +314,10 @@ export class GameRoom {
       recortados: new Map(),
       firstReachedAt: new Map(),
       ganador: null,
+      tokens: new Map(),
+      tokensUpdatedAt: new Map(),
+      jitterStreak: new Map(),
+      flaggedPlayers: new Set(),
     };
     this.state.currentRound = round;
     this.state.estado = "armed";
@@ -448,7 +498,7 @@ export class GameRoom {
         nickname: p.nickname,
         taps,
         valorPujado: taps * this.state.valorPorTap,
-        flagged: false,
+        flagged: round.flaggedPlayers.has(p.playerId),
       };
     });
     rows.sort((a, b) => {
@@ -567,7 +617,7 @@ export class GameRoom {
         telefono: p.telefono,
         correo: p.correo,
         conectado: p.socket !== null,
-        flagged: false,
+        flagged: this.state.currentRound?.flaggedPlayers.has(p.playerId) ?? false,
       })),
       rondaActual: this.state.currentRound
         ? {

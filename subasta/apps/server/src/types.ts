@@ -25,6 +25,11 @@ export interface RoundState {
   firstReachedAt: Map<string, number>; // playerId -> ts en que alcanzó su conteo actual (para desempate)
   ganador: { playerId: string; nickname: string; valorFinal: number } | null;
   abortada?: boolean;
+  // ---------- Anti-trampa: autoclickers ----------
+  tokens: Map<string, number>; // playerId -> taps disponibles ahora mismo (balde con recarga)
+  tokensUpdatedAt: Map<string, number>; // playerId -> último ts en que se recargó el balde
+  jitterStreak: Map<string, number>; // playerId -> lotes seguidos con variación sospechosamente baja
+  flaggedPlayers: Set<string>; // playerId marcados como sospechosos en esta ronda
 }
 
 /** Fila resumida y ya persistida (Supabase, tabla rounds_log) para el panel de historial del host. */
