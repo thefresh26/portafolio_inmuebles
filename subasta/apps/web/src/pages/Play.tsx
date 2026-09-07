@@ -518,6 +518,7 @@ export default function Play() {
         <button
           type="button"
           className="puja-glow w-72 h-72 max-w-[80vw] max-h-[80vw] aspect-square rounded-full bg-manila text-archivo font-display text-3xl tracking-wide active:scale-90 hover:scale-105 transition-transform relative"
+          style={{ touchAction: "none", WebkitTapHighlightColor: "transparent" }}
           onPointerDown={onTap}
         >
           ¡PUJA!
