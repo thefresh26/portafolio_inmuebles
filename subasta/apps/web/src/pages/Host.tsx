@@ -571,7 +571,7 @@ export default function Host() {
             type="button"
             className="bg-manila/10 border border-manila/25 text-manila px-3.5 py-2 rounded-full text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
             onClick={() => {
-              window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
+              window.location.href = "https://portafolio-inmuebles.onrender.com/admin/";
             }}
           >
             Ir a la página
@@ -751,7 +751,7 @@ export default function Host() {
                     className="bg-sello/80 text-manila px-6 py-3 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
                     onClick={() => {
                       setRondaGanador(null);
-                      window.location.href = "https://portafolio-inmuebles.onrender.com/#panel-alto-valor";
+                      window.location.href = "https://portafolio-inmuebles.onrender.com/admin/";
                     }}
                   >
                     Ir a la página
