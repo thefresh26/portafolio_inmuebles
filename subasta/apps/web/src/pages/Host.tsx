@@ -912,10 +912,6 @@ export default function Host() {
           <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-manila/90">{state?.estado ?? "-"}</span>
           <span className="text-manila/25">·</span>
           <span>{state?.jugadores.length ?? 0} jugadores</span>
-          <span className="ml-auto inline-flex items-center gap-1.5">
-            <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-esmeralda live-pulse" : "bg-manila/30"}`} />
-            {connected ? "Conectado en vivo" : "Reconectando…"}
-          </span>
         </div>
 
         {/* ---------- Historial / Jugadores / Guía rápida: tres columnas, sin tarjetas ---------- */}
