@@ -34,6 +34,7 @@ export default function Play() {
   const [telefono, setTelefono] = useState(datosGuardados?.telefono ?? "");
   const [correo, setCorreo] = useState(datosGuardados?.correo ?? "");
   const autoJoinIntentadoRef = useRef(false);
+  const haJoineadoRef = useRef(false); // ya se recibio "joined" al menos una vez en esta pestana
   const nicknameRef = useRef(nickname);
   const telefonoRef = useRef(telefono);
   const correoRef = useRef(correo);
@@ -91,6 +92,7 @@ export default function Play() {
     clearTapRafidoTimeout();
     localStorage.removeItem("subasta_resume");
     localStorage.removeItem("subasta_player");
+    haJoineadoRef.current = false;
     resumeTokenRef.current = undefined;
     roundIdRef.current = null;
     seqRef.current = 0;
@@ -124,6 +126,7 @@ export default function Play() {
     const msg = data as Record<string, unknown>;
     switch (msg.t) {
       case "joined": {
+        haJoineadoRef.current = true;
         setJoinError(null);
         setPlayerId(msg.playerId as string);
         setValorPorTap(msg.valorPorTap as number);
@@ -255,6 +258,25 @@ export default function Play() {
     correoRef.current = correo;
     send({ t: "join", pin, nickname, telefono, correo, resumeToken: resumeTokenRef.current });
   };
+
+  // Si el socket se cae un instante (wifi/señal) y vuelve a conectar a mitad
+  // de partida, el servidor abre una conexion nueva que todavia no sabe a que
+  // jugador pertenece: sin esto, el jugador se queda tocando "en el aire" sin
+  // que el servidor lo cuente, hasta que recarga la pagina a mano. En cuanto
+  // "connected" vuelve a true y ya nos habiamos unido antes en esta pestaña,
+  // reenviamos "join" con el resumeToken para que el servidor lo reenganche
+  // de inmediato, sin pedirle nada de nuevo al jugador.
+  useEffect(() => {
+    if (!connected || !haJoineadoRef.current) return;
+    send({
+      t: "join",
+      pin,
+      nickname: nicknameRef.current,
+      telefono: telefonoRef.current,
+      correo: correoRef.current,
+      resumeToken: resumeTokenRef.current,
+    });
+  }, [connected, pin, send]);
 
   // Si ya se había registrado antes en este mismo celular (mismo navegador),
   // se reconecta solo sin pedirle de nuevo el formulario.
