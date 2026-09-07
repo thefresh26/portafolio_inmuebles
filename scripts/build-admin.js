@@ -10,8 +10,9 @@
  *  2. Decodifica la foto (base64) de cada inmueble y la guarda en images/{id}.{ext}.
  *  3. Arma el link "Subastar" con los mismos parametros que ya usa el juego
  *     (fmi, nombre, ciudad, area, avaluo, imagen).
- *  4. Escribe admin/index.html con el diseño de mosaico + animaciones ya aprobado,
- *     con TODOS los inmuebles que haya en ese momento en index.html.
+ *  4. Escribe admin/index.html con el diseño de mosaico + animaciones + login
+ *     de Supabase (Auth con correo/contraseña de los admins reales), con TODOS
+ *     los inmuebles que haya en ese momento en index.html.
  *
  * Correlo cada vez que el coordinador cambie/agregue/quite inmuebles en index.html,
  * y luego sube admin/index.html (y las fotos nuevas en images/, si las hay) con git.
@@ -27,6 +28,11 @@ const OUT_HTML = path.join(ROOT, "admin", "index.html");
 
 const HOST_BASE = "https://subasta-web.onrender.com/host";
 const SITE_IMAGES_BASE = "https://portafolio-inmuebles.onrender.com/images";
+
+// Supabase (Auth con correo/contraseña) para el login del panel interno.
+// La "publishable key" esta pensada para ser publica (va en el HTML igual).
+const SUPABASE_URL = "https://vazzjcgcqyxechiwrqjv.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_XchKwzcsUTDcepEcaw_gqg_B6Q8CBQe";
 
 function readSource() {
   if (!fs.existsSync(SRC_HTML)) {
@@ -72,19 +78,16 @@ const MIME_EXT = {
 
 function parsePrice(rawText) {
   const text = rawText.trim();
-  // "$ 47.332.239.056" o "$ 187.194.452 c/u" -> toma el numero formateado al inicio
   let m = text.match(/^\$?\s*([\d.]+)/);
   if (m) {
     const digits = m[1].replace(/\./g, "");
     if (digits.length > 0) return { value: parseInt(digits, 10), ok: true };
   }
-  // "+ 200 MIL MILLONES"
   m = text.match(/([\d.,]+)\s*MIL\s*MILLONES/i);
   if (m) {
     const n = parseFloat(m[1].replace(/\./g, "").replace(",", "."));
     return { value: Math.round(n * 1_000_000_000), ok: true };
   }
-  // "+ 50 MILLONES"
   m = text.match(/([\d.,]+)\s*MILLONES/i);
   if (m) {
     const n = parseFloat(m[1].replace(/\./g, "").replace(",", "."));
@@ -94,7 +97,6 @@ function parsePrice(rawText) {
 }
 
 function parseArea(specHtml) {
-  // primer <b>...</b> del primer .spec, ej "5.226,15 m²" o "56,62 m²"
   const m = specHtml.match(/<b>([\d.,]+)\s*m²<\/b>/);
   if (!m) return { value: 0, ok: false };
   const n = parseFloat(m[1].replace(/\./g, "").replace(",", "."));
@@ -191,6 +193,7 @@ const TEMPLATE_HEAD = `<!doctype html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
 <style>
   :root{
     --archivo:#0b2a4a;
@@ -214,6 +217,7 @@ const TEMPLATE_HEAD = `<!doctype html>
   p{margin:0;}
   a{color:inherit; text-decoration:none;}
   img{max-width:100%; display:block;}
+  button{font-family:inherit;}
 
   @keyframes fadeSlideDown{ from{opacity:0; transform:translateY(-14px);} to{opacity:1; transform:translateY(0);} }
   @keyframes fadeSlideUp{ from{opacity:0; transform:translateY(22px);} to{opacity:1; transform:translateY(0);} }
@@ -239,6 +243,50 @@ const TEMPLATE_HEAD = `<!doctype html>
     animation: floatBg 22s ease-in-out infinite;
   }
 
+  /* --- pantalla de login --- */
+  .login-screen{
+    position:fixed; inset:0; z-index:100;
+    display:flex; align-items:center; justify-content:center;
+    background:#081d33; padding:24px;
+  }
+  .login-card{
+    width:100%; max-width:380px;
+    background:rgba(23,63,112,0.35);
+    border:1px solid rgba(234,241,251,0.12);
+    border-radius:18px;
+    padding:32px 28px;
+    animation: fadeSlideUp .5s cubic-bezier(.22,1,.36,1) both;
+  }
+  .login-card .brand{ margin-bottom:18px; justify-content:center; }
+  .login-card h2{ font-size:20px; font-weight:800; margin-bottom:6px; text-align:center; }
+  .login-card p.sub{ color:rgba(234,241,251,0.55); font-size:13px; text-align:center; margin-bottom:22px; line-height:1.5; }
+  .login-field{ margin-bottom:14px; }
+  .login-field label{ display:block; font-size:12px; font-weight:600; color:rgba(234,241,251,0.7); margin-bottom:6px; }
+  .login-field input{
+    width:100%; padding:11px 14px; border-radius:9px;
+    background:rgba(8,29,51,0.6); border:1px solid rgba(234,241,251,0.18);
+    color:var(--manila); font-family:inherit; font-size:14px;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .login-field input:focus{ outline:none; border-color:var(--azul); box-shadow:0 0 0 3px rgba(26,168,221,0.15); }
+  .login-submit{
+    width:100%; padding:12px; border-radius:9px; border:none; cursor:pointer;
+    font-size:14px; font-weight:700;
+    background:linear-gradient(90deg, var(--azul) 0%, var(--navy3) 100%);
+    color:var(--manila);
+    transition: filter .2s ease, transform .15s ease;
+    margin-top:6px;
+  }
+  .login-submit:hover{ filter:brightness(1.08); }
+  .login-submit:active{ transform: scale(.98); }
+  .login-submit:disabled{ opacity:.6; cursor:default; filter:none; }
+  .login-error{
+    margin-top:14px; padding:10px 12px; border-radius:8px;
+    background:rgba(224,53,53,0.12); border:1px solid rgba(224,53,53,0.35);
+    color:#ff9d9d; font-size:12.5px; line-height:1.5; display:none;
+  }
+  #app-content{ display:none; }
+
   .topbar{
     position:sticky; top:0; z-index:10;
     display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 16px;
@@ -262,7 +310,7 @@ const TEMPLATE_HEAD = `<!doctype html>
     font-size:12px; font-weight:600; white-space:nowrap;
     padding:6px 12px; border-radius:8px;
     background:rgba(234,241,251,0.08); border:1px solid rgba(234,241,251,0.18);
-    color:var(--manila);
+    color:var(--manila); cursor:pointer;
     transition: background .2s ease, transform .2s ease, border-color .2s ease;
   }
   .logout-btn:hover{ background:rgba(224,53,53,0.16); border-color:rgba(224,53,53,0.4); transform:translateY(-1px); }
@@ -373,14 +421,36 @@ const TEMPLATE_HEAD = `<!doctype html>
 </head>
 <body>
 
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <div class="brand"><span class="dot"></span>Subasta Activa</div>
+      <h2>Acceso al panel interno</h2>
+      <p class="sub">Ingresa con tu correo de Activos por Colombia para entrar al catálogo de subasta.</p>
+      <form id="loginForm">
+        <div class="login-field">
+          <label for="loginEmail">Correo</label>
+          <input type="email" id="loginEmail" autocomplete="username" required placeholder="tucorreo@activosporcolombia.com" />
+        </div>
+        <div class="login-field">
+          <label for="loginPassword">Contraseña</label>
+          <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••" />
+        </div>
+        <button type="submit" class="login-submit" id="loginSubmitBtn">Entrar</button>
+        <div class="login-error" id="loginError"></div>
+      </form>
+    </div>
+  </div>
+
+  <div id="app-content">
+
   <div class="topbar">
     <div class="brand"><span class="dot"></span>Subasta Activa</div>
     <div class="topbar-right">
       <span class="badge-interno">Panel interno · No compartir con clientes</span>
-      <a class="logout-btn" href="./" title="Salir del panel interno (por ahora recarga el panel; login real pendiente)">
+      <button type="button" class="logout-btn" id="logoutBtn" title="Cerrar sesión">
         Cerrar sesión
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-      </a>
+      </button>
     </div>
   </div>
 
@@ -396,6 +466,64 @@ const TEMPLATE_HEAD = `<!doctype html>
 const TEMPLATE_TAIL = `  </div>
 
   <footer>Activos por Colombia S.A.S. · Panel interno de subasta</footer>
+
+  </div>
+
+  <script>
+    (function () {
+      var SUPABASE_URL = ${JSON.stringify(SUPABASE_URL)};
+      var SUPABASE_ANON_KEY = ${JSON.stringify(SUPABASE_ANON_KEY)};
+      var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+      var loginScreen = document.getElementById("login-screen");
+      var appContent = document.getElementById("app-content");
+      var loginForm = document.getElementById("loginForm");
+      var loginError = document.getElementById("loginError");
+      var loginSubmitBtn = document.getElementById("loginSubmitBtn");
+      var logoutBtn = document.getElementById("logoutBtn");
+
+      function showApp() {
+        loginScreen.style.display = "none";
+        appContent.style.display = "block";
+      }
+      function showLogin() {
+        appContent.style.display = "none";
+        loginScreen.style.display = "flex";
+      }
+
+      sb.auth.getSession().then(function (res) {
+        if (res.data && res.data.session) showApp();
+        else showLogin();
+      });
+
+      loginForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        loginError.style.display = "none";
+        loginSubmitBtn.disabled = true;
+        loginSubmitBtn.textContent = "Entrando...";
+        var email = document.getElementById("loginEmail").value.trim();
+        var password = document.getElementById("loginPassword").value;
+        sb.auth.signInWithPassword({ email: email, password: password }).then(function (res) {
+          loginSubmitBtn.disabled = false;
+          loginSubmitBtn.textContent = "Entrar";
+          if (res.error) {
+            loginError.textContent = "No pudimos verificar esos datos: " + res.error.message;
+            loginError.style.display = "block";
+            return;
+          }
+          showApp();
+        });
+      });
+
+      if (logoutBtn) {
+        logoutBtn.addEventListener("click", function () {
+          sb.auth.signOut().then(function () {
+            showLogin();
+          });
+        });
+      }
+    })();
+  </script>
 
 </body>
 </html>
