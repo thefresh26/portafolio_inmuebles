@@ -34,6 +34,30 @@
   a{color:inherit; text-decoration:none;}
   img{max-width:100%; display:block;}
 
+  @keyframes fadeSlideDown{ from{opacity:0; transform:translateY(-14px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes fadeSlideUp{ from{opacity:0; transform:translateY(22px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes pulseBadge{
+    0%,100%{ box-shadow:0 0 0 0 rgba(224,53,53,0.45); }
+    50%{ box-shadow:0 0 0 7px rgba(224,53,53,0); }
+  }
+  @keyframes dotBlink{
+    0%,100%{ opacity:1; transform:scale(1); }
+    50%{ opacity:.45; transform:scale(.8); }
+  }
+  @keyframes floatBg{
+    0%{ background-position:0% 0%; }
+    50%{ background-position:100% 100%; }
+    100%{ background-position:0% 0%; }
+  }
+
+  body{
+    background-image:
+      radial-gradient(ellipse 780px 520px at 4% 0%, rgba(245,166,35,0.10) 0%, rgba(245,166,35,0) 60%),
+      radial-gradient(ellipse 900px 640px at 100% 46%, rgba(26,168,221,0.12) 0%, rgba(26,168,221,0) 58%);
+    background-size:200% 200%;
+    animation: floatBg 22s ease-in-out infinite;
+  }
+
   .topbar{
     position:sticky; top:0; z-index:10;
     display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 16px;
@@ -41,13 +65,15 @@
     background:rgba(11,42,74,0.85);
     backdrop-filter: blur(8px);
     border-bottom:1px solid rgba(234,241,251,0.10);
+    animation: fadeSlideDown .5s cubic-bezier(.22,1,.36,1) both;
   }
   .brand{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:0.02em;}
-  .brand .dot{width:8px; height:8px; border-radius:999px; background:var(--esmeralda);}
+  .brand .dot{width:8px; height:8px; border-radius:999px; background:var(--esmeralda); animation:dotBlink 1.8s ease-in-out infinite;}
   .badge-interno{
     font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;
     padding:4px 10px; border-radius:999px; white-space:nowrap;
     background:rgba(224,53,53,0.15); color:#ff9d9d; border:1px solid rgba(224,53,53,0.4);
+    animation: pulseBadge 2.6s ease-in-out infinite;
   }
   @media (max-width:480px){
     .badge-interno{ font-size:9.5px; letter-spacing:0.02em; padding:3px 8px; }
@@ -55,9 +81,18 @@
   }
 
   .hero{padding:40px 24px 8px; max-width:1200px; margin:0 auto;}
-  .hero .eyebrow{color:var(--oro); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.16em; margin-bottom:8px;}
-  .hero h1{font-size:clamp(24px,3vw,34px); font-weight:800; margin-bottom:8px;}
-  .hero p{color:rgba(234,241,251,0.65); font-size:14px; max-width:640px; line-height:1.6;}
+  .hero .eyebrow{
+    color:var(--oro); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.16em; margin-bottom:8px;
+    animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) .08s both;
+  }
+  .hero h1{
+    font-size:clamp(24px,3vw,34px); font-weight:800; margin-bottom:8px;
+    animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) .16s both;
+  }
+  .hero p{
+    color:rgba(234,241,251,0.65); font-size:14px; max-width:640px; line-height:1.6;
+    animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) .24s both;
+  }
 
   .grid{
     max-width:1200px; margin:0 auto; padding:24px 24px 64px;
@@ -67,35 +102,80 @@
     position:relative; aspect-ratio:3/4; border-radius:16px; overflow:hidden;
     box-shadow:0 10px 26px -12px rgba(0,0,0,.5);
     background:#0a2543;
+    animation: fadeSlideUp .6s cubic-bezier(.22,1,.36,1) both;
+    transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease;
+    will-change: transform;
   }
-  .tile img{width:100%; height:100%; object-fit:cover; position:absolute; inset:0;}
-  .scrim{position:absolute; inset:0; background:linear-gradient(180deg, rgba(8,29,51,0) 35%, rgba(8,29,51,.92) 100%);}
+  .tile:hover{
+    transform: translateY(-8px) scale(1.015);
+    box-shadow:0 22px 40px -14px rgba(0,0,0,.65);
+  }
+  .tile img{
+    width:100%; height:100%; object-fit:cover; position:absolute; inset:0;
+    transition: transform .5s cubic-bezier(.22,1,.36,1), filter .4s ease;
+  }
+  .tile:hover img{ transform: scale(1.09); filter:brightness(1.04) saturate(1.08); }
+  .scrim{
+    position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(8,29,51,0) 35%, rgba(8,29,51,.92) 100%);
+    transition: background .3s ease;
+  }
+  .tile:hover .scrim{ background:linear-gradient(180deg, rgba(8,29,51,0.05) 25%, rgba(8,29,51,.96) 100%); }
   .fmi-badge{
     position:absolute; top:10px; left:10px; z-index:2;
     font-family:'Courier New',monospace; font-size:11px;
     background:rgba(11,42,74,0.85); color:var(--oro);
     padding:3px 9px; border-radius:999px; border:1px solid rgba(245,166,35,0.4);
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
   }
-  .info{position:absolute; left:0; right:0; bottom:0; padding:16px; z-index:2;}
+  .tile:hover .fmi-badge{ transform: translateY(-2px); }
+  .info{
+    position:absolute; left:0; right:0; bottom:0; padding:16px; z-index:2;
+    transition: transform .3s cubic-bezier(.22,1,.36,1);
+  }
+  .tile:hover .info{ transform: translateY(-3px); }
   .loc{font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--azul); margin-bottom:3px;}
   .nombre{font-weight:700; font-size:15.5px; margin-bottom:2px;}
   .highlight{font-size:12px; color:rgba(234,241,251,0.55); margin-bottom:8px; min-height:15px;}
   .row-bottom{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
-  .price{font-weight:800; color:var(--oro); font-size:15px;}
+  .price{
+    font-weight:800; color:var(--oro); font-size:15px;
+    transition: text-shadow .3s ease;
+  }
+  .tile:hover .price{ text-shadow:0 0 14px rgba(245,166,35,0.55); }
   .cta{
     display:flex; align-items:center; gap:6px;
     padding:9px 16px; border-radius:8px; font-size:13px; font-weight:700;
     font-family:inherit;
     background:linear-gradient(90deg, var(--azul) 0%, var(--navy3) 100%);
+    background-size:160% 100%;
     color:var(--manila);
     box-shadow:0 6px 16px rgba(26,168,221,0.28);
+    transition: filter .25s ease, box-shadow .25s ease, transform .25s cubic-bezier(.22,1,.36,1), background-position .5s ease;
   }
-  .cta:hover{filter:brightness(1.08);}
-  .cta svg{width:14px; height:14px;}
+  .tile:hover .cta{
+    filter:brightness(1.1);
+    box-shadow:0 10px 22px rgba(26,168,221,0.4);
+    background-position:100% 0;
+    transform: translateX(2px);
+  }
+  .cta:active{ transform: scale(.96); }
+  .cta svg{width:14px; height:14px; transition: transform .3s cubic-bezier(.22,1,.36,1);}
+  .tile:hover .cta svg{ transform: translateX(4px); }
 
   footer{
     padding:24px; text-align:center; font-size:12px; color:rgba(234,241,251,0.4);
     border-top:1px solid rgba(234,241,251,0.10);
+    animation: fadeSlideUp .5s ease both;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration:0.001ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:0.001ms !important;
+      scroll-behavior:auto !important;
+    }
   }
 </style>
 </head>
@@ -113,7 +193,7 @@
   </div>
 
   <div class="grid">
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50C-30092&amp;nombre=Lote%20con%20construcci%C3%B3n&amp;ciudad=Bogot%C3%A1%20D.C.&amp;area=5226.15&amp;avaluo=47332239056&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-30092.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50C-30092&amp;nombre=Lote%20con%20construcci%C3%B3n&amp;ciudad=Bogot%C3%A1%20D.C.&amp;area=5226.15&amp;avaluo=47332239056&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-30092.jpg" style="animation-delay:0ms">
         <img src="../images/50C-30092.jpg" alt="Lote con construcción" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 50C-30092</span>
@@ -129,7 +209,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-160898&amp;nombre=Lote%20con%20construcci%C3%B3n&amp;ciudad=Medell%C3%ADn%2C%20Antioquia&amp;area=8599.66&amp;avaluo=20245229044&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-160898.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-160898&amp;nombre=Lote%20con%20construcci%C3%B3n&amp;ciudad=Medell%C3%ADn%2C%20Antioquia&amp;area=8599.66&amp;avaluo=20245229044&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-160898.jpg" style="animation-delay:70ms">
         <img src="../images/001-160898.jpg" alt="Lote con construcción" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 001-160898</span>
@@ -145,7 +225,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50N-316804&amp;nombre=Parqueadero%20comercial&amp;ciudad=Suba%20%C2%B7%20Bogot%C3%A1%20D.C.&amp;area=10800&amp;avaluo=32554727000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50N-316804.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50N-316804&amp;nombre=Parqueadero%20comercial&amp;ciudad=Suba%20%C2%B7%20Bogot%C3%A1%20D.C.&amp;area=10800&amp;avaluo=32554727000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50N-316804.jpg" style="animation-delay:140ms">
         <img src="../images/50N-316804.jpg" alt="Parqueadero comercial" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 50N-316804</span>
@@ -161,7 +241,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-1040680&amp;nombre=Edificaci%C3%B3n%20para%20hotel&amp;ciudad=Medell%C3%ADn%2C%20Antioquia&amp;area=1923.12&amp;avaluo=13350515000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-1040680.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-1040680&amp;nombre=Edificaci%C3%B3n%20para%20hotel&amp;ciudad=Medell%C3%ADn%2C%20Antioquia&amp;area=1923.12&amp;avaluo=13350515000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-1040680.jpg" style="animation-delay:210ms">
         <img src="../images/001-1040680.jpg" alt="Edificación para hotel" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 001-1040680</span>
@@ -177,7 +257,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=370-247541&amp;nombre=Lote&amp;ciudad=Las%20Vegas%20%C2%B7%20Cali%2C%20Valle%20del%20Cauca&amp;area=11689.31&amp;avaluo=11971214829&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F370-247541.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=370-247541&amp;nombre=Lote&amp;ciudad=Las%20Vegas%20%C2%B7%20Cali%2C%20Valle%20del%20Cauca&amp;area=11689.31&amp;avaluo=11971214829&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F370-247541.jpg" style="animation-delay:25ms">
         <img src="../images/370-247541.jpg" alt="Lote" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 370-247541</span>
@@ -193,7 +273,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-197443&amp;nombre=Hotel%20/%20Motel&amp;ciudad=San%20Agust%C3%ADn%20%C2%B7%20La%20Estrella%2C%20Antioquia&amp;area=14186.82&amp;avaluo=30051637115&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-197443.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-197443&amp;nombre=Hotel%20/%20Motel&amp;ciudad=San%20Agust%C3%ADn%20%C2%B7%20La%20Estrella%2C%20Antioquia&amp;area=14186.82&amp;avaluo=30051637115&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-197443.jpg" style="animation-delay:95ms">
         <img src="../images/001-197443.jpg" alt="Hotel / Motel" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 001-197443</span>
@@ -209,7 +289,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=060-100108&amp;nombre=Lotes&amp;ciudad=Altamira%20%C2%B7%20Cartagena%2C%20Bol%C3%ADvar&amp;area=4300.87&amp;avaluo=200000000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F060-100108.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=060-100108&amp;nombre=Lotes&amp;ciudad=Altamira%20%C2%B7%20Cartagena%2C%20Bol%C3%ADvar&amp;area=4300.87&amp;avaluo=200000000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F060-100108.jpg" style="animation-delay:165ms">
         <img src="../images/060-100108.jpg" alt="Lotes" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 060-100108</span>
@@ -225,7 +305,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=020-14105&amp;nombre=Lote&amp;ciudad=Rionegro%2C%20Antioquia&amp;area=186229&amp;avaluo=24023541000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F020-14105.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=020-14105&amp;nombre=Lote&amp;ciudad=Rionegro%2C%20Antioquia&amp;area=186229&amp;avaluo=24023541000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F020-14105.jpg" style="animation-delay:235ms">
         <img src="../images/020-14105.jpg" alt="Lote" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 020-14105</span>
@@ -241,7 +321,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=01N-8734&amp;nombre=Lote%20con%20construcci%C3%B3n&amp;ciudad=Bello%2C%20Antioquia&amp;area=968.55&amp;avaluo=23483696878&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F01N-8734.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=01N-8734&amp;nombre=Lote%20con%20construcci%C3%B3n&amp;ciudad=Bello%2C%20Antioquia&amp;area=968.55&amp;avaluo=23483696878&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F01N-8734.jpg" style="animation-delay:50ms">
         <img src="../images/01N-8734.jpg" alt="Lote con construcción" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 01N-8734</span>
@@ -257,7 +337,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50C-338126&amp;nombre=Edificio&amp;ciudad=Bogot%C3%A1%20D.C.&amp;area=11689.31&amp;avaluo=3547392018&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-338126.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50C-338126&amp;nombre=Edificio&amp;ciudad=Bogot%C3%A1%20D.C.&amp;area=11689.31&amp;avaluo=3547392018&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-338126.jpg" style="animation-delay:120ms">
         <img src="../images/50C-338126.jpg" alt="Edificio" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 50C-338126</span>
@@ -273,7 +353,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-794653&amp;nombre=Casa&amp;ciudad=Medell%C3%ADn%2C%20Antioquia&amp;area=729.61&amp;avaluo=2488792972&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-794653.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=001-794653&amp;nombre=Casa&amp;ciudad=Medell%C3%ADn%2C%20Antioquia&amp;area=729.61&amp;avaluo=2488792972&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F001-794653.jpg" style="animation-delay:190ms">
         <img src="../images/001-794653.jpg" alt="Casa" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 001-794653</span>
@@ -289,7 +369,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50C-790912&amp;nombre=Apartamento&amp;ciudad=Centro%20Oriente%20%C2%B7%20Bogot%C3%A1%20D.C.&amp;area=104.17&amp;avaluo=630176833&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-790912.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=50C-790912&amp;nombre=Apartamento&amp;ciudad=Centro%20Oriente%20%C2%B7%20Bogot%C3%A1%20D.C.&amp;area=104.17&amp;avaluo=630176833&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F50C-790912.jpg" style="animation-delay:260ms">
         <img src="../images/50C-790912.jpg" alt="Apartamento" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 50C-790912</span>
@@ -305,7 +385,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=200-180041&amp;nombre=Casa&amp;ciudad=Sur%20%C2%B7%20Neiva%2C%20Huila&amp;area=221.04&amp;avaluo=483834605&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F200-180041.png">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=200-180041&amp;nombre=Casa&amp;ciudad=Sur%20%C2%B7%20Neiva%2C%20Huila&amp;area=221.04&amp;avaluo=483834605&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F200-180041.png" style="animation-delay:75ms">
         <img src="../images/200-180041.png" alt="Casa" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 200-180041</span>
@@ -321,7 +401,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=260-283218&amp;nombre=Apartamento&amp;ciudad=Centro%20Oriente%20%C2%B7%20San%20Jos%C3%A9%20de%20C%C3%BAcuta%2C%20Norte%20de%20Santander&amp;area=120&amp;avaluo=226993000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F260-283218.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=260-283218&amp;nombre=Apartamento&amp;ciudad=Centro%20Oriente%20%C2%B7%20San%20Jos%C3%A9%20de%20C%C3%BAcuta%2C%20Norte%20de%20Santander&amp;area=120&amp;avaluo=226993000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F260-283218.jpg" style="animation-delay:145ms">
         <img src="../images/260-283218.jpg" alt="Apartamento" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 260-283218</span>
@@ -337,7 +417,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=230-4310&amp;nombre=Casa&amp;ciudad=Centro%20Oriente%20%C2%B7%20Villavicencio%2C%20Meta&amp;area=339&amp;avaluo=373249234&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F230-4310.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=230-4310&amp;nombre=Casa&amp;ciudad=Centro%20Oriente%20%C2%B7%20Villavicencio%2C%20Meta&amp;area=339&amp;avaluo=373249234&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F230-4310.jpg" style="animation-delay:215ms">
         <img src="../images/230-4310.jpg" alt="Casa" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 230-4310</span>
@@ -353,7 +433,7 @@
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=060-84329&amp;nombre=Apartamento&amp;ciudad=Caribe%20%C2%B7%20Cartagena%20de%20Indias%2C%20Bol%C3%ADvar&amp;area=116&amp;avaluo=1068160072&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F060-84329.jpg">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=060-84329&amp;nombre=Apartamento&amp;ciudad=Caribe%20%C2%B7%20Cartagena%20de%20Indias%2C%20Bol%C3%ADvar&amp;area=116&amp;avaluo=1068160072&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F060-84329.jpg" style="animation-delay:285ms">
         <img src="../images/060-84329.jpg" alt="Apartamento" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 060-84329</span>
