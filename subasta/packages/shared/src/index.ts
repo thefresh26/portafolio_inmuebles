@@ -93,12 +93,30 @@ export type PlayerToServerMsg = z.infer<typeof PlayerToServerMsg>;
 
 // ---------- Servidor -> Jugador ----------
 
+// Estado de la ronda en curso desde el punto de vista de un jugador puntual,
+// para que al (re)conectarse -- primera vez, reconexion tras caida de wifi, o
+// reapertura de la pagina con resumeToken -- el cliente pueda reanudar
+// directo en la pantalla correcta (armada o corriendo) en vez de quedarse
+// pegado en "esperando" mientras la ronda sigue sin el.
+export const RondaActualParaJugadorSchema = z.object({
+  roundId: z.string(),
+  propiedad: PropertySchema,
+  startAt: z.number(),
+  duracionMs: z.number(),
+  estado: z.enum(["armed", "running"]),
+  misTaps: z.number().int().nonnegative(),
+  miPosicion: z.number().int().positive(),
+  lider: z.object({ nickname: z.string(), taps: z.number().int().nonnegative() }).nullable(),
+});
+export type RondaActualParaJugador = z.infer<typeof RondaActualParaJugadorSchema>;
+
 export const JoinedMsg = z.object({
   t: z.literal("joined"),
   playerId: z.string(),
   resumeToken: z.string(),
   estado: z.string(),
   valorPorTap: z.number(),
+  rondaActual: RondaActualParaJugadorSchema.nullable(),
 });
 
 export const RoundArmedToPlayerMsg = z.object({

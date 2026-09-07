@@ -136,7 +136,50 @@ export default function Play() {
           "subasta_player",
           JSON.stringify({ nickname: nicknameRef.current, telefono: telefonoRef.current, correo: correoRef.current })
         );
-        setFase("esperando");
+
+        // Si el servidor nos manda una ronda en curso (armada o corriendo),
+        // significa que nos estamos (re)conectando a mitad de partida -- por
+        // ejemplo, el jugador salio de la pagina justo cuando empezaba la
+        // subasta. En vez de mandarlo a "esperando" (donde se quedaria sin
+        // poder pujar aunque el servidor si lo siga contando), lo reanudamos
+        // directo en la pantalla que le corresponde, con sus taps y posicion
+        // reales ya sincronizados.
+        const rondaActual = msg.rondaActual as {
+          roundId: string;
+          propiedad: Property;
+          startAt: number;
+          duracionMs: number;
+          estado: "armed" | "running";
+          misTaps: number;
+          miPosicion: number;
+          lider: { nickname: string; taps: number } | null;
+        } | null;
+
+        if (rondaActual) {
+          clearFinTimeout();
+          setPropiedad(rondaActual.propiedad);
+          setStartAt(rondaActual.startAt);
+          setDuracionMs(rondaActual.duracionMs);
+          setRoundId(rondaActual.roundId);
+          roundIdRef.current = rondaActual.roundId;
+          seqRef.current = 0;
+          pendingTapsRef.current = 0;
+          tapTimestampsRef.current = [];
+          setMisTaps(rondaActual.misTaps);
+          setServidorTaps(rondaActual.misTaps);
+          setMiPosicion(rondaActual.miPosicion);
+          setLider(rondaActual.lider);
+          setCoins([]);
+          if (rondaActual.estado === "running") {
+            roundActiveRef.current = true;
+            setFase("corriendo");
+          } else {
+            roundActiveRef.current = false;
+            setFase("armado");
+          }
+        } else {
+          setFase("esperando");
+        }
         break;
       }
       case "round_armed": {

@@ -150,6 +150,32 @@ export class GameRoom {
     return player;
   }
 
+  /**
+   * Estado de la ronda en curso visto desde un jugador puntual. Se usa al
+   * (re)conectarse -- primera vez, reconexion automatica tras caida de wifi,
+   * o reapertura de la pagina con el resumeToken guardado -- para que el
+   * cliente pueda reanudar directo en la pantalla correcta (armada o
+   * corriendo, con sus taps y posicion reales) en vez de quedarse pegado en
+   * "esperando" mientras la ronda sigue corriendo sin que la vea.
+   */
+  getRondaActualParaJugador(playerId: string) {
+    const round = this.state.currentRound;
+    if (!round || (round.estado !== "armed" && round.estado !== "running")) return null;
+    const ranking = this.rankRound(round);
+    const positions = this.buildPositions(ranking);
+    const lider = ranking.length > 0 && ranking[0].taps > 0 ? { nickname: ranking[0].nickname, taps: ranking[0].taps } : null;
+    return {
+      roundId: round.roundId,
+      propiedad: round.propiedad,
+      startAt: round.startAt,
+      duracionMs: round.duracionMs,
+      estado: round.estado as "armed" | "running",
+      misTaps: round.counts.get(playerId) ?? 0,
+      miPosicion: positions.get(playerId) ?? ranking.length + 1,
+      lider,
+    };
+  }
+
   addScreen(socket: WebSocket) {
     this.state.screens.add(socket);
     this.broadcastLobby();

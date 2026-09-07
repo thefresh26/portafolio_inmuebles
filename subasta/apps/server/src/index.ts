@@ -70,6 +70,9 @@ wssPlayer.on("connection", (socket: WebSocket) => {
           resumeToken: player.resumeToken,
           estado: room.state.estado,
           valorPorTap: room.state.valorPorTap,
+          // Si hay una ronda armada o corriendo, se la mandamos de una vez para
+          // que el cliente reanude ahi mismo en vez de mostrar "esperando".
+          rondaActual: room.getRondaActualParaJugador(player.playerId),
         })
       );
       return;
