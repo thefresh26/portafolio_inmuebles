@@ -34,6 +34,49 @@ const SITE_IMAGES_BASE = "https://portafolio-inmuebles.onrender.com/images";
 const SUPABASE_URL = "https://vazzjcgcqyxechiwrqjv.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_XchKwzcsUTDcepEcaw_gqg_B6Q8CBQe";
 
+// Fecha/hora de la proxima ronda de subasta para el contador del panel
+// interno. No hay forma de saberla automaticamente (no existe un
+// calendario/agenda en el sistema) -- el equipo la actualiza aqui a mano
+// cada vez que se agenda la siguiente ronda. Formato ISO con offset de
+// Colombia (-05:00).
+const PROXIMA_SUBASTA_ISO = "2026-09-23T15:00:00-05:00";
+
+const MESES_ES = [
+  "enero", "febrero", "marzo", "abril", "mayo", "junio",
+  "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre",
+];
+
+function formatFechaLarga(iso) {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return `${d.getDate()} de ${MESES_ES[d.getMonth()]}`;
+}
+
+function countdownBannerHtml(nextItem) {
+  const sub = nextItem
+    ? `Se subasta <strong>${escapeHtml(nextItem.nombre)}</strong> en ${escapeHtml(nextItem.loc)} — no dejes pasar tu oportunidad.`
+    : "No dejes pasar tu oportunidad — el cierre de pujas es improrrogable.";
+  return `  <div class="countdown-wrap">
+    <div class="countdown-banner">
+      <div class="countdown-info">
+        <p class="countdown-date"><span class="countdown-dot"></span>${escapeHtml(formatFechaLarga(PROXIMA_SUBASTA_ISO))}</p>
+        <h2>Próxima ronda de subasta</h2>
+        <p class="countdown-sub">${sub}</p>
+      </div>
+      <div class="countdown-clock" data-target="${PROXIMA_SUBASTA_ISO}">
+        <div class="countdown-box"><span class="countdown-num" data-unit="dias">00</span><span class="countdown-label">Días</span></div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-box"><span class="countdown-num" data-unit="hrs">00</span><span class="countdown-label">Hrs</span></div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-box"><span class="countdown-num" data-unit="min">00</span><span class="countdown-label">Min</span></div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-box"><span class="countdown-num" data-unit="seg">00</span><span class="countdown-label">Seg</span></div>
+      </div>
+    </div>
+  </div>
+`;
+}
+
 function readSource() {
   if (!fs.existsSync(SRC_HTML)) {
     console.error("No encontre index.html en " + SRC_HTML);
@@ -322,6 +365,10 @@ const TEMPLATE_HEAD = `<!doctype html>
     .hero, .grid{ padding-left:16px; padding-right:16px; }
   }
 
+  @property --angle{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
+  @keyframes tileBorderSweep{ to{ --angle:360deg; } }
+  @keyframes glowSweep{ 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
+
   .hero{padding:40px 24px 8px; max-width:1200px; margin:0 auto;}
   .hero .eyebrow{
     color:var(--oro); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.16em; margin-bottom:8px;
@@ -336,6 +383,48 @@ const TEMPLATE_HEAD = `<!doctype html>
     animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) .24s both;
   }
 
+  /* --- Contador de la proxima ronda de subasta --- */
+  .countdown-wrap{ max-width:1200px; margin:0 auto; padding:8px 24px 0; }
+  .countdown-banner{
+    position:relative; border-radius:18px; overflow:hidden;
+    background:
+      radial-gradient(ellipse 420px 260px at 8% 0%, rgba(245,166,35,0.16) 0%, rgba(245,166,35,0) 60%),
+      radial-gradient(ellipse 480px 320px at 100% 100%, rgba(26,168,221,0.18) 0%, rgba(26,168,221,0) 60%),
+      linear-gradient(160deg, #123457 0%, #0b2a4a 55%, #0a2543 100%);
+    padding:26px 28px 28px;
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:20px;
+    animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) both;
+  }
+  .countdown-banner::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg, transparent, var(--azul), var(--oro), transparent);
+    background-size:200% 100%;
+    animation: glowSweep 3.6s ease-in-out infinite;
+  }
+  .countdown-info{ position:relative; z-index:1; max-width:440px; }
+  .countdown-date{
+    display:flex; align-items:center; gap:7px; color:var(--sello);
+    font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;
+  }
+  .countdown-dot{ width:7px; height:7px; border-radius:999px; background:var(--sello); animation:dotBlink 1.6s ease-in-out infinite; }
+  .countdown-info h2{ font-size:22px; font-weight:800; margin-bottom:8px; }
+  .countdown-sub{ color:rgba(234,241,251,0.6); font-size:13.5px; line-height:1.55; }
+  .countdown-sub strong{ color:var(--manila); }
+  .countdown-clock{ position:relative; z-index:1; display:flex; align-items:center; gap:8px; }
+  .countdown-box{
+    background:rgba(234,241,251,0.06); border:1px solid rgba(234,241,251,0.12);
+    border-radius:10px; padding:10px 14px; text-align:center; min-width:56px;
+  }
+  .countdown-num{ display:block; font-size:26px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .countdown-label{ display:block; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.45); margin-top:2px; }
+  .countdown-sep{ font-size:20px; font-weight:800; color:rgba(234,241,251,0.3); }
+  @media (max-width:480px){
+    .countdown-banner{ padding:20px; }
+    .countdown-clock{ width:100%; justify-content:space-between; }
+    .countdown-box{ min-width:0; flex:1; padding:8px 6px; }
+    .countdown-num{ font-size:20px; }
+  }
+
   .grid{
     max-width:1200px; margin:0 auto; padding:24px 24px 64px;
     display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:18px;
@@ -347,6 +436,16 @@ const TEMPLATE_HEAD = `<!doctype html>
     animation: fadeSlideUp .6s cubic-bezier(.22,1,.36,1) both;
     transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease;
     will-change: transform;
+  }
+  /* Borde que brilla breve y en movimiento (un arco que da la vuelta),
+     no un glow fuerte/constante. */
+  .tile::before{
+    content:""; position:absolute; inset:-1px; border-radius:17px; padding:1px;
+    background: conic-gradient(from var(--angle), transparent 0deg, transparent 268deg, rgba(26,168,221,0.95) 300deg, rgba(245,166,35,0.95) 328deg, transparent 358deg);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: tileBorderSweep 7.5s linear infinite; animation-delay: var(--glow-delay, 0ms);
+    pointer-events:none; z-index:1;
   }
   .tile:hover{
     transform: translateY(-8px) scale(1.015);
@@ -380,6 +479,8 @@ const TEMPLATE_HEAD = `<!doctype html>
   .nombre{font-weight:700; font-size:15.5px; margin-bottom:2px;}
   .highlight{font-size:12px; color:rgba(234,241,251,0.55); margin-bottom:8px; min-height:15px;}
   .row-bottom{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .price-block{ display:flex; flex-direction:column; }
+  .price-label{ font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.4); margin-bottom:1px; }
   .price{
     font-weight:800; color:var(--oro); font-size:15px;
     transition: text-shadow .3s ease;
@@ -462,6 +563,7 @@ const TEMPLATE_HEAD = `<!doctype html>
     <p>Elige el inmueble y toca "Subastar" para armarlo en la consola del presentador. Esta vista es solo para el equipo -- los clientes ven el portafolio público, sin este botón.</p>
   </div>
 
+<!-- COUNTDOWN_BANNER -->
   <div class="grid">
 `;
 
@@ -524,6 +626,30 @@ const TEMPLATE_TAIL = `  </div>
           });
         });
       }
+
+      function pad2(n) { return n < 10 ? "0" + n : "" + n; }
+      var clockEl = document.querySelector(".countdown-clock");
+      if (clockEl) {
+        var target = new Date(clockEl.getAttribute("data-target")).getTime();
+        var dEl = clockEl.querySelector('[data-unit="dias"]');
+        var hEl = clockEl.querySelector('[data-unit="hrs"]');
+        var mEl = clockEl.querySelector('[data-unit="min"]');
+        var sEl = clockEl.querySelector('[data-unit="seg"]');
+        var tick = function () {
+          var diff = Math.max(0, target - Date.now());
+          var segTotal = Math.floor(diff / 1000);
+          var dias = Math.floor(segTotal / 86400);
+          var hrs = Math.floor((segTotal % 86400) / 3600);
+          var min = Math.floor((segTotal % 3600) / 60);
+          var seg = segTotal % 60;
+          dEl.textContent = pad2(dias);
+          hEl.textContent = pad2(hrs);
+          mEl.textContent = pad2(min);
+          sEl.textContent = pad2(seg);
+        };
+        tick();
+        setInterval(tick, 1000);
+      }
     })();
   </script>
 
@@ -535,9 +661,10 @@ function tileHtml(item, index) {
   const col = index % 4;
   const row = Math.floor(index / 4);
   const delay = Math.min(col * 70 + row * 25, 480);
+  const glowDelay = -((index % 6) * 1250);
   const href = escapeHtml(buildSubastarHref(item));
   const img = `../images/${item.siteId}.${item.ext}`;
-  return `      <a class="tile" href="${href}" style="animation-delay:${delay}ms">
+  return `      <a class="tile" href="${href}" style="animation-delay:${delay}ms; --glow-delay:${glowDelay}ms">
         <img src="${escapeHtml(img)}" alt="${escapeHtml(item.nombre)}" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">${escapeHtml(item.codigoLabel)}</span>
@@ -546,7 +673,10 @@ function tileHtml(item, index) {
           <div class="nombre">${escapeHtml(item.nombre)}</div>
           <div class="highlight">${escapeHtml(item.highlight)}</div>
           <div class="row-bottom">
-            <span class="price">${escapeHtml(item.priceText)}</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">${escapeHtml(item.priceText)}</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
@@ -581,7 +711,8 @@ function main() {
   });
 
   const tiles = items.map((item, i) => tileHtml(item, i)).join("");
-  const out = TEMPLATE_HEAD + tiles + TEMPLATE_TAIL;
+  const head = TEMPLATE_HEAD.replace("<!-- COUNTDOWN_BANNER -->", countdownBannerHtml(items[0] || null));
+  const out = head + tiles + TEMPLATE_TAIL;
   fs.writeFileSync(OUT_HTML, out, "utf-8");
 
   console.log(`\nListo: ${items.length} inmuebles escritos en admin/index.html (${skipped} omitidas).`);

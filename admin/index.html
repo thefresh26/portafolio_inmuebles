@@ -139,6 +139,10 @@
     .hero, .grid{ padding-left:16px; padding-right:16px; }
   }
 
+  @property --angle{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
+  @keyframes tileBorderSweep{ to{ --angle:360deg; } }
+  @keyframes glowSweep{ 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
+
   .hero{padding:40px 24px 8px; max-width:1200px; margin:0 auto;}
   .hero .eyebrow{
     color:var(--oro); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.16em; margin-bottom:8px;
@@ -153,6 +157,48 @@
     animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) .24s both;
   }
 
+  /* --- Contador de la proxima ronda de subasta --- */
+  .countdown-wrap{ max-width:1200px; margin:0 auto; padding:8px 24px 0; }
+  .countdown-banner{
+    position:relative; border-radius:18px; overflow:hidden;
+    background:
+      radial-gradient(ellipse 420px 260px at 8% 0%, rgba(245,166,35,0.16) 0%, rgba(245,166,35,0) 60%),
+      radial-gradient(ellipse 480px 320px at 100% 100%, rgba(26,168,221,0.18) 0%, rgba(26,168,221,0) 60%),
+      linear-gradient(160deg, #123457 0%, #0b2a4a 55%, #0a2543 100%);
+    padding:26px 28px 28px;
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:20px;
+    animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) both;
+  }
+  .countdown-banner::before{
+    content:""; position:absolute; top:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg, transparent, var(--azul), var(--oro), transparent);
+    background-size:200% 100%;
+    animation: glowSweep 3.6s ease-in-out infinite;
+  }
+  .countdown-info{ position:relative; z-index:1; max-width:440px; }
+  .countdown-date{
+    display:flex; align-items:center; gap:7px; color:var(--sello);
+    font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;
+  }
+  .countdown-dot{ width:7px; height:7px; border-radius:999px; background:var(--sello); animation:dotBlink 1.6s ease-in-out infinite; }
+  .countdown-info h2{ font-size:22px; font-weight:800; margin-bottom:8px; }
+  .countdown-sub{ color:rgba(234,241,251,0.6); font-size:13.5px; line-height:1.55; }
+  .countdown-sub strong{ color:var(--manila); }
+  .countdown-clock{ position:relative; z-index:1; display:flex; align-items:center; gap:8px; }
+  .countdown-box{
+    background:rgba(234,241,251,0.06); border:1px solid rgba(234,241,251,0.12);
+    border-radius:10px; padding:10px 14px; text-align:center; min-width:56px;
+  }
+  .countdown-num{ display:block; font-size:26px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .countdown-label{ display:block; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.45); margin-top:2px; }
+  .countdown-sep{ font-size:20px; font-weight:800; color:rgba(234,241,251,0.3); }
+  @media (max-width:480px){
+    .countdown-banner{ padding:20px; }
+    .countdown-clock{ width:100%; justify-content:space-between; }
+    .countdown-box{ min-width:0; flex:1; padding:8px 6px; }
+    .countdown-num{ font-size:20px; }
+  }
+
   .grid{
     max-width:1200px; margin:0 auto; padding:24px 24px 64px;
     display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:18px;
@@ -164,6 +210,16 @@
     animation: fadeSlideUp .6s cubic-bezier(.22,1,.36,1) both;
     transition: transform .3s cubic-bezier(.22,1,.36,1), box-shadow .3s ease;
     will-change: transform;
+  }
+  /* Borde que brilla breve y en movimiento (un arco que da la vuelta),
+     no un glow fuerte/constante. */
+  .tile::before{
+    content:""; position:absolute; inset:-1px; border-radius:17px; padding:1px;
+    background: conic-gradient(from var(--angle), transparent 0deg, transparent 268deg, rgba(26,168,221,0.95) 300deg, rgba(245,166,35,0.95) 328deg, transparent 358deg);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    animation: tileBorderSweep 7.5s linear infinite; animation-delay: var(--glow-delay, 0ms);
+    pointer-events:none; z-index:1;
   }
   .tile:hover{
     transform: translateY(-8px) scale(1.015);
@@ -197,6 +253,8 @@
   .nombre{font-weight:700; font-size:15.5px; margin-bottom:2px;}
   .highlight{font-size:12px; color:rgba(234,241,251,0.55); margin-bottom:8px; min-height:15px;}
   .row-bottom{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;}
+  .price-block{ display:flex; flex-direction:column; }
+  .price-label{ font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.4); margin-bottom:1px; }
   .price{
     font-weight:800; color:var(--oro); font-size:15px;
     transition: text-shadow .3s ease;
@@ -279,8 +337,27 @@
     <p>Elige el inmueble y toca "Subastar" para armarlo en la consola del presentador. Esta vista es solo para el equipo -- los clientes ven el portafolio público, sin este botón.</p>
   </div>
 
+  <div class="countdown-wrap">
+    <div class="countdown-banner">
+      <div class="countdown-info">
+        <p class="countdown-date"><span class="countdown-dot"></span>23 de septiembre</p>
+        <h2>Próxima ronda de subasta</h2>
+        <p class="countdown-sub">Se subasta <strong>Lote con construcción</strong> en Bogotá D.C. — no dejes pasar tu oportunidad.</p>
+      </div>
+      <div class="countdown-clock" data-target="2026-09-23T15:00:00-05:00">
+        <div class="countdown-box"><span class="countdown-num" data-unit="dias">00</span><span class="countdown-label">Días</span></div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-box"><span class="countdown-num" data-unit="hrs">00</span><span class="countdown-label">Hrs</span></div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-box"><span class="countdown-num" data-unit="min">00</span><span class="countdown-label">Min</span></div>
+        <span class="countdown-sep">:</span>
+        <div class="countdown-box"><span class="countdown-num" data-unit="seg">00</span><span class="countdown-label">Seg</span></div>
+      </div>
+    </div>
+  </div>
+
   <div class="grid">
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=510&amp;nombre=Lote+con+construcci%C3%B3n&amp;ciudad=Bogot%C3%A1+D.C.&amp;area=5226.15&amp;avaluo=47332239056&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F510.jpg" style="animation-delay:0ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=510&amp;nombre=Lote+con+construcci%C3%B3n&amp;ciudad=Bogot%C3%A1+D.C.&amp;area=5226.15&amp;avaluo=47332239056&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F510.jpg" style="animation-delay:0ms; --glow-delay:0ms">
         <img src="../images/510.jpg" alt="Lote con construcción" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 50C-30092</span>
@@ -289,14 +366,17 @@
           <div class="nombre">Lote con construcción</div>
           <div class="highlight">El de mayor valor del portafolio</div>
           <div class="row-bottom">
-            <span class="price">$ 47.332.239.056</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 47.332.239.056</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=444&amp;nombre=Lote+con+construcci%C3%B3n&amp;ciudad=Medell%C3%ADn%2C+Antioquia&amp;area=8599.66&amp;avaluo=20245229044&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F444.jpg" style="animation-delay:70ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=444&amp;nombre=Lote+con+construcci%C3%B3n&amp;ciudad=Medell%C3%ADn%2C+Antioquia&amp;area=8599.66&amp;avaluo=20245229044&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F444.jpg" style="animation-delay:70ms; --glow-delay:-1250ms">
         <img src="../images/444.jpg" alt="Lote con construcción" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 001-160898</span>
@@ -305,14 +385,17 @@
           <div class="nombre">Lote con construcción</div>
           <div class="highlight">Sector La Chula</div>
           <div class="row-bottom">
-            <span class="price">$ 20.245.229.044</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 20.245.229.044</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=528&amp;nombre=Parqueadero+comercial&amp;ciudad=Suba+%C2%B7+Bogot%C3%A1+D.C.&amp;area=10800&amp;avaluo=32554727000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F528.jpg" style="animation-delay:140ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=528&amp;nombre=Parqueadero+comercial&amp;ciudad=Suba+%C2%B7+Bogot%C3%A1+D.C.&amp;area=10800&amp;avaluo=32554727000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F528.jpg" style="animation-delay:140ms; --glow-delay:-2500ms">
         <img src="../images/528.jpg" alt="Parqueadero comercial" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 50N-316804</span>
@@ -321,14 +404,17 @@
           <div class="nombre">Parqueadero comercial</div>
           <div class="highlight">Lote de 10.800 m²</div>
           <div class="row-bottom">
-            <span class="price">$ 32.554.727.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 32.554.727.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=135&amp;nombre=Edificaci%C3%B3n+para+hotel&amp;ciudad=Medell%C3%ADn%2C+Antioquia&amp;area=1923.12&amp;avaluo=13350515000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F135.jpg" style="animation-delay:210ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=135&amp;nombre=Edificaci%C3%B3n+para+hotel&amp;ciudad=Medell%C3%ADn%2C+Antioquia&amp;area=1923.12&amp;avaluo=13350515000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F135.jpg" style="animation-delay:210ms; --glow-delay:-3750ms">
         <img src="../images/135.jpg" alt="Edificación para hotel" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 001-1040680</span>
@@ -337,14 +423,17 @@
           <div class="nombre">Edificación para hotel</div>
           <div class="highlight">Sector Mall 10</div>
           <div class="row-bottom">
-            <span class="price">$ 13.350.515.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 13.350.515.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=4235&amp;nombre=Lote&amp;ciudad=Las+Vegas+%C2%B7+Cali%2C+Valle+del+Cauca&amp;area=11689.31&amp;avaluo=11971214829&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F4235.jpg" style="animation-delay:25ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=4235&amp;nombre=Lote&amp;ciudad=Las+Vegas+%C2%B7+Cali%2C+Valle+del+Cauca&amp;area=11689.31&amp;avaluo=11971214829&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F4235.jpg" style="animation-delay:25ms; --glow-delay:-5000ms">
         <img src="../images/4235.jpg" alt="Lote" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 370-247541</span>
@@ -353,14 +442,17 @@
           <div class="nombre">Lote</div>
           <div class="highlight">Lote de 11.689,31 m² en Cali</div>
           <div class="row-bottom">
-            <span class="price">$ 11.971.214.829</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 11.971.214.829</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=19&amp;nombre=Hotel+%2F+Motel&amp;ciudad=San+Agust%C3%ADn+%C2%B7+La+Estrella%2C+Antioquia&amp;area=14186.82&amp;avaluo=30051637115&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F19.jpg" style="animation-delay:95ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=19&amp;nombre=Hotel+%2F+Motel&amp;ciudad=San+Agust%C3%ADn+%C2%B7+La+Estrella%2C+Antioquia&amp;area=14186.82&amp;avaluo=30051637115&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F19.jpg" style="animation-delay:95ms; --glow-delay:-6250ms">
         <img src="../images/19.jpg" alt="Hotel / Motel" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 001-197443</span>
@@ -369,14 +461,17 @@
           <div class="nombre">Hotel / Motel</div>
           <div class="highlight">Motel La Estrella — 95 habitaciones</div>
           <div class="row-bottom">
-            <span class="price">$ 30.051.637.115</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 30.051.637.115</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=108&amp;nombre=Lotes&amp;ciudad=Altamira+%C2%B7+Cartagena%2C+Bol%C3%ADvar&amp;area=4300.87&amp;avaluo=200000000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F108.jpg" style="animation-delay:165ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=108&amp;nombre=Lotes&amp;ciudad=Altamira+%C2%B7+Cartagena%2C+Bol%C3%ADvar&amp;area=4300.87&amp;avaluo=200000000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F108.jpg" style="animation-delay:165ms; --glow-delay:0ms">
         <img src="../images/108.jpg" alt="Lotes" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 060-100108</span>
@@ -385,14 +480,17 @@
           <div class="nombre">Lotes</div>
           <div class="highlight">4.300,87 m² en Cartagena</div>
           <div class="row-bottom">
-            <span class="price">+ 200 MIL MILLONES</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">+ 200 MIL MILLONES</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=8267&amp;nombre=Lote&amp;ciudad=Rionegro%2C+Antioquia&amp;area=186229&amp;avaluo=24023541000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F8267.jpg" style="animation-delay:235ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=8267&amp;nombre=Lote&amp;ciudad=Rionegro%2C+Antioquia&amp;area=186229&amp;avaluo=24023541000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F8267.jpg" style="animation-delay:235ms; --glow-delay:-1250ms">
         <img src="../images/8267.jpg" alt="Lote" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 020-14105</span>
@@ -401,14 +499,17 @@
           <div class="nombre">Lote</div>
           <div class="highlight">186.229 m² en Rionegro</div>
           <div class="row-bottom">
-            <span class="price">$ 24.023.541.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 24.023.541.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=3486&amp;nombre=Lote+con+construcci%C3%B3n&amp;ciudad=Bello%2C+Antioquia&amp;area=968.55&amp;avaluo=23483696878&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F3486.jpg" style="animation-delay:50ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=3486&amp;nombre=Lote+con+construcci%C3%B3n&amp;ciudad=Bello%2C+Antioquia&amp;area=968.55&amp;avaluo=23483696878&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F3486.jpg" style="animation-delay:50ms; --glow-delay:-2500ms">
         <img src="../images/3486.jpg" alt="Lote con construcción" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 01N-8734</span>
@@ -417,14 +518,17 @@
           <div class="nombre">Lote con construcción</div>
           <div class="highlight">968,55 m² en Bello</div>
           <div class="row-bottom">
-            <span class="price">$ 23.483.696.878</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 23.483.696.878</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=5723&amp;nombre=Edificio&amp;ciudad=Bogot%C3%A1+D.C.&amp;area=11689.31&amp;avaluo=3547392018&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F5723.jpg" style="animation-delay:120ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=5723&amp;nombre=Edificio&amp;ciudad=Bogot%C3%A1+D.C.&amp;area=11689.31&amp;avaluo=3547392018&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F5723.jpg" style="animation-delay:120ms; --glow-delay:-3750ms">
         <img src="../images/5723.jpg" alt="Edificio" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 50C-338126</span>
@@ -433,14 +537,17 @@
           <div class="nombre">Edificio</div>
           <div class="highlight">Edificio en venta en Bogotá</div>
           <div class="row-bottom">
-            <span class="price">$ 3.547.392.018</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 3.547.392.018</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=491&amp;nombre=Casa&amp;ciudad=Medell%C3%ADn%2C+Antioquia&amp;area=729.61&amp;avaluo=2488792972&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F491.jpg" style="animation-delay:190ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=491&amp;nombre=Casa&amp;ciudad=Medell%C3%ADn%2C+Antioquia&amp;area=729.61&amp;avaluo=2488792972&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F491.jpg" style="animation-delay:190ms; --glow-delay:-5000ms">
         <img src="../images/491.jpg" alt="Casa" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 001-794653</span>
@@ -449,14 +556,17 @@
           <div class="nombre">Casa</div>
           <div class="highlight">La alternativa más accesible del listado</div>
           <div class="row-bottom">
-            <span class="price">$ 2.488.792.972</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 2.488.792.972</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=259&amp;nombre=Apartamento&amp;ciudad=Centro+Oriente+%C2%B7+Bogot%C3%A1+D.C.&amp;area=104.17&amp;avaluo=630176833&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F259.jpg" style="animation-delay:260ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=259&amp;nombre=Apartamento&amp;ciudad=Centro+Oriente+%C2%B7+Bogot%C3%A1+D.C.&amp;area=104.17&amp;avaluo=630176833&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F259.jpg" style="animation-delay:260ms; --glow-delay:-6250ms">
         <img src="../images/259.jpg" alt="Apartamento" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 50C-790912</span>
@@ -465,14 +575,17 @@
           <div class="nombre">Apartamento</div>
           <div class="highlight">104,17 m² en Bogotá D.C.</div>
           <div class="row-bottom">
-            <span class="price">$ 630.176.833</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 630.176.833</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=37879&amp;nombre=Casa&amp;ciudad=Sur+%C2%B7+Neiva%2C+Huila&amp;area=221.04&amp;avaluo=483834605&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F37879.png" style="animation-delay:75ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=37879&amp;nombre=Casa&amp;ciudad=Sur+%C2%B7+Neiva%2C+Huila&amp;area=221.04&amp;avaluo=483834605&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F37879.png" style="animation-delay:75ms; --glow-delay:0ms">
         <img src="../images/37879.png" alt="Casa" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 200-180041</span>
@@ -481,14 +594,17 @@
           <div class="nombre">Casa</div>
           <div class="highlight">221,04 m² en Neiva</div>
           <div class="row-bottom">
-            <span class="price">$ 483.834.605</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 483.834.605</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=20120&amp;nombre=Apartamento&amp;ciudad=Centro+Oriente+%C2%B7+San+Jos%C3%A9+de+C%C3%BAcuta%2C+Norte+de+Santander&amp;area=120&amp;avaluo=226993000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F20120.jpg" style="animation-delay:145ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=20120&amp;nombre=Apartamento&amp;ciudad=Centro+Oriente+%C2%B7+San+Jos%C3%A9+de+C%C3%BAcuta%2C+Norte+de+Santander&amp;area=120&amp;avaluo=226993000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F20120.jpg" style="animation-delay:145ms; --glow-delay:-1250ms">
         <img src="../images/20120.jpg" alt="Apartamento" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 260-283218</span>
@@ -497,14 +613,17 @@
           <div class="nombre">Apartamento</div>
           <div class="highlight">120 m² en Cúcuta</div>
           <div class="row-bottom">
-            <span class="price">$ 226.993.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 226.993.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=1068&amp;nombre=Locales+comerciales+en+centro+comercial&amp;ciudad=Centro+Oriente+%C2%B7+Bogot%C3%A1+D.C.&amp;area=7.53&amp;avaluo=49297000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F1068.png" style="animation-delay:215ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=1068&amp;nombre=Locales+comerciales+en+centro+comercial&amp;ciudad=Centro+Oriente+%C2%B7+Bogot%C3%A1+D.C.&amp;area=7.53&amp;avaluo=49297000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F1068.png" style="animation-delay:215ms; --glow-delay:-2500ms">
         <img src="../images/1068.png" alt="Locales comerciales en centro comercial" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">ID 1068</span>
@@ -513,14 +632,17 @@
           <div class="nombre">Locales comerciales en centro comercial</div>
           <div class="highlight">8 locales dentro del mismo CC — oferta conjunta</div>
           <div class="row-bottom">
-            <span class="price">$ 49.297.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 49.297.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=31&amp;nombre=Casa&amp;ciudad=Centro+Oriente+%C2%B7+Villavicencio%2C+Meta&amp;area=339&amp;avaluo=373249234&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F31.jpg" style="animation-delay:285ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=31&amp;nombre=Casa&amp;ciudad=Centro+Oriente+%C2%B7+Villavicencio%2C+Meta&amp;area=339&amp;avaluo=373249234&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F31.jpg" style="animation-delay:285ms; --glow-delay:-3750ms">
         <img src="../images/31.jpg" alt="Casa" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 230-4310</span>
@@ -529,14 +651,17 @@
           <div class="nombre">Casa</div>
           <div class="highlight">339 m² en Villavicencio</div>
           <div class="row-bottom">
-            <span class="price">$ 373.249.234</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 373.249.234</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=28356&amp;nombre=Apartamento&amp;ciudad=Caribe+%C2%B7+Cartagena+de+Indias%2C+Bol%C3%ADvar&amp;area=116&amp;avaluo=1068160072&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F28356.jpg" style="animation-delay:100ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=28356&amp;nombre=Apartamento&amp;ciudad=Caribe+%C2%B7+Cartagena+de+Indias%2C+Bol%C3%ADvar&amp;area=116&amp;avaluo=1068160072&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F28356.jpg" style="animation-delay:100ms; --glow-delay:-5000ms">
         <img src="../images/28356.jpg" alt="Apartamento" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">FMI 060-84329</span>
@@ -545,14 +670,17 @@
           <div class="nombre">Apartamento</div>
           <div class="highlight">116 m² en Cartagena de Indias</div>
           <div class="row-bottom">
-            <span class="price">$ 1.068.160.072</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 1.068.160.072</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=35059&amp;nombre=2+apartamentos+%E2%80%94+mismo+conjunto&amp;ciudad=Sur+%C2%B7+Ibagu%C3%A9%2C+Tolima&amp;area=56.62&amp;avaluo=187194452&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F35059.jpg" style="animation-delay:170ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=35059&amp;nombre=2+apartamentos+%E2%80%94+mismo+conjunto&amp;ciudad=Sur+%C2%B7+Ibagu%C3%A9%2C+Tolima&amp;area=56.62&amp;avaluo=187194452&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F35059.jpg" style="animation-delay:170ms; --glow-delay:-6250ms">
         <img src="../images/35059.jpg" alt="2 apartamentos — mismo conjunto" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">ID 35059</span>
@@ -561,14 +689,17 @@
           <div class="nombre">2 apartamentos — mismo conjunto</div>
           <div class="highlight">56,62 m² c/u — mismas medidas</div>
           <div class="row-bottom">
-            <span class="price">$ 187.194.452 c/u</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 187.194.452 c/u</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38423&amp;nombre=Lote&amp;ciudad=Galapa+%C2%B7+Galapa%2C+Atl%C3%A1ntico&amp;area=4350&amp;avaluo=4350000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38423.jpg" style="animation-delay:240ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38423&amp;nombre=Lote&amp;ciudad=Galapa+%C2%B7+Galapa%2C+Atl%C3%A1ntico&amp;area=4350&amp;avaluo=4350000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38423.jpg" style="animation-delay:240ms; --glow-delay:0ms">
         <img src="../images/38423.jpg" alt="Lote" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">Código 1610</span>
@@ -577,14 +708,17 @@
           <div class="nombre">Lote</div>
           <div class="highlight">4.350 m² en Galapa</div>
           <div class="row-bottom">
-            <span class="price">$ 4.350.000.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 4.350.000.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38426&amp;nombre=Casa&amp;ciudad=San+Jos%C3%A9+%C2%B7+Barranquilla%2C+Atl%C3%A1ntico&amp;area=163&amp;avaluo=445000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38426.jpg" style="animation-delay:310ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38426&amp;nombre=Casa&amp;ciudad=San+Jos%C3%A9+%C2%B7+Barranquilla%2C+Atl%C3%A1ntico&amp;area=163&amp;avaluo=445000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38426.jpg" style="animation-delay:310ms; --glow-delay:-1250ms">
         <img src="../images/38426.jpg" alt="Casa" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">Código 1612</span>
@@ -593,14 +727,17 @@
           <div class="nombre">Casa</div>
           <div class="highlight">163 m² en Barranquilla</div>
           <div class="row-bottom">
-            <span class="price">$ 445.000.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 445.000.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38186&amp;nombre=Finca&amp;ciudad=Bonda+%28Corregimiento%29+%C2%B7+Santa+Marta%2C+Magdalena&amp;area=65815&amp;avaluo=3900000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38186.jpg" style="animation-delay:125ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38186&amp;nombre=Finca&amp;ciudad=Bonda+%28Corregimiento%29+%C2%B7+Santa+Marta%2C+Magdalena&amp;area=65815&amp;avaluo=3900000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38186.jpg" style="animation-delay:125ms; --glow-delay:-2500ms">
         <img src="../images/38186.jpg" alt="Finca" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">Código 1601</span>
@@ -609,14 +746,17 @@
           <div class="nombre">Finca</div>
           <div class="highlight">65.815 m² en Santa Marta</div>
           <div class="row-bottom">
-            <span class="price">$ 3.900.000.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 3.900.000.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38126&amp;nombre=Lote&amp;ciudad=Terreno+en+Arroyo+Grande+%C2%B7+Santa+Catalina%2C+Bol%C3%ADvar&amp;area=520000&amp;avaluo=41600000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38126.jpg" style="animation-delay:195ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38126&amp;nombre=Lote&amp;ciudad=Terreno+en+Arroyo+Grande+%C2%B7+Santa+Catalina%2C+Bol%C3%ADvar&amp;area=520000&amp;avaluo=41600000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38126.jpg" style="animation-delay:195ms; --glow-delay:-3750ms">
         <img src="../images/38126.jpg" alt="Lote" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">Código 1523</span>
@@ -625,14 +765,17 @@
           <div class="nombre">Lote</div>
           <div class="highlight">520.000 m² en Santa Catalina</div>
           <div class="row-bottom">
-            <span class="price">$ 41.600.000.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 41.600.000.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38182&amp;nombre=Local+comercial&amp;ciudad=Alameda+170+%C2%B7+Usaqu%C3%A9n+%C2%B7+Bogot%C3%A1+D.C.&amp;area=194&amp;avaluo=2900000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38182.jpg" style="animation-delay:265ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38182&amp;nombre=Local+comercial&amp;ciudad=Alameda+170+%C2%B7+Usaqu%C3%A9n+%C2%B7+Bogot%C3%A1+D.C.&amp;area=194&amp;avaluo=2900000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38182.jpg" style="animation-delay:265ms; --glow-delay:-5000ms">
         <img src="../images/38182.jpg" alt="Local comercial" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">Código 1550</span>
@@ -641,14 +784,17 @@
           <div class="nombre">Local comercial</div>
           <div class="highlight">194 m² en Bogotá D.C.</div>
           <div class="row-bottom">
-            <span class="price">$ 2.900.000.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 2.900.000.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38147&amp;nombre=Casa-Local&amp;ciudad=Bellavista+%C2%B7+Barranquilla%2C+Atl%C3%A1ntico&amp;area=490&amp;avaluo=2000000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38147.jpg" style="animation-delay:335ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38147&amp;nombre=Casa-Local&amp;ciudad=Bellavista+%C2%B7+Barranquilla%2C+Atl%C3%A1ntico&amp;area=490&amp;avaluo=2000000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38147.jpg" style="animation-delay:335ms; --glow-delay:-6250ms">
         <img src="../images/38147.jpg" alt="Casa-Local" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">Código 1546</span>
@@ -657,14 +803,17 @@
           <div class="nombre">Casa-Local</div>
           <div class="highlight">490 m² en Barranquilla</div>
           <div class="row-bottom">
-            <span class="price">$ 2.000.000.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 2.000.000.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38123&amp;nombre=Finca&amp;ciudad=V%C3%ADa+Minca+%C2%B7+Santa+Marta%2C+Magdalena&amp;area=5730&amp;avaluo=700000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38123.jpg" style="animation-delay:150ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38123&amp;nombre=Finca&amp;ciudad=V%C3%ADa+Minca+%C2%B7+Santa+Marta%2C+Magdalena&amp;area=5730&amp;avaluo=700000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38123.jpg" style="animation-delay:150ms; --glow-delay:0ms">
         <img src="../images/38123.jpg" alt="Finca" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">Código 1461</span>
@@ -673,14 +822,17 @@
           <div class="nombre">Finca</div>
           <div class="highlight">5.730 m² en Santa Marta</div>
           <div class="row-bottom">
-            <span class="price">$ 700.000.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 700.000.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38130&amp;nombre=Finca&amp;ciudad=Vereda+El+Resguardo+%C2%B7+Fusagasug%C3%A1%2C+Cundinamarca&amp;area=7020&amp;avaluo=800000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38130.jpg" style="animation-delay:220ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38130&amp;nombre=Finca&amp;ciudad=Vereda+El+Resguardo+%C2%B7+Fusagasug%C3%A1%2C+Cundinamarca&amp;area=7020&amp;avaluo=800000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38130.jpg" style="animation-delay:220ms; --glow-delay:-1250ms">
         <img src="../images/38130.jpg" alt="Finca" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">Código 1525</span>
@@ -689,14 +841,17 @@
           <div class="nombre">Finca</div>
           <div class="highlight">7.020 m² en Fusagasugá</div>
           <div class="row-bottom">
-            <span class="price">$ 800.000.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 800.000.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38122&amp;nombre=Lote&amp;ciudad=Salgar+%C2%B7+Puerto+Colombia%2C+Atl%C3%A1ntico&amp;area=400&amp;avaluo=139500000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38122.jpg" style="animation-delay:290ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38122&amp;nombre=Lote&amp;ciudad=Salgar+%C2%B7+Puerto+Colombia%2C+Atl%C3%A1ntico&amp;area=400&amp;avaluo=139500000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38122.jpg" style="animation-delay:290ms; --glow-delay:-2500ms">
         <img src="../images/38122.jpg" alt="Lote" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">Código 1460</span>
@@ -705,14 +860,17 @@
           <div class="nombre">Lote</div>
           <div class="highlight">400 m² en Puerto Colombia</div>
           <div class="row-bottom">
-            <span class="price">$ 139.500.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 139.500.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </div>
         </div>
       </a>
-      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38133&amp;nombre=Apartamento&amp;ciudad=San+Francisco+%C2%B7+Barranquilla%2C+Atl%C3%A1ntico&amp;area=54&amp;avaluo=285000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38133.jpg" style="animation-delay:360ms">
+      <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38133&amp;nombre=Apartamento&amp;ciudad=San+Francisco+%C2%B7+Barranquilla%2C+Atl%C3%A1ntico&amp;area=54&amp;avaluo=285000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38133.jpg" style="animation-delay:360ms; --glow-delay:-3750ms">
         <img src="../images/38133.jpg" alt="Apartamento" loading="lazy" />
         <div class="scrim"></div>
         <span class="fmi-badge">Código 1528</span>
@@ -721,7 +879,10 @@
           <div class="nombre">Apartamento</div>
           <div class="highlight">54 m² en Barranquilla</div>
           <div class="row-bottom">
-            <span class="price">$ 285.000.000</span>
+            <div class="price-block">
+              <span class="price-label">Subasta desde</span>
+              <span class="price">$ 285.000.000</span>
+            </div>
             <span class="cta">Subastar
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
@@ -786,6 +947,30 @@
             showLogin();
           });
         });
+      }
+
+      function pad2(n) { return n < 10 ? "0" + n : "" + n; }
+      var clockEl = document.querySelector(".countdown-clock");
+      if (clockEl) {
+        var target = new Date(clockEl.getAttribute("data-target")).getTime();
+        var dEl = clockEl.querySelector('[data-unit="dias"]');
+        var hEl = clockEl.querySelector('[data-unit="hrs"]');
+        var mEl = clockEl.querySelector('[data-unit="min"]');
+        var sEl = clockEl.querySelector('[data-unit="seg"]');
+        var tick = function () {
+          var diff = Math.max(0, target - Date.now());
+          var segTotal = Math.floor(diff / 1000);
+          var dias = Math.floor(segTotal / 86400);
+          var hrs = Math.floor((segTotal % 86400) / 3600);
+          var min = Math.floor((segTotal % 3600) / 60);
+          var seg = segTotal % 60;
+          dEl.textContent = pad2(dias);
+          hEl.textContent = pad2(hrs);
+          mEl.textContent = pad2(min);
+          sEl.textContent = pad2(seg);
+        };
+        tick();
+        setInterval(tick, 1000);
       }
     })();
   </script>

@@ -235,8 +235,9 @@ body,
   animation-delay: var(--confetti-delay, 0ms);
 }
 
-/* Brillo dorado pulsante alrededor del nombre del ganador. Finito (3
-   pulsos) para no quedar como movimiento indefinido en pantalla. */
+/* Brillo dorado pulsante alrededor del nombre del ganador. En loop
+   mientras la pantalla de celebracion siga en cartel (no se corta a los
+   3 pulsos), para que la sensacion de fiesta se sostenga en el tiempo. */
 @keyframes winner-glow-pulse {
   0%,
   100% {
@@ -250,7 +251,7 @@ body,
 }
 
 .winner-glow {
-  animation: winner-glow-pulse 1s ease-in-out 3;
+  animation: winner-glow-pulse 1.6s ease-in-out infinite;
 }
 
 /* Sacudida sutil del contador de taps cuando el jugador tapea muy rápido. */
@@ -288,6 +289,82 @@ body,
   animation: valor-pop 200ms ease-out;
 }
 
+/* Monedas flotando de fondo, sutiles, en la pantalla de espera del
+   jugador -- decoracion continua para que no se sienta una pantalla
+   muerta mientras no hay ronda armada. */
+@keyframes coin-drift {
+  0%,
+  100% {
+    transform: translateY(16px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-24px) rotate(10deg);
+  }
+}
+
+.coin-drift {
+  animation: coin-drift 9s ease-in-out infinite;
+}
+
+/* Anillo que se expande y se desvanece, en loop, detras del icono de la
+   pantalla de espera del jugador. */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.7);
+    opacity: 0;
+  }
+}
+
+.pulse-ring {
+  animation: pulse-ring 2.6s ease-out infinite;
+}
+
+/* Monedas que suben por la barra de puja de cada jugador, en loop, en
+   /screen -- feedback continuo de que se sigue pujando. */
+@keyframes coin-rise {
+  0% {
+    bottom: 0;
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    bottom: 100%;
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+.coin-rise {
+  position: absolute;
+  left: 50%;
+  animation: coin-rise 1.7s ease-out infinite;
+}
+
+/* Resplandor calido y pulsante detras de la foto del inmueble en /screen
+   mientras se puja, en loop continuo. */
+@keyframes foto-glow-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.06);
+  }
+}
+
+.foto-glow-pulse {
+  animation: foto-glow-pulse 1.8s ease-in-out infinite;
+}
+
 /* Entrada del trofeo en la pantalla de proyección al adjudicar. */
 @keyframes trophy-bounce {
   0% {
@@ -305,7 +382,21 @@ body,
 }
 
 .trophy-bounce {
-  animation: trophy-bounce 550ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation:
+    trophy-bounce 550ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    trophy-float 2.4s ease-in-out 550ms infinite;
+}
+
+/* Flotecito suave y continuo del trofeo, arranca justo despues de la
+   entrada (trophy-bounce) y se queda ahi mientras dure la celebracion. */
+@keyframes trophy-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
 }
 
 /* Respeta "reducir movimiento" del sistema operativo: neutraliza toda

@@ -492,8 +492,50 @@ export default function Play() {
   if (fase === "esperando") {
     return (
       <Centered>
-        <p className="font-display text-xl">Estás dentro, {nickname}.</p>
-        <p className="opacity-70 mt-2">Esperando a que el presentador arme la siguiente ronda…</p>
+        <div className="relative flex flex-col items-center">
+          <span className="coin-drift absolute text-xl opacity-[0.16] pointer-events-none" style={{ left: "-64px", top: "-6px" }} aria-hidden="true">
+            🪙
+          </span>
+          <span className="coin-drift absolute text-xl opacity-[0.16] pointer-events-none" style={{ right: "-70px", top: "14px", animationDelay: "2s" }} aria-hidden="true">
+            🪙
+          </span>
+          <span className="coin-drift absolute text-lg opacity-[0.14] pointer-events-none" style={{ left: "-30px", bottom: "-28px", animationDelay: "4s" }} aria-hidden="true">
+            🪙
+          </span>
+
+          <span className="pulse-ring absolute w-44 h-44 rounded-full border border-azul/30 pointer-events-none" aria-hidden="true" />
+          <span className="pulse-ring absolute w-44 h-44 rounded-full border border-azul/30 pointer-events-none" style={{ animationDelay: "1.3s" }} aria-hidden="true" />
+
+          <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-azul/25 to-navy3/50 border border-manila/20 flex items-center justify-center text-3xl">
+            👋
+          </div>
+        </div>
+
+        <p className="font-display text-xl mt-4">Estás dentro, {nickname}.</p>
+        <p className="opacity-70 mt-2 mb-6">Esperando a que el presentador arme la siguiente ronda…</p>
+
+        <div className="w-full max-w-xs text-left bg-manila/[0.06] border border-manila/10 rounded-2xl p-5">
+          <h2 className="text-[13px] font-display font-bold uppercase tracking-wide text-oro mb-3.5">¿Cómo funciona?</h2>
+          <div className="flex items-start gap-3 mb-3.5">
+            <span className="w-6 h-6 rounded-full bg-azul/20 border border-azul/50 text-azul text-xs font-bold flex items-center justify-center shrink-0">1</span>
+            <p className="text-[13px] leading-relaxed opacity-85">
+              Cuando arme la ronda verás el <strong className="text-manila opacity-100">inmueble</strong> y una cuenta regresiva para prepararte.
+            </p>
+          </div>
+          <div className="flex items-start gap-3 mb-3.5">
+            <span className="w-6 h-6 rounded-full bg-azul/20 border border-azul/50 text-azul text-xs font-bold flex items-center justify-center shrink-0">2</span>
+            <p className="text-[13px] leading-relaxed opacity-85">
+              Toca el botón <strong className="text-manila opacity-100">¡PUJA!</strong> lo más rápido que puedas — cada toque sube tu puja.
+            </p>
+          </div>
+          <div className="flex items-start gap-3">
+            <span className="w-6 h-6 rounded-full bg-azul/20 border border-azul/50 text-azul text-xs font-bold flex items-center justify-center shrink-0">3</span>
+            <p className="text-[13px] leading-relaxed opacity-85">
+              Al cerrarse el tiempo, <strong className="text-manila opacity-100">gana quien más haya pujado</strong>.
+            </p>
+          </div>
+        </div>
+
         <button type="button" className="mt-8 px-4 py-2 rounded-full bg-sello/80 text-manila text-sm font-display hover:bg-sello transition-colors active:scale-95" onClick={salirDelJuego}>
           Salir
         </button>

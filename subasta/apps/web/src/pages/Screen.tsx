@@ -192,20 +192,39 @@ export default function Screen() {
           {propiedad.ciudad} · {propiedad.areaM2} m² · avalúo {propiedad.avaluo.toLocaleString("es-CO")} COP
         </p>
 
-        <div className="mt-6 flex flex-col items-center">
-          {propiedad.imagenUrl ? (
-            <img
-              src={propiedad.imagenUrl}
-              alt={propiedad.nombre}
-              className="w-64 h-40 object-cover rounded-xl border-4 border-oro/40 shadow-xl"
-            />
-          ) : (
-            <div className="w-64 h-40 rounded-xl bg-manila/10 border-4 border-oro/40 flex items-center justify-center">
-              <BrandMark className="w-14 h-14 opacity-40" />
+        {(() => {
+          // A medida que la ronda avanza (se acaba el tiempo), la foto se
+          // va encogiendo un poco -- da la sensacion de que las barras de
+          // puja la van "alcanzando" hasta que se define el ganador.
+          const progresoRonda = duracionMs > 0 ? Math.min(1, Math.max(0, 1 - remainingMs / duracionMs)) : 0;
+          const fotoScale = 1 - progresoRonda * 0.34;
+          return (
+            <div className="mt-6 flex flex-col items-center">
+              <div
+                className="relative"
+                style={{ transform: `scale(${fotoScale})`, transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1)" }}
+              >
+                <div
+                  className="foto-glow-pulse absolute -inset-5 rounded-[32px] pointer-events-none"
+                  style={{ background: "radial-gradient(ellipse at center, rgba(245,166,35,0.35), transparent 70%)", filter: "blur(6px)" }}
+                  aria-hidden="true"
+                />
+                {propiedad.imagenUrl ? (
+                  <img
+                    src={propiedad.imagenUrl}
+                    alt={propiedad.nombre}
+                    className="relative w-[820px] max-w-[70vw] h-[512px] max-h-[46vw] object-cover rounded-[22px] border-[7px] border-oro/70 shadow-2xl"
+                  />
+                ) : (
+                  <div className="relative w-[820px] max-w-[70vw] h-[512px] max-h-[46vw] rounded-[22px] bg-manila/10 border-[7px] border-oro/70 flex items-center justify-center">
+                    <BrandMark className="w-24 h-24 opacity-40" />
+                  </div>
+                )}
+              </div>
+              <p className="text-sm opacity-70 mt-3">¡Llega hasta aquí!</p>
             </div>
-          )}
-          <p className="text-sm opacity-70 mt-2">¡Llega hasta aquí!</p>
-        </div>
+          );
+        })()}
 
         <div
           ref={top5FlipRef}
@@ -219,10 +238,15 @@ export default function Screen() {
               const cercaDeLaMeta = pct >= 90;
               return (
                 <div key={p.playerId} data-flip-key={p.playerId} className="flex flex-col items-center w-16 shrink-0">
-                  <div className="w-16 h-64 flex flex-col items-center justify-end">
+                  <div className="relative w-16 h-64 flex flex-col items-center justify-end">
                     {esLider && (
                       <span className="text-xl mb-1" aria-hidden="true">
                         🏆
+                      </span>
+                    )}
+                    {p.valorPujado > 0 && (
+                      <span className="coin-rise text-sm" style={{ animationDelay: `${i * 0.45}s` }} aria-hidden="true">
+                        🪙
                       </span>
                     )}
                     <div
