@@ -646,6 +646,7 @@ export class GameRoom {
       top: ranking.slice(0, 10),
       tapsTotales,
       valorActual: tapsTotales * this.state.valorPorTap,
+      pujaActual: this.calcularPujaActual(round.propiedad.avaluo, tapsTotales),
     };
     for (const h of this.state.hosts) safeSend(h, hostPayload);
   }

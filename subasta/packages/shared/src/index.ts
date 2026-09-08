@@ -313,6 +313,8 @@ export const HostTickMsg = z.object({
   top: z.array(PlayerSummarySchema),
   tapsTotales: z.number().int().nonnegative(),
   valorActual: z.number().nonnegative(),
+  // Puja actual del inmueble en subasta (arranca en el avaluo), igual que en la pantalla proyector.
+  pujaActual: z.number().nonnegative(),
 });
 
 export const ServerToHostMsg = z.discriminatedUnion("t", [HostStateMsg, AdminCreatedMsg, HostTickMsg, ErrorMsg]);

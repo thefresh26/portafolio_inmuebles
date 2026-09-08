@@ -1,299 +1,42 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import type { Property } from "@subasta/shared";
 import { useSocket } from "../lib/useSocket.js";
 import { wsUrl } from "../lib/wsUrl.js";
-import { useFlip } from "../lib/useFlip.js";
-import { usePrefersReducedMotion } from "../lib/useReducedMotion.js";
 import BrandMark from "../components/BrandMark.js";
-import BarraTiempo from "../components/BarraTiempo.js";
 
 const WS_URL = wsUrl("/ws/screen");
 
-type PlayerSummary = { playerId: string; nickname: string; taps: number; valorPujado: number };
-type Portafolio = { playerId: string; nickname: string; inmueblesAdjudicados: number; valorTotal: number; titulo?: string };
-
-type PiezaConfeti = { id: number; left: number; delay: number; duracion: number; rot: number; color: string };
-
-const CONFETTI_COLORES = ["bg-oro", "bg-azul", "bg-esmeralda", "bg-manila"];
-
-function generarConfeti(cantidad: number): PiezaConfeti[] {
-  return Array.from({ length: cantidad }, (_, i) => ({
-    id: i,
-    left: Math.random() * 100,
-    delay: Math.random() * 700,
-    duracion: 2200 + Math.random() * 1400,
-    rot: Math.random() * 360,
-    color: CONFETTI_COLORES[i % CONFETTI_COLORES.length],
-  }));
-}
-
+// Pantalla proyector: SOLO muestra el código QR de entrada y cuántos
+// jugadores se han registrado. Todo lo demás de la ronda (puja actual,
+// ranking en vivo, ganador) vive ahora en la consola del presentador
+// (Host), que es la pantalla principal para seguir la subasta.
 export default function Screen() {
-  const [pin, setPin] = useState("----");
   const [jugadores, setJugadores] = useState<{ playerId: string; nickname: string }[]>([]);
-  const [propiedad, setPropiedad] = useState<Property | null>(null);
-  const [remainingMs, setRemainingMs] = useState(0);
-  const [duracionMs, setDuracionMs] = useState(20_000);
-  const [top5, setTop5] = useState<PlayerSummary[]>([]);
-  const [tapsTotales, setTapsTotales] = useState(0);
-  const [pujaActual, setPujaActual] = useState(0);
-  const [sello, setSello] = useState<{ ganador: string; valorFinal: number } | null>(null);
-  const [podio, setPodio] = useState<Portafolio[] | null>(null);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
-  const [confetti, setConfetti] = useState<PiezaConfeti[]>([]);
 
   const onMessage = useCallback((data: unknown) => {
     const msg = data as Record<string, unknown>;
-    switch (msg.t) {
-      case "lobby":
-        setPin(msg.pin as string);
-        setJugadores(msg.jugadores as { playerId: string; nickname: string }[]);
-        setQrUrl(msg.qrUrl as string);
-        break;
-      case "round_armed":
-        setPropiedad(msg.propiedad as Property);
-        setDuracionMs(msg.duracionMs as number);
-        setPujaActual((msg.propiedad as Property).avaluo);
-        setSello(null);
-        setTop5([]);
-        break;
-      case "tick":
-        setRemainingMs(msg.remainingMs as number);
-        setTop5(msg.top5 as PlayerSummary[]);
-        setTapsTotales(msg.tapsTotales as number);
-        setPujaActual(msg.pujaActual as number);
-        break;
-      case "round_end":
-        setSello(
-          (msg.ganador as { nickname: string; valorFinal: number } | null)
-            ? { ganador: (msg.ganador as { nickname: string }).nickname, valorFinal: msg.valorFinal as number }
-            : null
-        );
-        setTop5(msg.top5 as PlayerSummary[]);
-        setPujaActual(msg.pujaFinal as number);
-        break;
-      case "podium":
-        setPodio(msg.portafolios as Portafolio[]);
-        break;
+    if (msg.t === "lobby") {
+      setJugadores(msg.jugadores as { playerId: string; nickname: string }[]);
+      setQrUrl(msg.qrUrl as string);
     }
   }, []);
 
   useSocket(WS_URL, onMessage);
 
-  const top5FlipRef = useFlip(top5.map((p) => p.playerId));
-  const reducedMotion = usePrefersReducedMotion();
+  const joinUrl = qrUrl ? `${window.location.origin}${qrUrl}` : null;
 
-  // Lanza una tanda de confeti apenas se adjudica, y sigue relanzando una
-  // tanda nueva cada pocos segundos mientras esta pantalla de resultado
-  // siga en cartel (si no, una sola tanda de ~4s se ve y despues la
-  // pantalla queda estatica el resto del tiempo que dure la celebracion).
-  useEffect(() => {
-    if (!sello) return;
-    setConfetti(generarConfeti(36));
-    const id = window.setInterval(() => setConfetti(generarConfeti(36)), 4000);
-    return () => window.clearInterval(id);
-  }, [sello]);
-
-  // Detecta, comparando contra el valor anterior de cada jugador (guardado
-  // en un ref), a quién le subió la puja desde el último tick, para
-  // dispararle el pop solo a esos valores (no a todos en cada render).
-  const valoresPreviosRef = useRef<Record<string, number>>({});
-  const [popGen, setPopGen] = useState<Record<string, number>>({});
-  useEffect(() => {
-    const anteriores = valoresPreviosRef.current;
-    const subieron: Record<string, number> = {};
-    for (const p of top5) {
-      if (anteriores[p.playerId] !== undefined && p.valorPujado > anteriores[p.playerId]) {
-        subieron[p.playerId] = (popGen[p.playerId] ?? 0) + 1;
-      }
-    }
-    valoresPreviosRef.current = Object.fromEntries(top5.map((p) => [p.playerId, p.valorPujado]));
-    if (Object.keys(subieron).length > 0) {
-      setPopGen((g) => ({ ...g, ...subieron }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [top5]);
-
-  if (podio) {
-    return (
-      <FullScreen>
-        <h1 className="font-display text-4xl mb-8">Podio final</h1>
-        <div className="flex gap-6">
-          {podio.slice(0, 3).map((p, i) => (
-            <div key={p.playerId} className="bg-manila text-archivo rounded-xl p-6 w-64 text-center">
-              <p className="text-oro font-mono text-sm">#{i + 1}</p>
-              <p className="font-display text-xl mt-2">{p.nickname}</p>
-              <p className="text-sm opacity-70 mt-1">{p.titulo}</p>
-              <p className="font-mono tabular mt-3">
-                {p.inmueblesAdjudicados} activos · {p.valorTotal.toLocaleString("es-CO")} COP
-              </p>
-            </div>
-          ))}
-        </div>
-      </FullScreen>
-    );
-  }
-
-  if (!propiedad) {
-    const joinUrl = qrUrl ? `${window.location.origin}${qrUrl}` : null;
-    return (
-      <FullScreen>
-        <BrandMark className="w-16 h-16 mb-6" />
-        {joinUrl ? (
-          <div className="bg-manila p-6 rounded-xl mb-6">
-            <QRCodeSVG value={joinUrl} size={340} />
-          </div>
-        ) : null}
-        <p className="opacity-70 mb-8">Escanea el código QR para participar</p>
-        <p className="opacity-50">{jugadores.length} jugador(es) conectado(s)</p>
-      </FullScreen>
-    );
-  }
-
-  if (sello) {
-    return (
-      <FullScreen>
-        {!reducedMotion && (
-          <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none" aria-hidden="true">
-            {confetti.map((p) => (
-              <span
-                key={p.id}
-                className={`confetti-piece absolute top-0 w-2 h-3 rounded-sm ${p.color}`}
-                style={
-                  {
-                    left: `${p.left}%`,
-                    "--confetti-duration": `${p.duracion}ms`,
-                    "--confetti-delay": `${p.delay}ms`,
-                    "--confetti-rot": `${p.rot}deg`,
-                  } as React.CSSProperties
-                }
-              />
-            ))}
-          </div>
-        )}
-        <div className="relative z-10 text-center scale-in-overshoot">
-          <p className={`text-7xl ${!reducedMotion ? "trophy-bounce" : ""}`} aria-hidden="true">
-            🏆
-          </p>
-          <p className={`font-display text-5xl text-oro mt-4 ${!reducedMotion ? "winner-glow" : ""}`}>
-            ¡Ha ganado {sello.ganador}!
-          </p>
-          <p className="font-mono tabular text-2xl mt-3">{sello.valorFinal.toLocaleString("es-CO")} COP</p>
-        </div>
-      </FullScreen>
-    );
-  }
-
-  // Ronda en vivo: la foto queda fija arriba como "meta" y las barras
-  // verticales de puja crecen hacia ella; tiempo y taps van debajo.
-  return (
-    <div className="min-h-screen bg-escenario text-manila font-body flex items-center justify-center p-6 lg:p-10">
-      <FullscreenButton />
-      <div className="w-full max-w-3xl flex flex-col items-center text-center">
-        <p className="font-mono text-sm uppercase opacity-70">{propiedad.matriculaInmobiliaria}</p>
-        <h2 className="font-display text-3xl lg:text-5xl mt-1">{propiedad.nombre}</h2>
-        <p className="opacity-70 text-base lg:text-lg mt-2">
-          {propiedad.ciudad} · {propiedad.areaM2} m²
-        </p>
-        <div className="mt-3">
-          <p className="font-mono text-xs uppercase tracking-widest opacity-60">Puja actual</p>
-          <p
-            key={pujaActual}
-            className="font-display text-4xl lg:text-6xl text-oro puja-pop tabular"
-          >
-            $ {Math.round(pujaActual).toLocaleString("es-CO")} COP
-          </p>
-        </div>
-
-        {(() => {
-          // A medida que la ronda avanza (se acaba el tiempo), la foto se
-          // va encogiendo un poco -- da la sensacion de que las barras de
-          // puja la van "alcanzando" hasta que se define el ganador.
-          const progresoRonda = duracionMs > 0 ? Math.min(1, Math.max(0, 1 - remainingMs / duracionMs)) : 0;
-          const fotoScale = 1 - progresoRonda * 0.34;
-          return (
-            <div className="mt-6 flex flex-col items-center">
-              <div
-                className="relative"
-                style={{ transform: `scale(${fotoScale})`, transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1)" }}
-              >
-                <div
-                  className="foto-glow-pulse absolute -inset-5 rounded-[32px] pointer-events-none"
-                  style={{ background: "radial-gradient(ellipse at center, rgba(245,166,35,0.35), transparent 70%)", filter: "blur(6px)" }}
-                  aria-hidden="true"
-                />
-                {propiedad.imagenUrl ? (
-                  <img
-                    src={propiedad.imagenUrl}
-                    alt={propiedad.nombre}
-                    className="relative w-[820px] max-w-[70vw] h-[512px] max-h-[46vw] object-cover rounded-[22px] border-[7px] border-oro/70 shadow-2xl"
-                  />
-                ) : (
-                  <div className="relative w-[820px] max-w-[70vw] h-[512px] max-h-[46vw] rounded-[22px] bg-manila/10 border-[7px] border-oro/70 flex items-center justify-center">
-                    <BrandMark className="w-24 h-24 opacity-40" />
-                  </div>
-                )}
-              </div>
-              <p className="text-sm opacity-70 mt-3">¡Llega hasta aquí!</p>
-            </div>
-          );
-        })()}
-
-        <div
-          ref={top5FlipRef}
-          className="mt-6 flex items-end justify-center gap-4 bg-gradient-to-b from-navy3/40 to-archivo/40 backdrop-blur-sm rounded-xl border border-manila/10 shadow-lg shadow-black/20 p-6"
-        >
-          {(() => {
-            const valorMaximo = Math.max(...top5.map((p) => p.valorPujado), 1);
-            return top5.map((p, i) => {
-              const pct = (p.valorPujado / valorMaximo) * 100;
-              const esLider = i === 0;
-              const cercaDeLaMeta = pct >= 90;
-              return (
-                <div key={p.playerId} data-flip-key={p.playerId} className="flex flex-col items-center w-16 shrink-0">
-                  <div className="relative w-16 h-64 flex flex-col items-center justify-end">
-                    {esLider && (
-                      <span className="text-xl mb-1" aria-hidden="true">
-                        🏆
-                      </span>
-                    )}
-                    {p.valorPujado > 0 && (
-                      <span className="coin-rise text-sm" style={{ animationDelay: `${i * 0.45}s` }} aria-hidden="true">
-                        🪙
-                      </span>
-                    )}
-                    <div
-                      className={`w-16 rounded-t-lg bg-azul/70 transition-all duration-300 ease-out ${
-                        esLider ? "border-2 border-oro" : ""
-                      } ${cercaDeLaMeta ? "shadow-[0_0_20px_rgba(245,168,0,0.4)]" : ""}`}
-                      style={{ height: `${pct}%` }}
-                    />
-                  </div>
-                  <span className="text-xs lg:text-sm mt-2 w-16 truncate text-center" title={p.nickname}>
-                    {p.nickname}
-                  </span>
-                  <span key={popGen[p.playerId] ?? 0} className="valor-pop font-mono tabular text-xs mt-0.5">
-                    {p.valorPujado.toLocaleString("es-CO")} COP
-                  </span>
-                </div>
-              );
-            });
-          })()}
-        </div>
-
-        <p className="font-mono tabular text-4xl lg:text-6xl mt-6">{Math.ceil(remainingMs / 1000)}s</p>
-        <BarraTiempo remainingMs={remainingMs} duracionMs={duracionMs} className="mt-4 w-80" />
-        <p className="opacity-60 mt-2">{tapsTotales} taps totales</p>
-      </div>
-    </div>
-  );
-}
-
-function FullScreen({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center text-center bg-escenario text-manila font-body">
       <FullscreenButton />
-      {children}
+      <BrandMark className="w-16 h-16 mb-6" />
+      {joinUrl ? (
+        <div className="bg-manila p-6 rounded-xl mb-6">
+          <QRCodeSVG value={joinUrl} size={340} />
+        </div>
+      ) : null}
+      <p className="opacity-70 mb-8">Escanea el código QR para participar</p>
+      <p className="opacity-50">{jugadores.length} jugador(es) conectado(s)</p>
     </div>
   );
 }

@@ -42,6 +42,7 @@ type LiveTick = {
   top: { playerId: string; nickname: string; taps: number; valorPujado: number; flagged: boolean }[];
   tapsTotales: number;
   valorActual: number;
+  pujaActual: number;
 };
 
 // Version compacta del valor pujado (ej. "171.5M" en vez de "171.500.000"),
@@ -725,7 +726,10 @@ export default function Host() {
                 <button
                   type="button"
                   className="bg-gradient-to-r from-azul to-navy3 text-manila px-6 py-3 rounded-lg font-display font-bold shadow-lg shadow-black/30 shrink-0 transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-                  onClick={() => send({ t: "host:arm", propertyId: propiedadPendiente.id })}
+                  onClick={() => {
+                    send({ t: "host:arm", propertyId: propiedadPendiente.id });
+                    rondaSectionRef.current?.requestFullscreen?.();
+                  }}
                 >
                   Subastar para comenzar
                 </button>
@@ -797,12 +801,12 @@ export default function Host() {
                     Puja actual
                   </p>
                   <p
-                    key={liveTick.valorActual}
+                    key={liveTick.pujaActual}
                     className={`font-display text-5xl lg:text-6xl font-extrabold tabular text-oro ${
                       state.rondaActual.estado === "running" ? "winner-glow" : ""
                     }`}
                   >
-                    {liveTick.valorActual.toLocaleString("es-CO")}
+                    {liveTick.pujaActual.toLocaleString("es-CO")}
                   </p>
                   <p className="opacity-50 text-xs mt-1">COP · {liveTick.tapsTotales} taps totales</p>
                 </div>
@@ -907,6 +911,7 @@ export default function Host() {
                           ganador: state.rondaActual!.ganador,
                         });
                         send({ t: "host:close_round" });
+                        if (document.fullscreenElement) document.exitFullscreen();
                       }}
                     >
                       Terminar
