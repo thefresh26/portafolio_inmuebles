@@ -197,6 +197,8 @@ export const TickToScreenMsg = z.object({
   top5: z.array(PlayerSummarySchema),
   tapsTotales: z.number().int().nonnegative(),
   valorActual: z.number().nonnegative(),
+  // Puja actual del inmueble en subasta (arranca en el avaluo), ver GAME_CONSTANTS.
+  pujaActual: z.number().nonnegative(),
 });
 
 export const RoundEndToScreenMsg = z.object({
@@ -205,6 +207,8 @@ export const RoundEndToScreenMsg = z.object({
   ganador: z.object({ playerId: z.string(), nickname: z.string(), valorFinal: z.number() }).nullable(),
   valorFinal: z.number().nonnegative(),
   top5: z.array(PlayerSummarySchema),
+  // Donde quedo la puja del inmueble al cerrar la ronda (ver pujaActual).
+  pujaFinal: z.number().nonnegative(),
 });
 
 export const PodiumMsg = z.object({
@@ -330,4 +334,8 @@ export const GAME_CONSTANTS = {
   RATE_LIMIT_MSGS_PER_SEC: 20,
   RATE_LIMIT_STRIKES: 3,
   DEFAULT_VALOR_POR_TAP: 1_000_000,
+  // "Puja actual" en pantalla: arranca en el avaluo del inmueble y sube un
+  // poco con cada toque aceptado (puro efecto visual, no decide al ganador).
+  PUJA_INCREMENTO_PCT_POR_TAP: 0.0006,
+  PUJA_TECHO_MULT: 5,
 } as const;

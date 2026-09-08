@@ -365,6 +365,28 @@ body,
   animation: foto-glow-pulse 1.8s ease-in-out infinite;
 }
 
+/* "Puja actual" en la pantalla de proyeccion: un pequeno "pop" cada vez que
+   el numero sube (se dispara solo -- ver key={pujaActual} en Screen.tsx,
+   que remonta el elemento y reinicia esta animacion en cada cambio). */
+@keyframes puja-pop {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.6;
+  }
+  40% {
+    transform: scale(1.06);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.puja-pop {
+  animation: puja-pop 320ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 /* Entrada del trofeo en la pantalla de proyección al adjudicar. */
 @keyframes trophy-bounce {
   0% {

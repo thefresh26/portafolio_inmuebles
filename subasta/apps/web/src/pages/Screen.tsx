@@ -36,6 +36,7 @@ export default function Screen() {
   const [duracionMs, setDuracionMs] = useState(20_000);
   const [top5, setTop5] = useState<PlayerSummary[]>([]);
   const [tapsTotales, setTapsTotales] = useState(0);
+  const [pujaActual, setPujaActual] = useState(0);
   const [sello, setSello] = useState<{ ganador: string; valorFinal: number } | null>(null);
   const [podio, setPodio] = useState<Portafolio[] | null>(null);
   const [qrUrl, setQrUrl] = useState<string | null>(null);
@@ -52,6 +53,7 @@ export default function Screen() {
       case "round_armed":
         setPropiedad(msg.propiedad as Property);
         setDuracionMs(msg.duracionMs as number);
+        setPujaActual((msg.propiedad as Property).avaluo);
         setSello(null);
         setTop5([]);
         break;
@@ -59,6 +61,7 @@ export default function Screen() {
         setRemainingMs(msg.remainingMs as number);
         setTop5(msg.top5 as PlayerSummary[]);
         setTapsTotales(msg.tapsTotales as number);
+        setPujaActual(msg.pujaActual as number);
         break;
       case "round_end":
         setSello(
@@ -67,6 +70,7 @@ export default function Screen() {
             : null
         );
         setTop5(msg.top5 as PlayerSummary[]);
+        setPujaActual(msg.pujaFinal as number);
         break;
       case "podium":
         setPodio(msg.portafolios as Portafolio[]);
@@ -189,8 +193,17 @@ export default function Screen() {
         <p className="font-mono text-sm uppercase opacity-70">{propiedad.matriculaInmobiliaria}</p>
         <h2 className="font-display text-3xl lg:text-5xl mt-1">{propiedad.nombre}</h2>
         <p className="opacity-70 text-base lg:text-lg mt-2">
-          {propiedad.ciudad} · {propiedad.areaM2} m² · avalúo {propiedad.avaluo.toLocaleString("es-CO")} COP
+          {propiedad.ciudad} · {propiedad.areaM2} m²
         </p>
+        <div className="mt-3">
+          <p className="font-mono text-xs uppercase tracking-widest opacity-60">Puja actual</p>
+          <p
+            key={pujaActual}
+            className="font-display text-4xl lg:text-6xl text-oro puja-pop tabular"
+          >
+            $ {Math.round(pujaActual).toLocaleString("es-CO")} COP
+          </p>
+        </div>
 
         {(() => {
           // A medida que la ronda avanza (se acaba el tiempo), la foto se

@@ -229,15 +229,19 @@
   }
   /* Borde que brilla breve y en movimiento (un arco que da la vuelta),
      no un glow fuerte/constante. */
-  .tile::before{
-    content:""; position:absolute; inset:-1px; border-radius:17px; padding:1px;
+  /* Brillo del borde: elemento real (span, ultimo hijo), no ::before --
+     en Chromium un <img> hermano con object-fit puede pintarse encima de
+     un pseudo-elemento con mask aunque su z-index sea mayor (bug de
+     compositing visto en pruebas); un elemento real al final del DOM con
+     z-index alto sí respeta el orden esperado. */
+  .tile-glow{
+    content:""; position:absolute; inset:0; border-radius:16px; padding:1.5px;
     background: conic-gradient(from var(--angle), transparent 0deg, transparent 268deg, rgba(26,168,221,0.95) 300deg, rgba(245,166,35,0.95) 328deg, transparent 358deg);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude;
     animation: tileBorderSweep 7.5s linear infinite; animation-delay: var(--glow-delay, 0ms);
-    pointer-events:none; z-index:1;
-  }
-  .tile:hover{
+    pointer-events:none; z-index:5; display:block;
+  }tile:hover{
     transform: translateY(-8px) scale(1.015);
     box-shadow:0 22px 40px -14px rgba(0,0,0,.65);
   }
@@ -402,6 +406,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=444&amp;nombre=Lote+con+construcci%C3%B3n&amp;ciudad=Medell%C3%ADn%2C+Antioquia&amp;area=8599.66&amp;avaluo=20245229044&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F444.jpg" style="animation-delay:70ms; --glow-delay:-1250ms">
         <img src="../images/444.jpg" alt="Lote con construcción" loading="lazy" />
@@ -421,6 +426,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=528&amp;nombre=Parqueadero+comercial&amp;ciudad=Suba+%C2%B7+Bogot%C3%A1+D.C.&amp;area=10800&amp;avaluo=32554727000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F528.jpg" style="animation-delay:140ms; --glow-delay:-2500ms">
         <img src="../images/528.jpg" alt="Parqueadero comercial" loading="lazy" />
@@ -440,6 +446,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=135&amp;nombre=Edificaci%C3%B3n+para+hotel&amp;ciudad=Medell%C3%ADn%2C+Antioquia&amp;area=1923.12&amp;avaluo=13350515000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F135.jpg" style="animation-delay:210ms; --glow-delay:-3750ms">
         <img src="../images/135.jpg" alt="Edificación para hotel" loading="lazy" />
@@ -459,6 +466,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=4235&amp;nombre=Lote&amp;ciudad=Las+Vegas+%C2%B7+Cali%2C+Valle+del+Cauca&amp;area=11689.31&amp;avaluo=11971214829&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F4235.jpg" style="animation-delay:25ms; --glow-delay:-5000ms">
         <img src="../images/4235.jpg" alt="Lote" loading="lazy" />
@@ -478,6 +486,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=19&amp;nombre=Hotel+%2F+Motel&amp;ciudad=San+Agust%C3%ADn+%C2%B7+La+Estrella%2C+Antioquia&amp;area=14186.82&amp;avaluo=30051637115&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F19.jpg" style="animation-delay:95ms; --glow-delay:-6250ms">
         <img src="../images/19.jpg" alt="Hotel / Motel" loading="lazy" />
@@ -497,6 +506,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=108&amp;nombre=Lotes&amp;ciudad=Altamira+%C2%B7+Cartagena%2C+Bol%C3%ADvar&amp;area=4300.87&amp;avaluo=200000000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F108.jpg" style="animation-delay:165ms; --glow-delay:0ms">
         <img src="../images/108.jpg" alt="Lotes" loading="lazy" />
@@ -516,6 +526,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=8267&amp;nombre=Lote&amp;ciudad=Rionegro%2C+Antioquia&amp;area=186229&amp;avaluo=24023541000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F8267.jpg" style="animation-delay:235ms; --glow-delay:-1250ms">
         <img src="../images/8267.jpg" alt="Lote" loading="lazy" />
@@ -535,6 +546,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=3486&amp;nombre=Lote+con+construcci%C3%B3n&amp;ciudad=Bello%2C+Antioquia&amp;area=968.55&amp;avaluo=23483696878&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F3486.jpg" style="animation-delay:50ms; --glow-delay:-2500ms">
         <img src="../images/3486.jpg" alt="Lote con construcción" loading="lazy" />
@@ -554,6 +566,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=5723&amp;nombre=Edificio&amp;ciudad=Bogot%C3%A1+D.C.&amp;area=11689.31&amp;avaluo=3547392018&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F5723.jpg" style="animation-delay:120ms; --glow-delay:-3750ms">
         <img src="../images/5723.jpg" alt="Edificio" loading="lazy" />
@@ -573,6 +586,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=491&amp;nombre=Casa&amp;ciudad=Medell%C3%ADn%2C+Antioquia&amp;area=729.61&amp;avaluo=2488792972&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F491.jpg" style="animation-delay:190ms; --glow-delay:-5000ms">
         <img src="../images/491.jpg" alt="Casa" loading="lazy" />
@@ -592,6 +606,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=259&amp;nombre=Apartamento&amp;ciudad=Centro+Oriente+%C2%B7+Bogot%C3%A1+D.C.&amp;area=104.17&amp;avaluo=630176833&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F259.jpg" style="animation-delay:260ms; --glow-delay:-6250ms">
         <img src="../images/259.jpg" alt="Apartamento" loading="lazy" />
@@ -611,6 +626,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=37879&amp;nombre=Casa&amp;ciudad=Sur+%C2%B7+Neiva%2C+Huila&amp;area=221.04&amp;avaluo=483834605&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F37879.png" style="animation-delay:75ms; --glow-delay:0ms">
         <img src="../images/37879.png" alt="Casa" loading="lazy" />
@@ -630,6 +646,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=20120&amp;nombre=Apartamento&amp;ciudad=Centro+Oriente+%C2%B7+San+Jos%C3%A9+de+C%C3%BAcuta%2C+Norte+de+Santander&amp;area=120&amp;avaluo=226993000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F20120.jpg" style="animation-delay:145ms; --glow-delay:-1250ms">
         <img src="../images/20120.jpg" alt="Apartamento" loading="lazy" />
@@ -649,6 +666,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=1068&amp;nombre=Locales+comerciales+en+centro+comercial&amp;ciudad=Centro+Oriente+%C2%B7+Bogot%C3%A1+D.C.&amp;area=7.53&amp;avaluo=49297000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F1068.png" style="animation-delay:215ms; --glow-delay:-2500ms">
         <img src="../images/1068.png" alt="Locales comerciales en centro comercial" loading="lazy" />
@@ -668,6 +686,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=31&amp;nombre=Casa&amp;ciudad=Centro+Oriente+%C2%B7+Villavicencio%2C+Meta&amp;area=339&amp;avaluo=373249234&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F31.jpg" style="animation-delay:285ms; --glow-delay:-3750ms">
         <img src="../images/31.jpg" alt="Casa" loading="lazy" />
@@ -687,6 +706,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=28356&amp;nombre=Apartamento&amp;ciudad=Caribe+%C2%B7+Cartagena+de+Indias%2C+Bol%C3%ADvar&amp;area=116&amp;avaluo=1068160072&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F28356.jpg" style="animation-delay:100ms; --glow-delay:-5000ms">
         <img src="../images/28356.jpg" alt="Apartamento" loading="lazy" />
@@ -706,6 +726,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=35059&amp;nombre=2+apartamentos+%E2%80%94+mismo+conjunto&amp;ciudad=Sur+%C2%B7+Ibagu%C3%A9%2C+Tolima&amp;area=56.62&amp;avaluo=187194452&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F35059.jpg" style="animation-delay:170ms; --glow-delay:-6250ms">
         <img src="../images/35059.jpg" alt="2 apartamentos — mismo conjunto" loading="lazy" />
@@ -725,6 +746,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38423&amp;nombre=Lote&amp;ciudad=Galapa+%C2%B7+Galapa%2C+Atl%C3%A1ntico&amp;area=4350&amp;avaluo=4350000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38423.jpg" style="animation-delay:240ms; --glow-delay:0ms">
         <img src="../images/38423.jpg" alt="Lote" loading="lazy" />
@@ -744,6 +766,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38426&amp;nombre=Casa&amp;ciudad=San+Jos%C3%A9+%C2%B7+Barranquilla%2C+Atl%C3%A1ntico&amp;area=163&amp;avaluo=445000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38426.jpg" style="animation-delay:310ms; --glow-delay:-1250ms">
         <img src="../images/38426.jpg" alt="Casa" loading="lazy" />
@@ -763,6 +786,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38186&amp;nombre=Finca&amp;ciudad=Bonda+%28Corregimiento%29+%C2%B7+Santa+Marta%2C+Magdalena&amp;area=65815&amp;avaluo=3900000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38186.jpg" style="animation-delay:125ms; --glow-delay:-2500ms">
         <img src="../images/38186.jpg" alt="Finca" loading="lazy" />
@@ -782,6 +806,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38126&amp;nombre=Lote&amp;ciudad=Terreno+en+Arroyo+Grande+%C2%B7+Santa+Catalina%2C+Bol%C3%ADvar&amp;area=520000&amp;avaluo=41600000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38126.jpg" style="animation-delay:195ms; --glow-delay:-3750ms">
         <img src="../images/38126.jpg" alt="Lote" loading="lazy" />
@@ -801,6 +826,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38182&amp;nombre=Local+comercial&amp;ciudad=Alameda+170+%C2%B7+Usaqu%C3%A9n+%C2%B7+Bogot%C3%A1+D.C.&amp;area=194&amp;avaluo=2900000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38182.jpg" style="animation-delay:265ms; --glow-delay:-5000ms">
         <img src="../images/38182.jpg" alt="Local comercial" loading="lazy" />
@@ -820,6 +846,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38147&amp;nombre=Casa-Local&amp;ciudad=Bellavista+%C2%B7+Barranquilla%2C+Atl%C3%A1ntico&amp;area=490&amp;avaluo=2000000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38147.jpg" style="animation-delay:335ms; --glow-delay:-6250ms">
         <img src="../images/38147.jpg" alt="Casa-Local" loading="lazy" />
@@ -839,6 +866,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38123&amp;nombre=Finca&amp;ciudad=V%C3%ADa+Minca+%C2%B7+Santa+Marta%2C+Magdalena&amp;area=5730&amp;avaluo=700000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38123.jpg" style="animation-delay:150ms; --glow-delay:0ms">
         <img src="../images/38123.jpg" alt="Finca" loading="lazy" />
@@ -858,6 +886,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38130&amp;nombre=Finca&amp;ciudad=Vereda+El+Resguardo+%C2%B7+Fusagasug%C3%A1%2C+Cundinamarca&amp;area=7020&amp;avaluo=800000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38130.jpg" style="animation-delay:220ms; --glow-delay:-1250ms">
         <img src="../images/38130.jpg" alt="Finca" loading="lazy" />
@@ -877,6 +906,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38122&amp;nombre=Lote&amp;ciudad=Salgar+%C2%B7+Puerto+Colombia%2C+Atl%C3%A1ntico&amp;area=400&amp;avaluo=139500000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38122.jpg" style="animation-delay:290ms; --glow-delay:-2500ms">
         <img src="../images/38122.jpg" alt="Lote" loading="lazy" />
@@ -896,6 +926,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=38133&amp;nombre=Apartamento&amp;ciudad=San+Francisco+%C2%B7+Barranquilla%2C+Atl%C3%A1ntico&amp;area=54&amp;avaluo=285000000&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F38133.jpg" style="animation-delay:360ms; --glow-delay:-3750ms">
         <img src="../images/38133.jpg" alt="Apartamento" loading="lazy" />
@@ -915,6 +946,7 @@
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
   </div>
 

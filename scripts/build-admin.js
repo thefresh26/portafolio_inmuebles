@@ -455,15 +455,19 @@ const TEMPLATE_HEAD = `<!doctype html>
   }
   /* Borde que brilla breve y en movimiento (un arco que da la vuelta),
      no un glow fuerte/constante. */
-  .tile::before{
-    content:""; position:absolute; inset:-1px; border-radius:17px; padding:1px;
+  /* Brillo del borde: elemento real (span, ultimo hijo), no ::before --
+     en Chromium un <img> hermano con object-fit puede pintarse encima de
+     un pseudo-elemento con mask aunque su z-index sea mayor (bug de
+     compositing visto en pruebas); un elemento real al final del DOM con
+     z-index alto sí respeta el orden esperado. */
+  .tile-glow{
+    content:""; position:absolute; inset:0; border-radius:16px; padding:1.5px;
     background: conic-gradient(from var(--angle), transparent 0deg, transparent 268deg, rgba(26,168,221,0.95) 300deg, rgba(245,166,35,0.95) 328deg, transparent 358deg);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude;
     animation: tileBorderSweep 7.5s linear infinite; animation-delay: var(--glow-delay, 0ms);
-    pointer-events:none; z-index:1;
-  }
-  .tile:hover{
+    pointer-events:none; z-index:5; display:block;
+  }tile:hover{
     transform: translateY(-8px) scale(1.015);
     box-shadow:0 22px 40px -14px rgba(0,0,0,.65);
   }
@@ -709,6 +713,7 @@ function tileHtml(item, index) {
             </span>
           </div>
         </div>
+        <span class="tile-glow" aria-hidden="true"></span>
       </a>
 `;
 }

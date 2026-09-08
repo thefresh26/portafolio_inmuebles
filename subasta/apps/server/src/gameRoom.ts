@@ -522,12 +522,14 @@ export class GameRoom {
     }
 
     const top5 = ranking.slice(0, 5);
+    const tapsTotalesFinal = [...round.counts.values()].reduce((a, b) => a + b, 0);
     const screenPayload = {
       t: "round_end" as const,
       roundId,
       ganador: round.ganador,
       valorFinal: round.ganador?.valorFinal ?? 0,
       top5,
+      pujaFinal: this.calcularPujaActual(round.propiedad.avaluo, tapsTotalesFinal),
     };
     for (const s of this.state.screens) safeSend(s, screenPayload);
     this.broadcastHostState();
@@ -593,6 +595,15 @@ export class GameRoom {
 
   // ---------- Broadcasts ----------
 
+  // "Puja actual" del inmueble en pantalla: arranca en el avaluo y sube un
+  // poco con cada toque aceptado (solo efecto visual/de tension -- el
+  // ganador de la ronda lo sigue decidiendo quien mas toco, no este numero).
+  private calcularPujaActual(avaluo: number, tapsTotales: number): number {
+    const incremento = avaluo * GAME_CONSTANTS.PUJA_INCREMENTO_PCT_POR_TAP * tapsTotales;
+    const techo = avaluo * GAME_CONSTANTS.PUJA_TECHO_MULT;
+    return Math.min(avaluo + incremento, techo);
+  }
+
   private broadcastTick() {
     const round = this.state.currentRound;
     if (!round || round.estado !== "running") return;
@@ -624,6 +635,7 @@ export class GameRoom {
       top5,
       tapsTotales,
       valorActual: tapsTotales * this.state.valorPorTap,
+      pujaActual: this.calcularPujaActual(round.propiedad.avaluo, tapsTotales),
     };
     for (const s of this.state.screens) safeSend(s, payload);
 
