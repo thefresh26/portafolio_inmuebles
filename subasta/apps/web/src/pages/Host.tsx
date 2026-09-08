@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Property, PropertyInput } from "@subasta/shared";
+import { GAME_CONSTANTS } from "@subasta/shared";
 import { useSocket } from "../lib/useSocket.js";
 import { wsUrl } from "../lib/wsUrl.js";
 import { supabase } from "../lib/supabaseClient.js";
@@ -578,6 +579,16 @@ export default function Host() {
   const pin = state?.pin ?? "----";
   const heroPropiedad = state?.rondaActual?.propiedad ?? propiedadPendiente ?? null;
 
+  // A medida que la ronda corre (se acaba el tiempo), la foto se va
+  // encogiendo un poco -- misma sensacion de "se acerca el cierre" que
+  // tenia antes la pantalla proyector, ahora aqui en la principal.
+  const rondaCorriendo =
+    state?.rondaActual?.estado === "running" && liveTick && liveTick.roundId === state.rondaActual.roundId;
+  const progresoRonda = rondaCorriendo
+    ? Math.min(1, Math.max(0, 1 - liveTick!.remainingMs / GAME_CONSTANTS.ROUND_DURATION_MS))
+    : 0;
+  const fotoScale = 1 - progresoRonda * 0.22;
+
   return (
     <div className="min-h-screen bg-escenario text-manila font-body flex flex-col">
       {/* ---------- Header: barra flotante minimalista ---------- */}
@@ -637,17 +648,22 @@ export default function Host() {
         ref={rondaSectionRef}
         className="[&:fullscreen]:h-screen [&:fullscreen]:w-screen [&:fullscreen]:overflow-auto [&:fullscreen]:bg-archivo [&:fullscreen]:flex [&:fullscreen]:flex-col [&:fullscreen]:justify-center [&:fullscreen]:[zoom:1.2]"
       >
-        <div className="relative w-full h-80 sm:h-96 lg:h-[26rem]">
-          {heroPropiedad?.imagenUrl ? (
-            <img src={heroPropiedad.imagenUrl} alt={heroPropiedad.nombre} className="w-full h-full object-cover" />
-          ) : (
-            <div
-              className="w-full h-full flex items-center justify-center text-7xl"
-              style={{ background: "linear-gradient(135deg, #6b451c 0%, #173f70 55%, #0b2a4a 100%)" }}
-            >
-              🏛️
-            </div>
-          )}
+        <div className="relative w-full h-80 sm:h-96 lg:h-[26rem] bg-archivo overflow-hidden">
+          <div
+            className="w-full h-full"
+            style={{ transform: `scale(${fotoScale})`, transition: "transform 0.6s cubic-bezier(0.22,1,0.36,1)" }}
+          >
+            {heroPropiedad?.imagenUrl ? (
+              <img src={heroPropiedad.imagenUrl} alt={heroPropiedad.nombre} className="w-full h-full object-cover" />
+            ) : (
+              <div
+                className="w-full h-full flex items-center justify-center text-7xl"
+                style={{ background: "linear-gradient(135deg, #6b451c 0%, #173f70 55%, #0b2a4a 100%)" }}
+              >
+                🏛️
+              </div>
+            )}
+          </div>
           <div className="absolute inset-0 bg-gradient-to-t from-archivo via-archivo/20 to-transparent" />
 
           <div className="absolute top-4 inset-x-6 lg:inset-x-10 flex items-start justify-between gap-3">
