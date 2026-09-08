@@ -60,7 +60,7 @@
     animation: floatBg 22s ease-in-out infinite;
   }
 
-  /* --- pantalla de login --- */
+  /* --- pantalla de login (misma tarjeta de dos tonos que el login del jugador) --- */
   .login-screen{
     position:fixed; inset:0; z-index:100;
     display:flex; align-items:center; justify-content:center;
@@ -68,40 +68,56 @@
   }
   .login-card{
     width:100%; max-width:380px;
-    background:rgba(23,63,112,0.35);
-    border:1px solid rgba(234,241,251,0.12);
     border-radius:18px;
-    padding:32px 28px;
+    overflow:hidden;
+    box-shadow:0 25px 60px -15px rgba(0,0,0,0.5);
     animation: fadeSlideUp .5s cubic-bezier(.22,1,.36,1) both;
   }
-  .login-card .brand{ margin-bottom:18px; justify-content:center; }
-  .login-card h2{ font-size:20px; font-weight:800; margin-bottom:6px; text-align:center; }
-  .login-card p.sub{ color:rgba(234,241,251,0.55); font-size:13px; text-align:center; margin-bottom:22px; line-height:1.5; }
+  .login-banner{
+    padding:34px 28px 26px;
+    background:linear-gradient(100deg, #7a4a12 0%, #173f70 46%, #0d3a63 100%);
+  }
+  .login-banner .brand{ margin-bottom:16px; }
+  .login-banner h2{ font-size:21px; font-weight:800; color:var(--manila); margin-bottom:6px; }
+  .login-banner p.sub{ color:rgba(234,241,251,0.75); font-size:13px; line-height:1.5; }
+  .login-body{
+    background:var(--manila);
+    padding:26px 28px 28px;
+  }
   .login-field{ margin-bottom:14px; }
-  .login-field label{ display:block; font-size:12px; font-weight:600; color:rgba(234,241,251,0.7); margin-bottom:6px; }
+  .login-field label{ display:block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:rgba(11,42,74,0.5); margin-bottom:6px; }
+  .login-field .input-wrap{ position:relative; }
+  .login-field .input-wrap svg{ position:absolute; left:12px; top:50%; transform:translateY(-50%); opacity:.4; pointer-events:none; }
   .login-field input{
-    width:100%; padding:11px 14px; border-radius:9px;
-    background:rgba(8,29,51,0.6); border:1px solid rgba(234,241,251,0.18);
-    color:var(--manila); font-family:inherit; font-size:14px;
+    width:100%; padding:11px 14px 11px 36px; border-radius:10px;
+    background:#fff; border:1.5px solid rgba(11,42,74,0.12);
+    color:var(--archivo); font-family:inherit; font-size:14px;
     transition: border-color .2s ease, box-shadow .2s ease;
   }
-  .login-field input:focus{ outline:none; border-color:var(--azul); box-shadow:0 0 0 3px rgba(26,168,221,0.15); }
+  .login-field input::placeholder{ color:rgba(11,42,74,0.32); }
+  .login-field input:focus{ outline:none; border-color:var(--azul); box-shadow:0 0 0 3px rgba(26,168,221,0.2); }
   .login-submit{
-    width:100%; padding:12px; border-radius:9px; border:none; cursor:pointer;
+    width:100%; padding:12px; border-radius:10px; border:none; cursor:pointer;
     font-size:14px; font-weight:700;
     background:linear-gradient(90deg, var(--azul) 0%, var(--navy3) 100%);
     color:var(--manila);
+    box-shadow:0 10px 20px -8px rgba(26,168,221,0.4);
     transition: filter .2s ease, transform .15s ease;
-    margin-top:6px;
+    margin-top:4px;
   }
-  .login-submit:hover{ filter:brightness(1.08); }
+  .login-submit:hover{ filter:brightness(1.08); transform:scale(1.02); }
   .login-submit:active{ transform: scale(.98); }
-  .login-submit:disabled{ opacity:.6; cursor:default; filter:none; }
+  .login-submit:disabled{ opacity:.6; cursor:default; filter:none; transform:none; }
   .login-error{
     margin-top:14px; padding:10px 12px; border-radius:8px;
-    background:rgba(224,53,53,0.12); border:1px solid rgba(224,53,53,0.35);
-    color:#ff9d9d; font-size:12.5px; line-height:1.5; display:none;
+    background:rgba(224,53,53,0.1); border:1px solid rgba(224,53,53,0.35);
+    color:#b23a3a; font-size:12.5px; line-height:1.5; display:none;
   }
+  .login-footer{
+    margin-top:20px; display:flex; align-items:center; justify-content:center; gap:6px;
+    color:rgba(11,42,74,0.4); font-size:11px;
+  }
+  .login-footer .dot{ width:6px; height:6px; border-radius:999px; background:var(--esmeralda); flex-shrink:0; }
   #app-content{ display:none; }
 
   .topbar{
@@ -116,7 +132,7 @@
   .brand{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:0.02em;}
   .brand .dot{width:8px; height:8px; border-radius:999px; background:var(--esmeralda); animation:dotBlink 1.8s ease-in-out infinite;}
   .brand-logo{width:28px; height:28px; border-radius:8px; object-fit:cover; flex-shrink:0;}
-  .login-card .brand-logo{width:40px; height:40px; border-radius:10px;}
+  .login-banner .brand-logo{width:40px; height:40px; border-radius:10px;}
   .topbar-right{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
   .badge-interno{
     font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;
@@ -300,21 +316,32 @@
 
   <div id="login-screen" class="login-screen">
     <div class="login-card">
-      <div class="brand"><img src="../logo.png" alt="Activos por Colombia" class="brand-logo">Subasta Activa</div>
-      <h2>Acceso al panel interno</h2>
-      <p class="sub">Ingresa con tu correo de Activos por Colombia para entrar al catálogo de subasta.</p>
-      <form id="loginForm">
-        <div class="login-field">
-          <label for="loginEmail">Correo</label>
-          <input type="email" id="loginEmail" autocomplete="username" required placeholder="tucorreo@activosporcolombia.com" />
-        </div>
-        <div class="login-field">
-          <label for="loginPassword">Contraseña</label>
-          <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••" />
-        </div>
-        <button type="submit" class="login-submit" id="loginSubmitBtn">Entrar</button>
-        <div class="login-error" id="loginError"></div>
-      </form>
+      <div class="login-banner">
+        <div class="brand"><img src="../logo.png" alt="Activos por Colombia" class="brand-logo">Subasta Activa</div>
+        <h2>Acceso al panel interno</h2>
+        <p class="sub">Ingresa con tu correo de Activos por Colombia para entrar al catálogo de subasta.</p>
+      </div>
+      <div class="login-body">
+        <form id="loginForm">
+          <div class="login-field">
+            <label for="loginEmail">Correo</label>
+            <div class="input-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 6 10-6"/></svg>
+              <input type="email" id="loginEmail" autocomplete="username" required placeholder="tucorreo@activosporcolombia.com" />
+            </div>
+          </div>
+          <div class="login-field">
+            <label for="loginPassword">Contraseña</label>
+            <div class="input-wrap">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••" />
+            </div>
+          </div>
+          <button type="submit" class="login-submit" id="loginSubmitBtn">Entrar</button>
+          <div class="login-error" id="loginError"></div>
+        </form>
+        <div class="login-footer"><span class="dot"></span>Activos por Colombia S.A.S.</div>
+      </div>
     </div>
   </div>
 
