@@ -382,20 +382,20 @@ export default function Play() {
   if (fase === "join") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-escenario sm:px-6 phase-fade-in">
-        <div className="w-full max-w-sm min-h-screen sm:min-h-0 sm:rounded-2xl overflow-hidden shadow-2xl shadow-black/30 flex flex-col font-body">
+        <div className="w-full max-w-xs sm:rounded-2xl rounded-2xl overflow-hidden shadow-2xl shadow-black/30 flex flex-col font-body">
           {/* Banner con el mismo degradado del header de la consola de admin */}
           <div
-            className="px-7 pt-14 pb-8 sm:pt-10"
+            className="px-5 pt-8 pb-5 sm:pt-6"
             style={{ background: "linear-gradient(100deg, #7a4a12 0%, #173f70 46%, #0d3a63 100%)" }}
           >
-            <BrandMark className="w-11 h-11 mb-3.5" />
-            <h1 className="font-display text-2xl text-manila mb-1.5">Subasta Activa</h1>
-            <p className="text-sm text-manila/75 leading-relaxed">Completa tus datos para participar en la subasta.</p>
+            <BrandMark className="w-8 h-8 mb-2" />
+            <h1 className="font-display text-lg text-manila mb-1">Subasta Activa</h1>
+            <p className="text-xs text-manila/75 leading-relaxed">Completa tus datos para participar en la subasta.</p>
           </div>
 
-          <div className="flex-1 bg-manila text-archivo px-6 pt-7 pb-8 flex flex-col">
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-archivo/50 mb-1.5">Nombre</label>
-            <div className="relative mb-4">
+          <div className="flex-1 bg-manila text-archivo px-5 pt-4 pb-5 flex flex-col">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-archivo/50 mb-1">Nombre</label>
+            <div className="relative mb-2.5">
               <svg
                 className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40"
                 width="16"
@@ -410,15 +410,15 @@ export default function Play() {
                 <path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8" />
               </svg>
               <input
-                className="w-full pl-9 pr-3.5 py-2.5 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
+                className="w-full pl-9 pr-3.5 py-2 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
                 placeholder="Tu nombre en pantalla"
               />
             </div>
 
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-archivo/50 mb-1.5">Celular</label>
-            <div className="relative mb-4">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-archivo/50 mb-1">Celular</label>
+            <div className="relative mb-2.5">
               <svg
                 className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40"
                 width="16"
@@ -433,7 +433,7 @@ export default function Play() {
                 <path d="M11 18h2" />
               </svg>
               <input
-                className="w-full pl-9 pr-3.5 py-2.5 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
+                className="w-full pl-9 pr-3.5 py-2 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)}
                 placeholder="300 123 4567"
@@ -441,8 +441,8 @@ export default function Play() {
               />
             </div>
 
-            <label className="block text-[11px] font-bold uppercase tracking-wide text-archivo/50 mb-1.5">Correo</label>
-            <div className="relative mb-6">
+            <label className="block text-[11px] font-bold uppercase tracking-wide text-archivo/50 mb-1">Correo</label>
+            <div className="relative mb-4">
               <svg
                 className="absolute left-3 top-1/2 -translate-y-1/2 opacity-40"
                 width="16"
@@ -457,7 +457,7 @@ export default function Play() {
                 <path d="m2 7 10 6 10-6" />
               </svg>
               <input
-                className="w-full pl-9 pr-3.5 py-2.5 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
+                className="w-full pl-9 pr-3.5 py-2 rounded-[10px] border-[1.5px] border-archivo/12 bg-white text-sm placeholder:text-archivo/30 focus:outline-none focus:border-azul focus:ring-[3px] focus:ring-azul/20"
                 value={correo}
                 onChange={(e) => setCorreo(e.target.value)}
                 placeholder="correo@empresa.com"
@@ -472,14 +472,14 @@ export default function Play() {
             )}
 
             <button
-              className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-3 rounded-[10px] font-display font-bold shadow-lg shadow-azul/20 transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100 disabled:active:scale-100"
+              className="w-full bg-gradient-to-r from-azul to-navy3 text-manila py-2.5 rounded-[10px] font-display font-bold shadow-lg shadow-azul/20 transition-transform duration-150 ease-out hover:scale-105 active:scale-95 disabled:opacity-40 disabled:hover:scale-100 disabled:active:scale-100"
               disabled={!puedeEntrar}
               onClick={onJoin}
             >
               {connected ? "Entrar" : "Conectando..."}
             </button>
 
-            <div className="mt-auto pt-6 flex items-center justify-center gap-1.5 text-archivo/40 text-[11px]">
+            <div className="mt-4 flex items-center justify-center gap-1.5 text-archivo/40 text-[11px]">
               <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-esmeralda" : "bg-archivo/25"}`} />
               {connected ? "Activos por Colombia S.A.S." : "Conectando..."}
             </div>
