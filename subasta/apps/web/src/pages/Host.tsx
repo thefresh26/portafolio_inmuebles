@@ -133,9 +133,15 @@ export default function Host() {
   const [adminMsg, setAdminMsg] = useState<{ tipo: "ok" | "error"; texto: string } | null>(null);
   const [creandoAdmin, setCreandoAdmin] = useState(false);
 
+  // Cuando el servidor rechaza el token (sesión vencida/inválida): se
+  // intenta refrescar la sesión de Supabase una sola vez antes de mandar
+  // de vuelta al login con un mensaje claro.
+  const [tokenRechazado, setTokenRechazado] = useState(false);
+
   const onMessage = useCallback((data: unknown) => {
     const msg = data as Record<string, unknown>;
     if (msg.t === "host:state") {
+      setAuthed(true);
       setState(msg as unknown as HostState);
       if (!(msg as unknown as HostState).rondaActual) setLiveTick(null);
     }
@@ -150,6 +156,10 @@ export default function Host() {
       setCreandoAdmin(false);
       if (msg.code === "admin_create_failed") {
         setAdminMsg({ tipo: "error", texto: String(msg.mensaje ?? "No se pudo crear el administrador") });
+      } else if (msg.code === "bad_token") {
+        setAuthed(false);
+        setAccessToken(null);
+        setTokenRechazado(true);
       } else {
         setActionError(String(msg.mensaje ?? "Ocurrió un error"));
       }
@@ -159,10 +169,12 @@ export default function Host() {
   const { send, connected } = useSocket(WS_URL, onMessage);
   const rankingFlipRef = useFlip(liveTick?.top.map((p) => p.playerId) ?? []);
 
+  // Solo manda el token; "authed" se marca en onMessage cuando el servidor
+  // confirma con el primer "host:state" (nunca de forma optimista), para no
+  // dejar la consola mostrada con una sesión que en realidad fue rechazada.
   const joinWithToken = useCallback(
     (t: string) => {
       send({ t: "host:join", token: t });
-      setAuthed(true);
     },
     [send]
   );
@@ -182,6 +194,26 @@ export default function Host() {
       joinWithToken(accessToken);
     }
   }, [accessToken, connected, authed, joinWithToken]);
+
+  // El servidor rechazó el token: intentar refrescar la sesión de Supabase
+  // una sola vez (cubre el caso típico de recargar la página con una sesión
+  // guardada que ya venció) y solo si eso también falla, dejar ver el login
+  // con un mensaje claro en vez de la consola rota.
+  useEffect(() => {
+    if (!tokenRechazado) return;
+    setTokenRechazado(false);
+    if (!supabase) {
+      setLoginError("Token inválido o vencido. Vuelve a intentarlo.");
+      return;
+    }
+    supabase.auth.refreshSession().then(({ data, error }) => {
+      if (!error && data.session?.access_token) {
+        setAccessToken(data.session.access_token);
+      } else {
+        setLoginError("Tu sesión expiró. Vuelve a iniciar sesión.");
+      }
+    });
+  }, [tokenRechazado]);
 
   const loginConSupabase = async () => {
     if (!supabase) return;
@@ -421,11 +453,9 @@ export default function Host() {
             className="px-7 pt-12 pb-8 sm:pt-10"
             style={{ background: "linear-gradient(100deg, #7a4a12 0%, #173f70 46%, #0d3a63 100%)" }}
           >
-            <div className="w-10 h-10 rounded-[10px] bg-manila flex items-center justify-center mb-3.5">
-              <BrandMark className="w-6 h-6" />
-            </div>
-            <h1 className="font-display text-2xl text-manila mb-1.5">Consola del presentador</h1>
-            <p className="text-sm text-manila/75 leading-relaxed">Inicia sesión para administrar la subasta.</p>
+            <BrandMark className="w-11 h-11 mb-3.5" />
+            <h1 className="font-display text-2xl text-manila mb-1.5">Subasta Activa</h1>
+            <p className="text-sm text-manila/75 leading-relaxed">Ingresa tus credenciales para administrar la subasta.</p>
           </div>
 
           <div className="flex-1 bg-manila text-archivo px-6 pt-7 pb-8 flex flex-col">
@@ -523,7 +553,7 @@ export default function Host() {
 
             <div className="mt-6 flex items-center justify-center gap-1.5 text-archivo/40 text-[11px]">
               <span className={`w-1.5 h-1.5 rounded-full ${connected ? "bg-esmeralda" : "bg-archivo/25"}`} />
-              {connected ? "Conectado" : "Conectando..."}
+              {connected ? "Activos por Colombia S.A.S." : "Conectando..."}
             </div>
           </div>
         </div>

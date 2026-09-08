@@ -298,6 +298,8 @@ const TEMPLATE_HEAD = `<!doctype html>
   }
   .brand{display:flex; align-items:center; gap:10px; font-weight:700; letter-spacing:0.02em;}
   .brand .dot{width:8px; height:8px; border-radius:999px; background:var(--esmeralda); animation:dotBlink 1.8s ease-in-out infinite;}
+  .brand-logo{width:28px; height:28px; border-radius:8px; object-fit:cover; flex-shrink:0;}
+  .login-card .brand-logo{width:40px; height:40px; border-radius:10px;}
   .topbar-right{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
   .badge-interno{
     font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em;
@@ -423,7 +425,7 @@ const TEMPLATE_HEAD = `<!doctype html>
 
   <div id="login-screen" class="login-screen">
     <div class="login-card">
-      <div class="brand"><span class="dot"></span>Subasta Activa</div>
+      <div class="brand"><img src="../logo.png" alt="Activos por Colombia" class="brand-logo">Subasta Activa</div>
       <h2>Acceso al panel interno</h2>
       <p class="sub">Ingresa con tu correo de Activos por Colombia para entrar al catálogo de subasta.</p>
       <form id="loginForm">
@@ -444,7 +446,7 @@ const TEMPLATE_HEAD = `<!doctype html>
   <div id="app-content">
 
   <div class="topbar">
-    <div class="brand"><span class="dot"></span>Subasta Activa</div>
+    <div class="brand"><img src="../logo.png" alt="Activos por Colombia" class="brand-logo">Subasta Activa</div>
     <div class="topbar-right">
       <span class="badge-interno">Panel interno · No compartir con clientes</span>
       <button type="button" class="logout-btn" id="logoutBtn" title="Cerrar sesión">
