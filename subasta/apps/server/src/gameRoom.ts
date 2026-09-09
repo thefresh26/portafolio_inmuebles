@@ -381,6 +381,10 @@ export class GameRoom {
     if (!round || round.roundId !== roundId) return;
     round.estado = "running";
     this.state.estado = "running";
+    // Sin esto el presentador se queda viendo "Armada - esperando" toda la
+    // ronda (el letrero y la foto que se encoge dependen de este estado),
+    // aunque los tics de "host:tick" si le sigan llegando en vivo.
+    this.broadcastHostState();
 
     if (this.tickInterval) clearInterval(this.tickInterval);
     this.tickInterval = setInterval(() => this.broadcastTick(), 1000 / GAME_CONSTANTS.TICK_HZ_SCREEN);
