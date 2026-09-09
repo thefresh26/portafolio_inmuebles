@@ -233,11 +233,13 @@ const TEMPLATE_HEAD = `<!doctype html>
 <title>Panel interno · Subastar inmuebles</title>
 <link rel="icon" type="image/png" href="../favicon.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
 <style>
+  @font-face{font-family:'Poppins';font-style:normal;font-weight:400;font-display:swap;src:url('../fonts/Poppins-400.woff2') format('woff2');}
+  @font-face{font-family:'Poppins';font-style:normal;font-weight:500;font-display:swap;src:url('../fonts/Poppins-500.woff2') format('woff2');}
+  @font-face{font-family:'Poppins';font-style:normal;font-weight:600;font-display:swap;src:url('../fonts/Poppins-600.woff2') format('woff2');}
+  @font-face{font-family:'Poppins';font-style:normal;font-weight:700;font-display:swap;src:url('../fonts/Poppins-700.woff2') format('woff2');}
+  @font-face{font-family:'Poppins';font-style:normal;font-weight:800;font-display:swap;src:url('../fonts/Poppins-800.woff2') format('woff2');}
   :root{
     --archivo:#0b2a4a;
     --navy3:#173f70;
