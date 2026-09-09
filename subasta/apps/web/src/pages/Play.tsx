@@ -349,7 +349,7 @@ export default function Play() {
     const now = Date.now();
     tapTimestampsRef.current.push(now);
     setMisTaps((n) => n + 1);
-    if (navigator.vibrate) navigator.vibrate(8);
+    if (navigator.vibrate) navigator.vibrate(5);
 
     // Racha de taps muy seguidos (<180ms entre sí): sacude el contador un
     // instante para que se sienta más vivo. No toca el batching de arriba.
