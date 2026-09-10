@@ -18,8 +18,8 @@ export default {
       },
       fontFamily: {
         // Misma tipografia que portafolio_inmuebles/index.html.
-        display: ["Poppins", "system-ui", "sans-serif"],
-        body: ["Poppins", "system-ui", "sans-serif"],
+        display: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
+        body: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
         mono: ["'Courier New'", "monospace"],
       },
     },

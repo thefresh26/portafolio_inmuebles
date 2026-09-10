@@ -235,11 +235,11 @@ const TEMPLATE_HEAD = `<!doctype html>
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>
 <style>
-  @font-face{font-family:'Poppins';font-style:normal;font-weight:400;font-display:swap;src:url('../fonts/Poppins-400.woff2') format('woff2');}
-  @font-face{font-family:'Poppins';font-style:normal;font-weight:500;font-display:swap;src:url('../fonts/Poppins-500.woff2') format('woff2');}
-  @font-face{font-family:'Poppins';font-style:normal;font-weight:600;font-display:swap;src:url('../fonts/Poppins-600.woff2') format('woff2');}
-  @font-face{font-family:'Poppins';font-style:normal;font-weight:700;font-display:swap;src:url('../fonts/Poppins-700.woff2') format('woff2');}
-  @font-face{font-family:'Poppins';font-style:normal;font-weight:800;font-display:swap;src:url('../fonts/Poppins-800.woff2') format('woff2');}
+  @font-face{font-family:'Plus Jakarta Sans';font-style:normal;font-weight:400;font-display:swap;src:url('../fonts/PlusJakartaSans-400.woff2') format('woff2');}
+  @font-face{font-family:'Plus Jakarta Sans';font-style:normal;font-weight:500;font-display:swap;src:url('../fonts/PlusJakartaSans-500.woff2') format('woff2');}
+  @font-face{font-family:'Plus Jakarta Sans';font-style:normal;font-weight:600;font-display:swap;src:url('../fonts/PlusJakartaSans-600.woff2') format('woff2');}
+  @font-face{font-family:'Plus Jakarta Sans';font-style:normal;font-weight:700;font-display:swap;src:url('../fonts/PlusJakartaSans-700.woff2') format('woff2');}
+  @font-face{font-family:'Plus Jakarta Sans';font-style:normal;font-weight:800;font-display:swap;src:url('../fonts/PlusJakartaSans-800.woff2') format('woff2');}
   :root{
     --archivo:#0b2a4a;
     --navy3:#173f70;
@@ -255,10 +255,10 @@ const TEMPLATE_HEAD = `<!doctype html>
     margin:0;
     background:#e4e9f0;
     color:var(--archivo);
-    font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
     -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3{font-family:'Poppins',system-ui,sans-serif; margin:0;}
+  h1,h2,h3{font-family:'Plus Jakarta Sans',system-ui,sans-serif; margin:0;}
   p{margin:0;}
   a{color:inherit; text-decoration:none;}
   img{max-width:100%; display:block;}
@@ -433,7 +433,7 @@ const TEMPLATE_HEAD = `<!doctype html>
     background:rgba(234,241,251,0.06); border:1px solid rgba(234,241,251,0.12);
     border-radius:10px; padding:10px 14px; text-align:center; min-width:56px;
   }
-  .countdown-num{ display:block; font-size:26px; font-weight:800; font-variant-numeric:tabular-nums; }
+  .countdown-num{ display:block; font-size:26px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--manila); }
   .countdown-label{ display:block; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.45); margin-top:2px; }
   .countdown-sep{ font-size:20px; font-weight:800; color:rgba(234,241,251,0.3); }
   @media (max-width:480px){
