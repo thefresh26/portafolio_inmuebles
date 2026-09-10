@@ -27,8 +27,8 @@
   html, body{ overflow-x:hidden; max-width:100%; }
   body{
     margin:0;
-    background:#eef1f6;
-    color:var(--archivo);
+    background:#0a1628;
+    color:var(--manila);
     font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
     -webkit-font-smoothing:antialiased;
   }
@@ -54,14 +54,17 @@
     100%{ background-position:0% 0%; }
   }
 
-  /* Fondo "Aurora suave": lavado diagonal muy tenue, azul arriba-izquierda
-     y ambar abajo-derecha, sin manchas ni formas duras. */
+  /* Fondo oscuro tipo "plano arquitectonico": navy profundo con una
+     cuadricula fina y dos halos de marca (azul/ambar) muy tenues. */
   body{
+    background-color:#0a1628;
     background-image:
-      radial-gradient(ellipse 1100px 850px at 0% 0%, rgba(26,168,221,0.24) 0%, rgba(26,168,221,0) 60%),
-      radial-gradient(ellipse 1100px 850px at 100% 100%, rgba(245,166,35,0.22) 0%, rgba(245,166,35,0) 60%),
-      radial-gradient(ellipse 900px 700px at 100% 0%, rgba(11,42,74,0.05) 0%, rgba(11,42,74,0) 55%);
-    background-repeat:no-repeat;
+      linear-gradient(rgba(234,241,251,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(234,241,251,0.05) 1px, transparent 1px),
+      radial-gradient(ellipse 1000px 800px at 0% 0%, rgba(26,168,221,0.16) 0%, rgba(26,168,221,0) 60%),
+      radial-gradient(ellipse 1000px 800px at 100% 100%, rgba(245,166,35,0.12) 0%, rgba(245,166,35,0) 60%);
+    background-size:42px 42px, 42px 42px, auto, auto;
+    background-repeat:repeat, repeat, no-repeat, no-repeat;
     background-attachment:fixed;
   }
 
@@ -174,7 +177,7 @@
     animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) .16s both;
   }
   .hero p{
-    color:rgba(11,42,74,0.65); font-size:14px; max-width:640px; line-height:1.6;
+    color:rgba(234,241,251,0.65); font-size:14px; max-width:640px; line-height:1.6;
     animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) .24s both;
   }
 
@@ -309,10 +312,63 @@
   .tile:hover .cta svg{ transform: translateX(4px); }
 
   footer{
-    padding:24px; text-align:center; font-size:12px; color:rgba(11,42,74,0.45);
-    border-top:1px solid rgba(11,42,74,0.10);
+    padding:24px; text-align:center; font-size:12px; color:rgba(234,241,251,0.45);
+    border-top:1px solid rgba(234,241,251,0.10);
     animation: fadeSlideUp .5s ease both;
   }
+
+  /* --- layout de dos columnas: tarjetas + panel de estadisticas en vivo --- */
+  .layout-wrap{
+    max-width:1200px; margin:0 auto; padding:0 24px;
+    display:grid; grid-template-columns:1fr 300px; gap:28px; align-items:start;
+  }
+  .main-col{ min-width:0; }
+  .main-col .hero{ padding:0 0 8px; max-width:none; }
+  .main-col .grid{ padding:0 0 40px; }
+  @media (max-width:980px){
+    .layout-wrap{ grid-template-columns:1fr; }
+  }
+
+  .stats-sidebar{
+    display:flex; flex-direction:column; gap:16px;
+    position:sticky; top:78px;
+    animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) .1s both;
+  }
+  @media (max-width:980px){ .stats-sidebar{ position:static; margin-bottom:8px; } }
+
+  .stat-card{
+    background:rgba(234,241,251,0.045); border:1px solid rgba(234,241,251,0.10);
+    border-radius:14px; padding:16px 16px 14px; backdrop-filter:blur(6px);
+  }
+  .stat-card-head{ display:flex; align-items:center; gap:7px; margin-bottom:2px; }
+  .stat-dot{
+    width:7px; height:7px; border-radius:999px; background:rgba(234,241,251,0.25); flex-shrink:0;
+    transition: background .3s ease, box-shadow .3s ease;
+  }
+  .stat-dot.is-live{ background:var(--esmeralda); box-shadow:0 0 0 3px rgba(26,184,122,0.22); animation:dotBlink 1.8s ease-in-out infinite; }
+  .stat-title{
+    font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
+    color:rgba(234,241,251,0.5); margin-bottom:10px;
+  }
+  .stat-card-head .stat-title{ margin-bottom:0; }
+  .stat-big{ font-size:30px; font-weight:800; color:var(--manila); font-variant-numeric:tabular-nums; margin:2px 0 2px; }
+  .stat-sub{ font-size:12px; color:rgba(234,241,251,0.5); line-height:1.5; }
+
+  .stat-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px; }
+  .stat-list li{
+    display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+    font-size:12.5px; padding-bottom:9px; border-bottom:1px dashed rgba(234,241,251,0.10);
+  }
+  .stat-list li:last-child{ border-bottom:none; padding-bottom:0; }
+  .stat-list .nm{ color:var(--manila); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .stat-list .meta{ color:rgba(234,241,251,0.45); font-size:10.5px; white-space:nowrap; }
+  .stat-list .val{ color:var(--oro); font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .stat-empty{ color:rgba(234,241,251,0.4); font-size:12.5px; font-style:italic; }
+  .stat-footnote{
+    margin-top:10px; padding-top:10px; border-top:1px solid rgba(234,241,251,0.08);
+    font-size:11px; color:rgba(234,241,251,0.45);
+  }
+  .stat-footnote b{ color:var(--oro); font-weight:700; }
 
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after{
@@ -369,6 +425,9 @@
       </button>
     </div>
   </div>
+
+  <div class="layout-wrap">
+  <div class="main-col">
 
   <div class="hero">
     <p class="eyebrow">Equipo · Activos por Colombia</p>
@@ -958,6 +1017,36 @@
       </a>
   </div>
 
+  </div>
+
+  <aside class="stats-sidebar" id="statsSidebar" aria-label="Estadísticas en vivo">
+    <div class="stat-card" id="statLive">
+      <div class="stat-card-head">
+        <span class="stat-dot" id="liveDot"></span>
+        <p class="stat-title">Actividad en vivo</p>
+      </div>
+      <p class="stat-big" id="statConectados">—</p>
+      <p class="stat-sub" id="statConectadosSub">Conectando con el servidor del juego…</p>
+    </div>
+
+    <div class="stat-card">
+      <p class="stat-title">Últimos jugadores registrados</p>
+      <ul class="stat-list" id="listJugadores">
+        <li class="stat-empty">Cargando…</li>
+      </ul>
+    </div>
+
+    <div class="stat-card">
+      <p class="stat-title">Últimas subastas cerradas</p>
+      <ul class="stat-list" id="listSubastas">
+        <li class="stat-empty">Cargando…</li>
+      </ul>
+      <p class="stat-footnote" id="statValorTotal"></p>
+    </div>
+  </aside>
+
+  </div>
+
   <footer>Activos por Colombia S.A.S. · Panel interno de subasta</footer>
 
   </div>
@@ -966,7 +1055,6 @@
     (function () {
       var SUPABASE_URL = "https://vazzjcgcqyxechiwrqjv.supabase.co";
       var SUPABASE_ANON_KEY = "sb_publishable_XchKwzcsUTDcepEcaw_gqg_B6Q8CBQe";
-      var sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
       var loginScreen = document.getElementById("login-screen");
       var appContent = document.getElementById("app-content");
@@ -984,32 +1072,54 @@
         loginScreen.style.display = "flex";
       }
 
-      sb.auth.getSession().then(function (res) {
-        if (res.data && res.data.session) showApp();
-        else showLogin();
-      });
+      // Si el script de Supabase (CDN externo) no llega a cargar -- red lenta,
+      // bloqueador, CDN caido -- no debe tumbar el resto de la pagina (el
+      // contador y el panel de estadisticas de abajo deben seguir andando).
+      var sb = null;
+      try {
+        if (window.supabase && window.supabase.createClient) {
+          sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+      } catch (e) {
+        sb = null;
+      }
 
-      loginForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        loginError.style.display = "none";
-        loginSubmitBtn.disabled = true;
-        loginSubmitBtn.textContent = "Entrando...";
-        var email = document.getElementById("loginEmail").value.trim();
-        var password = document.getElementById("loginPassword").value;
-        sb.auth.signInWithPassword({ email: email, password: password }).then(function (res) {
-          loginSubmitBtn.disabled = false;
-          loginSubmitBtn.textContent = "Entrar";
-          if (res.error) {
-            loginError.textContent = "No pudimos verificar esos datos: " + res.error.message;
-            loginError.style.display = "block";
-            return;
-          }
-          showApp();
+      if (!sb) {
+        if (loginError) {
+          loginError.textContent = "No se pudo cargar el inicio de sesión (revisa tu conexión y recarga la página).";
+          loginError.style.display = "block";
+        }
+        if (loginSubmitBtn) loginSubmitBtn.disabled = true;
+        showLogin();
+      } else {
+        sb.auth.getSession().then(function (res) {
+          if (res.data && res.data.session) showApp();
+          else showLogin();
         });
-      });
+
+        loginForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          loginError.style.display = "none";
+          loginSubmitBtn.disabled = true;
+          loginSubmitBtn.textContent = "Entrando...";
+          var email = document.getElementById("loginEmail").value.trim();
+          var password = document.getElementById("loginPassword").value;
+          sb.auth.signInWithPassword({ email: email, password: password }).then(function (res) {
+            loginSubmitBtn.disabled = false;
+            loginSubmitBtn.textContent = "Entrar";
+            if (res.error) {
+              loginError.textContent = "No pudimos verificar esos datos: " + res.error.message;
+              loginError.style.display = "block";
+              return;
+            }
+            showApp();
+          });
+        });
+      }
 
       if (logoutBtn) {
         logoutBtn.addEventListener("click", function () {
+          if (!sb) { showLogin(); return; }
           sb.auth.signOut().then(function () {
             showLogin();
           });
@@ -1039,6 +1149,94 @@
         tick();
         setInterval(tick, 1000);
       }
+
+      // ---------- Estadisticas reales del panel (fetch al servidor del juego) ----------
+      var STATS_URL = "https://subasta-server-begz.onrender.com/api/panel-stats";
+
+      function fmtMoney(n) {
+        if (n === null || n === undefined) return "-";
+        if (n >= 1000000000) return "$" + (n / 1000000000).toFixed(1).replace(/\.0$/, "") + "MM";
+        if (n >= 1000000) return "$" + (n / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+        return "$" + n.toLocaleString("es-CO");
+      }
+      function fmtRelativo(iso) {
+        var ms = Date.now() - new Date(iso).getTime();
+        var min = Math.floor(ms / 60000);
+        if (min < 1) return "recién";
+        if (min < 60) return "hace " + min + " min";
+        var hrs = Math.floor(min / 60);
+        if (hrs < 24) return "hace " + hrs + "h";
+        return "hace " + Math.floor(hrs / 24) + "d";
+      }
+
+      function renderStats(data) {
+        var dot = document.getElementById("liveDot");
+        var big = document.getElementById("statConectados");
+        var sub = document.getElementById("statConectadosSub");
+        if (dot) dot.classList.add("is-live");
+        if (big) big.textContent = String(data.conectadosAhora);
+        if (sub) {
+          sub.textContent = data.conectadosAhora === 1
+            ? "jugador conectado ahora · " + data.jugadoresRegistradosTotal + " registrados en total"
+            : "jugadores conectados ahora · " + data.jugadoresRegistradosTotal + " registrados en total";
+        }
+
+        var listJ = document.getElementById("listJugadores");
+        if (listJ) {
+          listJ.innerHTML = "";
+          if (!data.ultimosJugadores || !data.ultimosJugadores.length) {
+            listJ.innerHTML = '<li class="stat-empty">Todavía no hay registros.</li>';
+          } else {
+            data.ultimosJugadores.forEach(function (j) {
+              var li = document.createElement("li");
+              var nm = document.createElement("span"); nm.className = "nm"; nm.textContent = j.nickname;
+              var meta = document.createElement("span"); meta.className = "meta"; meta.textContent = fmtRelativo(j.createdAt);
+              li.appendChild(nm); li.appendChild(meta);
+              listJ.appendChild(li);
+            });
+          }
+        }
+
+        var listS = document.getElementById("listSubastas");
+        if (listS) {
+          listS.innerHTML = "";
+          var cerradas = (data.ultimasSubastas || []).filter(function (s) { return !s.abortada && s.ganador; });
+          if (!cerradas.length) {
+            listS.innerHTML = '<li class="stat-empty">Todavía no hay subastas cerradas.</li>';
+          } else {
+            cerradas.forEach(function (s) {
+              var li = document.createElement("li");
+              var nm = document.createElement("span"); nm.className = "nm"; nm.textContent = s.inmueble + " — " + s.ganador;
+              var val = document.createElement("span"); val.className = "val"; val.textContent = fmtMoney(s.valorFinal);
+              li.appendChild(nm); li.appendChild(val);
+              listS.appendChild(li);
+            });
+          }
+        }
+
+        var foot = document.getElementById("statValorTotal");
+        if (foot) {
+          foot.innerHTML = data.valorTotalSubastado
+            ? "Total subastado hasta hoy: <b>" + fmtMoney(data.valorTotalSubastado) + "</b>"
+            : "";
+        }
+      }
+
+      function loadStats() {
+        fetch(STATS_URL, { cache: "no-store" })
+          .then(function (r) { if (!r.ok) throw new Error("bad status"); return r.json(); })
+          .then(renderStats)
+          .catch(function () {
+            var dot = document.getElementById("liveDot");
+            var sub = document.getElementById("statConectadosSub");
+            var big = document.getElementById("statConectados");
+            if (dot) dot.classList.remove("is-live");
+            if (big) big.textContent = "—";
+            if (sub) sub.textContent = "No se pudo conectar con el servidor del juego ahora mismo.";
+          });
+      }
+      loadStats();
+      setInterval(loadStats, 12000);
     })();
   </script>
 
