@@ -414,10 +414,11 @@ const TEMPLATE_HEAD = `<!doctype html>
     animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) both;
   }
   .countdown-banner::before{
-    content:""; position:absolute; top:0; left:0; right:0; height:3px;
+    content:""; position:absolute; top:0; left:0; right:0; height:4px;
     background:linear-gradient(90deg, transparent, var(--azul), var(--oro), transparent);
     background-size:200% 100%;
-    animation: glowSweep 3.6s ease-in-out infinite;
+    animation: glowSweep 2.6s ease-in-out infinite;
+    box-shadow:0 0 10px 1px rgba(26,168,221,0.45);
   }
   .countdown-info{ position:relative; z-index:1; max-width:440px; }
   .countdown-date{
@@ -463,13 +464,15 @@ const TEMPLATE_HEAD = `<!doctype html>
      compositing visto en pruebas); un elemento real al final del DOM con
      z-index alto sí respeta el orden esperado. */
   .tile-glow{
-    content:""; position:absolute; inset:0; border-radius:16px; padding:1.5px;
-    background: conic-gradient(from var(--angle), transparent 0deg, transparent 268deg, rgba(26,168,221,0.95) 300deg, rgba(245,166,35,0.95) 328deg, transparent 358deg);
+    content:""; position:absolute; inset:0; border-radius:16px; padding:2.5px;
+    background: conic-gradient(from var(--angle), transparent 0deg, transparent 225deg, rgba(26,168,221,1) 280deg, rgba(245,166,35,1) 320deg, transparent 355deg);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude;
-    animation: tileBorderSweep 7.5s linear infinite; animation-delay: var(--glow-delay, 0ms);
+    animation: tileBorderSweep 6s linear infinite; animation-delay: var(--glow-delay, 0ms);
     pointer-events:none; z-index:5; display:block;
-  }tile:hover{
+    filter: drop-shadow(0 0 4px rgba(26,168,221,0.55));
+  }
+  .tile:hover{
     transform: translateY(-8px) scale(1.015);
     box-shadow:0 22px 40px -14px rgba(0,0,0,.65);
   }
