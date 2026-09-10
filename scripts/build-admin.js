@@ -480,7 +480,7 @@ const TEMPLATE_HEAD = `<!doctype html>
   .countdown-box{
     background:rgba(234,241,251,0.06); border:1px solid rgba(234,241,251,0.12);
     border-radius:10px; padding:16px 26px; text-align:center; min-width:80px;
-    margin:0 18px;
+    margin:0 34px;
   }
   .countdown-num{ display:block; font-size:30px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--manila); }
   .countdown-label{ display:block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.62); margin-top:7px; }
