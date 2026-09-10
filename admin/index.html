@@ -27,7 +27,7 @@
   html, body{ overflow-x:hidden; max-width:100%; }
   body{
     margin:0;
-    background:#e4e9f0;
+    background:#eef1f6;
     color:var(--archivo);
     font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
     -webkit-font-smoothing:antialiased;
@@ -54,28 +54,15 @@
     100%{ background-position:0% 0%; }
   }
 
+  /* Fondo "Aurora suave": lavado diagonal muy tenue, azul arriba-izquierda
+     y ambar abajo-derecha, sin manchas ni formas duras. */
   body{
     background-image:
-      radial-gradient(ellipse 620px 480px at -6% 12%, rgba(245,166,35,0.24) 0%, rgba(245,166,35,0) 62%),
-      radial-gradient(ellipse 560px 460px at 106% 30%, rgba(26,168,221,0.26) 0%, rgba(26,168,221,0) 60%),
-      radial-gradient(ellipse 520px 420px at -4% 82%, rgba(26,168,221,0.18) 0%, rgba(26,168,221,0) 60%),
-      radial-gradient(ellipse 480px 400px at 104% 88%, rgba(245,166,35,0.16) 0%, rgba(245,166,35,0) 60%);
-    background-size:200% 200%;
-    animation: floatBg 22s ease-in-out infinite;
-    position:relative;
-  }
-  /* Orbes suaves que laten a los lados, para que el margen de la pantalla
-     nunca se sienta vacio en viewports angostos (celular). */
-  body::before, body::after{
-    content:""; position:fixed; top:38%; width:420px; height:420px; border-radius:50%;
-    filter:blur(90px); pointer-events:none; z-index:0;
-    animation: sideGlowPulse 6.5s ease-in-out infinite;
-  }
-  body::before{ left:-220px; background:rgba(26,168,221,0.45); }
-  body::after{ right:-220px; top:64%; background:rgba(245,166,35,0.4); animation-delay:3.1s; }
-  @keyframes sideGlowPulse{
-    0%,100%{ transform:scale(1); opacity:.55; }
-    50%{ transform:scale(1.25); opacity:1; }
+      radial-gradient(ellipse 1100px 850px at 0% 0%, rgba(26,168,221,0.24) 0%, rgba(26,168,221,0) 60%),
+      radial-gradient(ellipse 1100px 850px at 100% 100%, rgba(245,166,35,0.22) 0%, rgba(245,166,35,0) 60%),
+      radial-gradient(ellipse 900px 700px at 100% 0%, rgba(11,42,74,0.05) 0%, rgba(11,42,74,0) 55%);
+    background-repeat:no-repeat;
+    background-attachment:fixed;
   }
 
   /* --- pantalla de login (misma tarjeta de dos tonos que el login del jugador) --- */
