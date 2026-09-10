@@ -56,10 +56,26 @@
 
   body{
     background-image:
-      radial-gradient(ellipse 780px 520px at 4% 0%, rgba(245,166,35,0.10) 0%, rgba(245,166,35,0) 60%),
-      radial-gradient(ellipse 900px 640px at 100% 46%, rgba(26,168,221,0.12) 0%, rgba(26,168,221,0) 58%);
+      radial-gradient(ellipse 620px 480px at -6% 12%, rgba(245,166,35,0.24) 0%, rgba(245,166,35,0) 62%),
+      radial-gradient(ellipse 560px 460px at 106% 30%, rgba(26,168,221,0.26) 0%, rgba(26,168,221,0) 60%),
+      radial-gradient(ellipse 520px 420px at -4% 82%, rgba(26,168,221,0.18) 0%, rgba(26,168,221,0) 60%),
+      radial-gradient(ellipse 480px 400px at 104% 88%, rgba(245,166,35,0.16) 0%, rgba(245,166,35,0) 60%);
     background-size:200% 200%;
     animation: floatBg 22s ease-in-out infinite;
+    position:relative;
+  }
+  /* Orbes suaves que laten a los lados, para que el margen de la pantalla
+     nunca se sienta vacio en viewports angostos (celular). */
+  body::before, body::after{
+    content:""; position:fixed; top:38%; width:240px; height:240px; border-radius:50%;
+    filter:blur(70px); pointer-events:none; z-index:0;
+    animation: sideGlowPulse 6.5s ease-in-out infinite;
+  }
+  body::before{ left:-120px; background:rgba(26,168,221,0.4); }
+  body::after{ right:-120px; top:64%; background:rgba(245,166,35,0.35); animation-delay:3.1s; }
+  @keyframes sideGlowPulse{
+    0%,100%{ transform:scale(1); opacity:.55; }
+    50%{ transform:scale(1.25); opacity:1; }
   }
 
   /* --- pantalla de login (misma tarjeta de dos tonos que el login del jugador) --- */
@@ -188,7 +204,7 @@
     animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) both;
   }
   .countdown-banner::before{
-    content:""; position:absolute; top:0; left:0; right:0; height:4px;
+    content:""; position:absolute; top:0; left:0; right:0; height:11px;
     background:linear-gradient(90deg, transparent, var(--azul), var(--oro), transparent);
     background-size:200% 100%;
     animation: glowSweep 2.6s ease-in-out infinite;
@@ -238,7 +254,7 @@
      compositing visto en pruebas); un elemento real al final del DOM con
      z-index alto sí respeta el orden esperado. */
   .tile-glow{
-    content:""; position:absolute; inset:0; border-radius:16px; padding:2.5px;
+    content:""; position:absolute; inset:0; border-radius:16px; padding:9px;
     background: conic-gradient(from var(--angle), transparent 0deg, transparent 225deg, rgba(26,168,221,1) 280deg, rgba(245,166,35,1) 320deg, transparent 355deg);
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor; mask-composite: exclude;
