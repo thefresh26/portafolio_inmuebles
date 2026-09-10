@@ -28,9 +28,6 @@ const OUT_HTML = path.join(ROOT, "admin", "index.html");
 
 const HOST_BASE = "https://subasta-web.onrender.com/host";
 const SITE_IMAGES_BASE = "https://portafolio-inmuebles.onrender.com/images";
-// Servidor del juego (Fastify): de aqui el panel trae /api/panel-stats con
-// datos reales (conectados ahora, ultimas subastas, ultimos jugadores).
-const SUBASTA_SERVER_BASE = "https://subasta-server-begz.onrender.com";
 
 // Supabase (Auth con correo/contraseña) para el login del panel interno.
 // La "publishable key" esta pensada para ser publica (va en el HTML igual).
@@ -590,11 +587,8 @@ const TEMPLATE_HEAD = `<!doctype html>
 
   /* --- layout de dos columnas: tarjetas + panel de estadisticas en vivo --- */
   .layout-wrap{
-    width:96%; max-width:2200px; margin:0 auto; padding:0 32px;
-    display:grid; grid-template-columns:1fr 360px; gap:32px; align-items:start;
-  }
-  @media (min-width:1700px){
-    .layout-wrap{ grid-template-columns:1fr 400px; gap:40px; }
+    width:96%; max-width:1680px; margin:0 auto; padding:0 32px;
+    display:grid; grid-template-columns:1fr; align-items:start;
   }
   .main-col{ min-width:0; }
   .main-col .hero{ padding:0 0 8px; max-width:none; }
@@ -757,47 +751,6 @@ const TEMPLATE_TAIL = `  </div>
 
   </div>
 
-  <aside class="stats-sidebar" id="statsSidebar" aria-label="Estadísticas en vivo">
-    <div class="stat-card stat-card--activity" id="statLive">
-      <div class="stat-card-head">
-        <span class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>
-        </span>
-        <p class="stat-title">Actividad en vivo</p>
-        <span class="stat-dot" id="liveDot"></span>
-      </div>
-      <p class="stat-big" id="statConectados">—</p>
-      <p class="stat-sub" id="statConectadosSub">Conectando con el servidor del juego…</p>
-    </div>
-
-    <div class="stat-card stat-card--players">
-      <div class="stat-card-head">
-        <span class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        </span>
-        <p class="stat-title">Últimos jugadores registrados</p>
-      </div>
-      <ul class="stat-list" id="listJugadores">
-        <li><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></li>
-      </ul>
-    </div>
-
-    <div class="stat-card stat-card--auctions">
-      <div class="stat-card-head">
-        <span class="stat-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-8.5 8.5a2.12 2.12 0 0 0 3 3L17 9"/><path d="m17 9 3.4-3.4a1 1 0 0 0 0-1.4L18.8 2.6a1 1 0 0 0-1.4 0L14 6"/><path d="m2.5 21.5 2-2"/></svg>
-        </span>
-        <p class="stat-title">Últimas subastas cerradas</p>
-      </div>
-      <ul class="stat-list" id="listSubastas">
-        <li><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></li>
-      </ul>
-      <p class="stat-footnote" id="statValorTotal"></p>
-    </div>
-  </aside>
-
-  </div>
-
   <footer>Activos por Colombia S.A.S. · Panel interno de subasta</footer>
 
   </div>
@@ -932,110 +885,6 @@ const TEMPLATE_TAIL = `  </div>
         setInterval(tick, 1000);
       }
 
-      // ---------- Estadisticas reales del panel (fetch al servidor del juego) ----------
-      var STATS_URL = "${SUBASTA_SERVER_BASE}/api/panel-stats";
-
-      function fmtMoney(n) {
-        if (n === null || n === undefined) return "-";
-        if (n >= 1000000000) return "$" + (n / 1000000000).toFixed(1).replace(/\\.0$/, "") + "MM";
-        if (n >= 1000000) return "$" + (n / 1000000).toFixed(1).replace(/\\.0$/, "") + "M";
-        return "$" + n.toLocaleString("es-CO");
-      }
-      function fmtRelativo(iso) {
-        var ms = Date.now() - new Date(iso).getTime();
-        var min = Math.floor(ms / 60000);
-        if (min < 1) return "recién";
-        if (min < 60) return "hace " + min + " min";
-        var hrs = Math.floor(min / 60);
-        if (hrs < 24) return "hace " + hrs + "h";
-        return "hace " + Math.floor(hrs / 24) + "d";
-      }
-
-      function renderStats(data) {
-        var dot = document.getElementById("liveDot");
-        var big = document.getElementById("statConectados");
-        var sub = document.getElementById("statConectadosSub");
-        if (dot) dot.classList.add("is-live");
-        if (big) big.textContent = String(data.conectadosAhora);
-        if (sub) {
-          sub.textContent = data.conectadosAhora === 1
-            ? "jugador conectado ahora · " + data.jugadoresRegistradosTotal + " registrados en total"
-            : "jugadores conectados ahora · " + data.jugadoresRegistradosTotal + " registrados en total";
-        }
-
-        var listJ = document.getElementById("listJugadores");
-        if (listJ) {
-          listJ.innerHTML = "";
-          if (!data.ultimosJugadores || !data.ultimosJugadores.length) {
-            listJ.innerHTML = '<li class="stat-empty">Todavía no hay registros.</li>';
-          } else {
-            data.ultimosJugadores.forEach(function (j) {
-              var li = document.createElement("li");
-              var nm = document.createElement("span"); nm.className = "nm"; nm.textContent = j.nickname;
-              var meta = document.createElement("span"); meta.className = "meta"; meta.textContent = fmtRelativo(j.createdAt);
-              li.appendChild(nm); li.appendChild(meta);
-              listJ.appendChild(li);
-            });
-          }
-        }
-
-        var listS = document.getElementById("listSubastas");
-        if (listS) {
-          listS.innerHTML = "";
-          var cerradas = (data.ultimasSubastas || []).filter(function (s) { return !s.abortada && s.ganador; });
-          if (!cerradas.length) {
-            listS.innerHTML = '<li class="stat-empty">Todavía no hay subastas cerradas.</li>';
-          } else {
-            cerradas.forEach(function (s) {
-              var li = document.createElement("li");
-              var nm = document.createElement("span"); nm.className = "nm"; nm.textContent = s.inmueble + " — " + s.ganador;
-              var val = document.createElement("span"); val.className = "val"; val.textContent = fmtMoney(s.valorFinal);
-              li.appendChild(nm); li.appendChild(val);
-              listS.appendChild(li);
-            });
-          }
-        }
-
-        var foot = document.getElementById("statValorTotal");
-        if (foot) {
-          foot.innerHTML = data.valorTotalSubastado
-            ? "Total subastado hasta hoy: <b>" + fmtMoney(data.valorTotalSubastado) + "</b>"
-            : "";
-        }
-      }
-
-      function statusHtml(mensaje) {
-        return (
-          '<li class="stat-status">' +
-          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
-          '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/></svg>' +
-          "<p>" + mensaje + "</p></li>"
-        );
-      }
-
-      function loadStats() {
-        fetch(STATS_URL, { cache: "no-store" })
-          .then(function (r) { if (!r.ok) throw new Error("bad status"); return r.json(); })
-          .then(renderStats)
-          .catch(function () {
-            var dot = document.getElementById("liveDot");
-            var sub = document.getElementById("statConectadosSub");
-            var big = document.getElementById("statConectados");
-            if (dot) dot.classList.remove("is-live");
-            if (big) big.textContent = "—";
-            if (sub) sub.textContent = "No se pudo conectar con el servidor del juego ahora mismo.";
-            // Antes esto solo actualizaba la tarjeta "Actividad en vivo" y las
-            // otras dos se quedaban en "Cargando..." para siempre si el fetch
-            // fallaba -- mensaje honesto en las tres, no solo en una.
-            var listJ = document.getElementById("listJugadores");
-            var listS = document.getElementById("listSubastas");
-            var msg = "No se pudo conectar con el servidor del juego.";
-            if (listJ) listJ.innerHTML = statusHtml(msg);
-            if (listS) listS.innerHTML = statusHtml(msg);
-          });
-      }
-      loadStats();
-      setInterval(loadStats, 12000);
     })();
   </script>
 
