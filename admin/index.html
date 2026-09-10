@@ -61,6 +61,27 @@
      despacio y se desvanecen, para que el fondo se sienta "vivo" (como
      datos en tiempo real) sin distraer del contenido. */
   #bgParticles{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+
+  /* Bordes laterales: una linea de brillo que sube y baja muy despacio en
+     cada extremo de la pantalla, para que los margenes vacios en monitores
+     anchos no se sientan un espacio muerto. */
+  .edge-glow{
+    position:fixed; top:0; bottom:0; width:120px; z-index:0; pointer-events:none; overflow:hidden;
+  }
+  .edge-glow.left{ left:0; background:linear-gradient(90deg, rgba(26,168,221,0.12) 0%, rgba(26,168,221,0) 100%); }
+  .edge-glow.right{ right:0; background:linear-gradient(270deg, rgba(245,166,35,0.10) 0%, rgba(245,166,35,0) 100%); }
+  .edge-glow::after{
+    content:""; position:absolute; left:0; right:0; height:46%;
+    background:linear-gradient(180deg, transparent 0%, rgba(234,241,251,0.16) 45%, rgba(234,241,251,0.16) 55%, transparent 100%);
+    animation:edgeGlowMove 10s ease-in-out infinite alternate;
+  }
+  .edge-glow.left::after{ background:linear-gradient(180deg, transparent 0%, rgba(26,168,221,0.35) 45%, rgba(26,168,221,0.35) 55%, transparent 100%); }
+  .edge-glow.right::after{ background:linear-gradient(180deg, transparent 0%, rgba(245,166,35,0.30) 45%, rgba(245,166,35,0.30) 55%, transparent 100%); animation-delay:3s; }
+  @keyframes edgeGlowMove{
+    0%{ transform:translateY(-70%); }
+    100%{ transform:translateY(170%); }
+  }
+  @media (max-width:1100px){ .edge-glow{ display:none; } }
   .bg-particle{
     position:absolute; bottom:-10px; border-radius:999px; opacity:0;
     animation-name:bgParticleRise; animation-timing-function:linear; animation-iteration-count:infinite;
@@ -229,13 +250,13 @@
   .countdown-info h2{ font-size:22px; font-weight:800; margin-bottom:8px; color:var(--manila); }
   .countdown-sub{ color:rgba(234,241,251,0.6); font-size:13.5px; line-height:1.55; }
   .countdown-sub strong{ color:var(--manila); }
-  .countdown-clock{ position:relative; z-index:1; display:flex; align-items:center; gap:14px; }
+  .countdown-clock{ position:relative; z-index:1; display:flex; align-items:center; gap:22px; }
   .countdown-box{
     background:rgba(234,241,251,0.06); border:1px solid rgba(234,241,251,0.12);
-    border-radius:10px; padding:12px 20px; text-align:center; min-width:68px;
+    border-radius:10px; padding:14px 24px; text-align:center; min-width:76px;
   }
-  .countdown-num{ display:block; font-size:28px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--manila); }
-  .countdown-label{ display:block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.62); margin-top:3px; }
+  .countdown-num{ display:block; font-size:30px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--manila); }
+  .countdown-label{ display:block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.62); margin-top:5px; }
   .countdown-sep{ font-size:20px; font-weight:800; color:rgba(234,241,251,0.25); }
   @media (max-width:480px){
     .countdown-banner{ padding:20px; }
@@ -442,6 +463,8 @@
 <body>
 
   <div id="bgParticles" aria-hidden="true"></div>
+  <div class="edge-glow left" aria-hidden="true"></div>
+  <div class="edge-glow right" aria-hidden="true"></div>
 
   <div id="login-screen" class="login-screen">
     <div class="login-card">
@@ -1133,7 +1156,7 @@
       // regla global de animaciones.
       var bgHost = document.getElementById("bgParticles");
       if (bgHost) {
-        var totalParticulas = 18;
+        var totalParticulas = 26;
         for (var i = 0; i < totalParticulas; i++) {
           var p = document.createElement("div");
           var esAzul = i % 2 === 0;
@@ -1141,7 +1164,15 @@
           var tam = 2 + Math.random() * 3;
           p.style.width = tam + "px";
           p.style.height = tam + "px";
-          p.style.left = (Math.random() * 100) + "%";
+          // La mayoria nace pegada a los bordes izquierdo/derecho (donde
+          // antes se veia vacio en monitores anchos); solo unas pocas se
+          // reparten por el resto de la pantalla para no tapar el contenido.
+          var pos;
+          var r = Math.random();
+          if (r < 0.42) pos = Math.random() * 13;
+          else if (r < 0.84) pos = 87 + Math.random() * 13;
+          else pos = 13 + Math.random() * 74;
+          p.style.left = pos + "%";
           p.style.animationDuration = (9 + Math.random() * 7) + "s";
           p.style.animationDelay = (Math.random() * 12) + "s";
           bgHost.appendChild(p);
