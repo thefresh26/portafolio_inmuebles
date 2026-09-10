@@ -37,6 +37,9 @@
   a{color:inherit; text-decoration:none;}
   img{max-width:100%; display:block;}
   button{font-family:inherit;}
+  a:focus-visible, button:focus-visible, input:focus-visible{
+    outline:2px solid var(--azul); outline-offset:2px; border-radius:4px;
+  }
 
   @keyframes fadeSlideDown{ from{opacity:0; transform:translateY(-14px);} to{opacity:1; transform:translateY(0);} }
   @keyframes fadeSlideUp{ from{opacity:0; transform:translateY(22px);} to{opacity:1; transform:translateY(0);} }
@@ -52,6 +55,23 @@
     0%{ background-position:0% 0%; }
     50%{ background-position:100% 100%; }
     100%{ background-position:0% 0%; }
+  }
+
+  /* Particulas ascendiendo: puntitos de luz azul/ambar que suben muy
+     despacio y se desvanecen, para que el fondo se sienta "vivo" (como
+     datos en tiempo real) sin distraer del contenido. */
+  #bgParticles{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+  .bg-particle{
+    position:absolute; bottom:-10px; border-radius:999px; opacity:0;
+    animation-name:bgParticleRise; animation-timing-function:linear; animation-iteration-count:infinite;
+  }
+  .bg-particle.azul{ background:var(--azul); box-shadow:0 0 8px 1px rgba(26,168,221,0.6); }
+  .bg-particle.oro{ background:var(--oro); box-shadow:0 0 8px 1px rgba(245,166,35,0.55); }
+  @keyframes bgParticleRise{
+    0%{ transform:translateY(0); opacity:0; }
+    10%{ opacity:0.55; }
+    90%{ opacity:0.45; }
+    100%{ transform:translateY(-100vh); opacity:0; }
   }
 
   /* Fondo oscuro tipo "plano arquitectonico": navy profundo con una
@@ -151,7 +171,7 @@
   .logout-btn{
     display:flex; align-items:center; gap:6px;
     font-size:12px; font-weight:600; white-space:nowrap;
-    padding:6px 12px; border-radius:8px;
+    min-height:44px; padding:10px 16px; border-radius:8px;
     background:rgba(234,241,251,0.08); border:1px solid rgba(234,241,251,0.18);
     color:var(--manila); cursor:pointer;
     transition: background .2s ease, transform .2s ease, border-color .2s ease;
@@ -209,24 +229,24 @@
   .countdown-info h2{ font-size:22px; font-weight:800; margin-bottom:8px; color:var(--manila); }
   .countdown-sub{ color:rgba(234,241,251,0.6); font-size:13.5px; line-height:1.55; }
   .countdown-sub strong{ color:var(--manila); }
-  .countdown-clock{ position:relative; z-index:1; display:flex; align-items:center; gap:8px; }
+  .countdown-clock{ position:relative; z-index:1; display:flex; align-items:center; gap:14px; }
   .countdown-box{
     background:rgba(234,241,251,0.06); border:1px solid rgba(234,241,251,0.12);
-    border-radius:10px; padding:10px 14px; text-align:center; min-width:56px;
+    border-radius:10px; padding:12px 20px; text-align:center; min-width:68px;
   }
-  .countdown-num{ display:block; font-size:26px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--manila); }
-  .countdown-label{ display:block; font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.45); margin-top:2px; }
-  .countdown-sep{ font-size:20px; font-weight:800; color:rgba(234,241,251,0.3); }
+  .countdown-num{ display:block; font-size:28px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--manila); }
+  .countdown-label{ display:block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.62); margin-top:3px; }
+  .countdown-sep{ font-size:20px; font-weight:800; color:rgba(234,241,251,0.25); }
   @media (max-width:480px){
     .countdown-banner{ padding:20px; }
-    .countdown-clock{ width:100%; justify-content:space-between; }
+    .countdown-clock{ width:100%; justify-content:space-between; gap:8px; }
     .countdown-box{ min-width:0; flex:1; padding:8px 6px; }
     .countdown-num{ font-size:20px; }
   }
 
   .grid{
     max-width:1200px; margin:0 auto; padding:24px 24px 64px;
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:18px;
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(300px, 1fr)); gap:20px;
   }
   .tile{
     position:relative; aspect-ratio:3/4; border-radius:16px; overflow:hidden;
@@ -293,8 +313,8 @@
   .tile:hover .price{ text-shadow:0 0 14px rgba(245,166,35,0.55); }
   .cta{
     display:flex; align-items:center; gap:6px;
-    padding:9px 16px; border-radius:8px; font-size:13px; font-weight:700;
-    font-family:inherit;
+    min-height:44px; padding:12px 18px; border-radius:8px; font-size:13px; font-weight:700;
+    font-family:inherit; cursor:pointer;
     background:linear-gradient(90deg, var(--azul) 0%, var(--navy3) 100%);
     background-size:160% 100%;
     color:var(--manila);
@@ -312,21 +332,24 @@
   .tile:hover .cta svg{ transform: translateX(4px); }
 
   footer{
-    padding:24px; text-align:center; font-size:12px; color:rgba(234,241,251,0.45);
+    padding:24px; text-align:center; font-size:12px; color:rgba(234,241,251,0.6);
     border-top:1px solid rgba(234,241,251,0.10);
     animation: fadeSlideUp .5s ease both;
   }
 
   /* --- layout de dos columnas: tarjetas + panel de estadisticas en vivo --- */
   .layout-wrap{
-    max-width:1200px; margin:0 auto; padding:0 24px;
-    display:grid; grid-template-columns:1fr 300px; gap:28px; align-items:start;
+    width:96%; max-width:2200px; margin:0 auto; padding:0 32px;
+    display:grid; grid-template-columns:1fr 360px; gap:32px; align-items:start;
+  }
+  @media (min-width:1700px){
+    .layout-wrap{ grid-template-columns:1fr 400px; gap:40px; }
   }
   .main-col{ min-width:0; }
   .main-col .hero{ padding:0 0 8px; max-width:none; }
-  .main-col .grid{ padding:0 0 40px; }
+  .main-col .grid{ max-width:none; padding:0 0 40px; }
   @media (max-width:980px){
-    .layout-wrap{ grid-template-columns:1fr; }
+    .layout-wrap{ grid-template-columns:1fr; padding:0 20px; }
   }
 
   .stats-sidebar{
@@ -337,10 +360,30 @@
   @media (max-width:980px){ .stats-sidebar{ position:static; margin-bottom:8px; } }
 
   .stat-card{
+    position:relative; overflow:hidden;
     background:rgba(234,241,251,0.045); border:1px solid rgba(234,241,251,0.10);
-    border-radius:14px; padding:16px 16px 14px; backdrop-filter:blur(6px);
+    border-radius:14px; padding:18px 18px 16px; backdrop-filter:blur(6px);
+    box-shadow:0 14px 28px -20px rgba(0,0,0,0.55);
   }
-  .stat-card-head{ display:flex; align-items:center; gap:7px; margin-bottom:2px; }
+  .stat-card::before{
+    content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
+    background:linear-gradient(180deg, var(--azul), var(--oro));
+    opacity:0.75;
+  }
+  .stat-card-head{ display:flex; align-items:center; gap:9px; margin-bottom:2px; }
+  .stat-card-head .stat-title{ flex:1; }
+  .stat-icon{
+    width:26px; height:26px; border-radius:8px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(26,168,221,0.14); color:var(--azul);
+  }
+  .stat-icon svg{ width:14px; height:14px; }
+  .stat-card--activity::before{ background:var(--azul); }
+  .stat-card--activity .stat-icon{ background:rgba(26,168,221,0.14); color:var(--azul); }
+  .stat-card--players::before{ background:var(--oro); }
+  .stat-card--players .stat-icon{ background:rgba(245,166,35,0.16); color:var(--oro); }
+  .stat-card--auctions::before{ background:var(--esmeralda); }
+  .stat-card--auctions .stat-icon{ background:rgba(26,184,122,0.16); color:var(--esmeralda); }
   .stat-dot{
     width:7px; height:7px; border-radius:999px; background:rgba(234,241,251,0.25); flex-shrink:0;
     transition: background .3s ease, box-shadow .3s ease;
@@ -348,11 +391,11 @@
   .stat-dot.is-live{ background:var(--esmeralda); box-shadow:0 0 0 3px rgba(26,184,122,0.22); animation:dotBlink 1.8s ease-in-out infinite; }
   .stat-title{
     font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;
-    color:rgba(234,241,251,0.5); margin-bottom:10px;
+    color:rgba(234,241,251,0.55); margin-bottom:10px;
   }
   .stat-card-head .stat-title{ margin-bottom:0; }
-  .stat-big{ font-size:30px; font-weight:800; color:var(--manila); font-variant-numeric:tabular-nums; margin:2px 0 2px; }
-  .stat-sub{ font-size:12px; color:rgba(234,241,251,0.5); line-height:1.5; }
+  .stat-big{ font-size:34px; font-weight:800; color:var(--manila); font-variant-numeric:tabular-nums; margin:6px 0 2px; letter-spacing:-0.01em; }
+  .stat-sub{ font-size:12px; color:rgba(234,241,251,0.6); line-height:1.5; }
 
   .stat-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px; }
   .stat-list li{
@@ -361,14 +404,30 @@
   }
   .stat-list li:last-child{ border-bottom:none; padding-bottom:0; }
   .stat-list .nm{ color:var(--manila); font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .stat-list .meta{ color:rgba(234,241,251,0.45); font-size:10.5px; white-space:nowrap; }
+  .stat-list .meta{ color:rgba(234,241,251,0.58); font-size:10.5px; white-space:nowrap; }
   .stat-list .val{ color:var(--oro); font-weight:700; font-variant-numeric:tabular-nums; white-space:nowrap; }
-  .stat-empty{ color:rgba(234,241,251,0.4); font-size:12.5px; font-style:italic; }
+  .stat-empty{ color:rgba(234,241,251,0.55); font-size:12.5px; font-style:italic; }
   .stat-footnote{
     margin-top:10px; padding-top:10px; border-top:1px solid rgba(234,241,251,0.08);
-    font-size:11px; color:rgba(234,241,251,0.45);
+    font-size:11px; color:rgba(234,241,251,0.6);
   }
   .stat-footnote b{ color:var(--oro); font-weight:700; }
+
+  /* Skeleton de carga inicial: se ve mientras llega la primera respuesta del
+     servidor -- reemplaza el texto "Cargando..." estatico por barras animadas,
+     mas honesto visualmente y respeta prefers-reduced-motion (regla global). */
+  .skeleton-line{
+    height:10px; border-radius:5px; margin:7px 0;
+    background:linear-gradient(90deg, rgba(234,241,251,0.06) 25%, rgba(234,241,251,0.16) 37%, rgba(234,241,251,0.06) 63%);
+    background-size:400% 100%;
+    animation: shimmer 1.6s ease-in-out infinite;
+  }
+  .skeleton-line:last-child{ width:65%; }
+  @keyframes shimmer{ 0%{ background-position:100% 0; } 100%{ background-position:-100% 0; } }
+
+  .stat-status{ display:flex; align-items:flex-start; gap:8px; }
+  .stat-status svg{ width:14px; height:14px; flex-shrink:0; margin-top:1px; color:#ff9d9d; }
+  .stat-status p{ font-size:12px; color:rgba(234,241,251,0.65); line-height:1.5; }
 
   @media (prefers-reduced-motion: reduce){
     *, *::before, *::after{
@@ -381,6 +440,8 @@
 </style>
 </head>
 <body>
+
+  <div id="bgParticles" aria-hidden="true"></div>
 
   <div id="login-screen" class="login-screen">
     <div class="login-card">
@@ -1020,26 +1081,39 @@
   </div>
 
   <aside class="stats-sidebar" id="statsSidebar" aria-label="Estadísticas en vivo">
-    <div class="stat-card" id="statLive">
+    <div class="stat-card stat-card--activity" id="statLive">
       <div class="stat-card-head">
-        <span class="stat-dot" id="liveDot"></span>
+        <span class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>
+        </span>
         <p class="stat-title">Actividad en vivo</p>
+        <span class="stat-dot" id="liveDot"></span>
       </div>
       <p class="stat-big" id="statConectados">—</p>
       <p class="stat-sub" id="statConectadosSub">Conectando con el servidor del juego…</p>
     </div>
 
-    <div class="stat-card">
-      <p class="stat-title">Últimos jugadores registrados</p>
+    <div class="stat-card stat-card--players">
+      <div class="stat-card-head">
+        <span class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </span>
+        <p class="stat-title">Últimos jugadores registrados</p>
+      </div>
       <ul class="stat-list" id="listJugadores">
-        <li class="stat-empty">Cargando…</li>
+        <li><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></li>
       </ul>
     </div>
 
-    <div class="stat-card">
-      <p class="stat-title">Últimas subastas cerradas</p>
+    <div class="stat-card stat-card--auctions">
+      <div class="stat-card-head">
+        <span class="stat-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14 6-8.5 8.5a2.12 2.12 0 0 0 3 3L17 9"/><path d="m17 9 3.4-3.4a1 1 0 0 0 0-1.4L18.8 2.6a1 1 0 0 0-1.4 0L14 6"/><path d="m2.5 21.5 2-2"/></svg>
+        </span>
+        <p class="stat-title">Últimas subastas cerradas</p>
+      </div>
       <ul class="stat-list" id="listSubastas">
-        <li class="stat-empty">Cargando…</li>
+        <li><div class="skeleton-line"></div><div class="skeleton-line"></div><div class="skeleton-line"></div></li>
       </ul>
       <p class="stat-footnote" id="statValorTotal"></p>
     </div>
@@ -1052,6 +1126,29 @@
   </div>
 
   <script>
+    (function () {
+      // Fondo "vivo": puntitos de luz azul/ambar que suben despacio y se
+      // desvanecen. Corre independiente del login (para que se vea incluso
+      // en la pantalla de acceso) y respeta prefers-reduced-motion via la
+      // regla global de animaciones.
+      var bgHost = document.getElementById("bgParticles");
+      if (bgHost) {
+        var totalParticulas = 18;
+        for (var i = 0; i < totalParticulas; i++) {
+          var p = document.createElement("div");
+          var esAzul = i % 2 === 0;
+          p.className = "bg-particle " + (esAzul ? "azul" : "oro");
+          var tam = 2 + Math.random() * 3;
+          p.style.width = tam + "px";
+          p.style.height = tam + "px";
+          p.style.left = (Math.random() * 100) + "%";
+          p.style.animationDuration = (9 + Math.random() * 7) + "s";
+          p.style.animationDelay = (Math.random() * 12) + "s";
+          bgHost.appendChild(p);
+        }
+      }
+    })();
+
     (function () {
       var SUPABASE_URL = "https://vazzjcgcqyxechiwrqjv.supabase.co";
       var SUPABASE_ANON_KEY = "sb_publishable_XchKwzcsUTDcepEcaw_gqg_B6Q8CBQe";
@@ -1222,6 +1319,15 @@
         }
       }
 
+      function statusHtml(mensaje) {
+        return (
+          '<li class="stat-status">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+          '<circle cx="12" cy="12" r="9"/><path d="M12 8v5"/><path d="M12 16.5v.01"/></svg>' +
+          "<p>" + mensaje + "</p></li>"
+        );
+      }
+
       function loadStats() {
         fetch(STATS_URL, { cache: "no-store" })
           .then(function (r) { if (!r.ok) throw new Error("bad status"); return r.json(); })
@@ -1233,6 +1339,14 @@
             if (dot) dot.classList.remove("is-live");
             if (big) big.textContent = "—";
             if (sub) sub.textContent = "No se pudo conectar con el servidor del juego ahora mismo.";
+            // Antes esto solo actualizaba la tarjeta "Actividad en vivo" y las
+            // otras dos se quedaban en "Cargando..." para siempre si el fetch
+            // fallaba -- mensaje honesto en las tres, no solo en una.
+            var listJ = document.getElementById("listJugadores");
+            var listS = document.getElementById("listSubastas");
+            var msg = "No se pudo conectar con el servidor del juego.";
+            if (listJ) listJ.innerHTML = statusHtml(msg);
+            if (listS) listS.innerHTML = statusHtml(msg);
           });
       }
       loadStats();
