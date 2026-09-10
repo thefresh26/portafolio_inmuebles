@@ -201,14 +201,18 @@
   .logout-btn svg{width:14px; height:14px;}
   @media (max-width:480px){
     .badge-interno{ font-size:9.5px; letter-spacing:0.02em; padding:3px 8px; }
-    .hero, .grid{ padding-left:16px; padding-right:16px; }
+    .hero-row, .grid{ padding-left:16px; padding-right:16px; }
   }
 
   @property --angle{ syntax:'<angle>'; initial-value:0deg; inherits:false; }
   @keyframes tileBorderSweep{ to{ --angle:360deg; } }
   @keyframes glowSweep{ 0%{background-position:-200% 0;} 100%{background-position:200% 0;} }
 
-  .hero{padding:40px 24px 8px; max-width:1200px; margin:0 auto;}
+  .hero-row{
+    display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap;
+    gap:24px 40px; max-width:1200px; margin:0 auto; padding:40px 24px 28px;
+  }
+  .hero{ padding:0; max-width:640px; }
   .hero .eyebrow{
     color:var(--oro); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.16em; margin-bottom:8px;
     animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) .08s both;
@@ -222,48 +226,45 @@
     animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) .24s both;
   }
 
-  /* --- Contador de la proxima ronda de subasta --- */
-  .countdown-wrap{ max-width:1200px; margin:0 auto; padding:8px 24px 0; }
+  /* --- Contador de la proxima ronda de subasta: version compacta, al lado
+     del titulo (antes era un banner de ancho completo debajo del hero). --- */
   .countdown-banner{
-    position:relative; border-radius:18px; overflow:hidden;
+    position:relative; overflow:hidden; flex-shrink:0;
+    border-radius:14px;
     background:
-      radial-gradient(ellipse 420px 260px at 8% 0%, rgba(245,166,35,0.16) 0%, rgba(245,166,35,0) 60%),
-      radial-gradient(ellipse 480px 320px at 100% 100%, rgba(26,168,221,0.18) 0%, rgba(26,168,221,0) 60%),
+      radial-gradient(ellipse 260px 160px at 10% 0%, rgba(245,166,35,0.16) 0%, rgba(245,166,35,0) 60%),
+      radial-gradient(ellipse 260px 180px at 100% 100%, rgba(26,168,221,0.18) 0%, rgba(26,168,221,0) 60%),
       linear-gradient(160deg, #123457 0%, #0b2a4a 55%, #0a2543 100%);
-    padding:26px 28px 28px;
-    display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:20px;
+    padding:14px 18px 16px;
     animation: fadeSlideUp .55s cubic-bezier(.22,1,.36,1) both;
   }
   .countdown-banner::before{
-    content:""; position:absolute; top:0; left:0; right:0; height:11px;
+    content:""; position:absolute; top:0; left:0; right:0; height:7px;
     background:linear-gradient(90deg, transparent, var(--azul), var(--oro), transparent);
     background-size:200% 100%;
     animation: glowSweep 2.6s ease-in-out infinite;
-    box-shadow:0 0 10px 1px rgba(26,168,221,0.45);
+    box-shadow:0 0 8px 1px rgba(26,168,221,0.4);
   }
-  .countdown-info{ position:relative; z-index:1; max-width:440px; }
   .countdown-date{
-    display:flex; align-items:center; gap:7px; color:var(--sello);
-    font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:10px;
+    position:relative; z-index:1; display:flex; align-items:center; gap:7px; color:var(--sello);
+    font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:10px; white-space:nowrap;
   }
-  .countdown-dot{ width:7px; height:7px; border-radius:999px; background:var(--sello); animation:dotBlink 1.6s ease-in-out infinite; }
-  .countdown-info h2{ font-size:22px; font-weight:800; margin-bottom:8px; color:var(--manila); }
-  .countdown-sub{ color:rgba(234,241,251,0.6); font-size:13.5px; line-height:1.55; }
-  .countdown-sub strong{ color:var(--manila); }
-  .countdown-clock{ position:relative; z-index:1; display:flex; align-items:center; gap:0; }
+  .countdown-dot{ width:6px; height:6px; border-radius:999px; background:var(--sello); flex-shrink:0; animation:dotBlink 1.6s ease-in-out infinite; }
+  .countdown-clock{ position:relative; z-index:1; display:flex; align-items:center; gap:8px; }
   .countdown-box{
-    background:rgba(234,241,251,0.06); border:1px solid rgba(234,241,251,0.12);
-    border-radius:10px; padding:16px 26px; text-align:center; min-width:80px;
-    margin:0 34px;
+    background:rgba(234,241,251,0.07); border:1px solid rgba(234,241,251,0.13);
+    border-radius:8px; padding:8px 11px; text-align:center; min-width:44px;
   }
-  .countdown-num{ display:block; font-size:30px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--manila); }
-  .countdown-label{ display:block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.62); margin-top:7px; }
-  .countdown-sep{ font-size:20px; font-weight:800; color:rgba(234,241,251,0.2); }
+  .countdown-num{ display:block; font-size:18px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--manila); }
+  .countdown-label{ display:block; font-size:7.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:rgba(234,241,251,0.6); margin-top:3px; }
+  .countdown-sep{ font-size:14px; font-weight:800; color:rgba(234,241,251,0.22); }
+  @media (max-width:760px){
+    .hero-row{ align-items:flex-start; }
+    .countdown-banner{ width:100%; }
+    .countdown-clock{ justify-content:space-between; }
+  }
   @media (max-width:480px){
-    .countdown-banner{ padding:20px; }
-    .countdown-clock{ width:100%; justify-content:space-between; gap:8px; }
     .countdown-box{ min-width:0; flex:1; padding:8px 6px; }
-    .countdown-num{ font-size:20px; }
   }
 
   .grid{
@@ -365,7 +366,7 @@
     display:grid; grid-template-columns:1fr; align-items:start;
   }
   .main-col{ min-width:0; }
-  .main-col .hero{ padding:0 0 8px; max-width:none; }
+  .main-col .hero-row{ padding:0 0 28px; max-width:none; }
   .main-col .grid{ max-width:none; padding:0 0 40px; }
   @media (max-width:980px){
     .layout-wrap{ grid-template-columns:1fr; padding:0 20px; }
@@ -511,19 +512,14 @@
   <div class="layout-wrap">
   <div class="main-col">
 
-  <div class="hero">
-    <p class="eyebrow">Equipo · Activos por Colombia</p>
-    <h1>Arrancar una subasta</h1>
-    <p>Elige el inmueble y toca "Subastar" para armarlo en la consola del presentador. Esta vista es solo para el equipo -- los clientes ven el portafolio público, sin este botón.</p>
-  </div>
-
-  <div class="countdown-wrap">
+  <div class="hero-row">
+    <div class="hero">
+      <p class="eyebrow">Equipo · Activos por Colombia</p>
+      <h1>Arrancar una subasta</h1>
+      <p>Elige el inmueble y toca "Subastar" para armarlo en la consola del presentador. Esta vista es solo para el equipo -- los clientes ven el portafolio público, sin este botón.</p>
+    </div>
     <div class="countdown-banner">
-      <div class="countdown-info">
-        <p class="countdown-date"><span class="countdown-dot"></span>23 de septiembre</p>
-        <h2>Próxima ronda de subasta</h2>
-        <p class="countdown-sub">Se subasta <strong>Lote con construcción</strong> en Bogotá D.C. — no dejes pasar tu oportunidad.</p>
-      </div>
+      <p class="countdown-date"><span class="countdown-dot"></span>Próxima ronda · 23 de septiembre</p>
       <div class="countdown-clock" data-target="2026-09-23T15:00:00-05:00">
         <div class="countdown-box"><span class="countdown-num" data-unit="dias">00</span><span class="countdown-label">Días</span></div>
         <span class="countdown-sep">:</span>
@@ -534,6 +530,7 @@
         <div class="countdown-box"><span class="countdown-num" data-unit="seg">00</span><span class="countdown-label">Seg</span></div>
       </div>
     </div>
+
   </div>
 
   <div class="grid">
