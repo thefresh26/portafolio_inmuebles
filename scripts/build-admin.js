@@ -479,14 +479,15 @@ const TEMPLATE_HEAD = `<!doctype html>
   .countdown-info h2{ font-size:22px; font-weight:800; margin-bottom:8px; color:var(--manila); }
   .countdown-sub{ color:rgba(234,241,251,0.6); font-size:13.5px; line-height:1.55; }
   .countdown-sub strong{ color:var(--manila); }
-  .countdown-clock{ position:relative; z-index:1; display:flex; align-items:center; gap:22px; }
+  .countdown-clock{ position:relative; z-index:1; display:flex; align-items:center; gap:0; }
   .countdown-box{
     background:rgba(234,241,251,0.06); border:1px solid rgba(234,241,251,0.12);
-    border-radius:10px; padding:14px 24px; text-align:center; min-width:76px;
+    border-radius:10px; padding:16px 26px; text-align:center; min-width:80px;
+    margin:0 18px;
   }
   .countdown-num{ display:block; font-size:30px; font-weight:800; font-variant-numeric:tabular-nums; color:var(--manila); }
-  .countdown-label{ display:block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.62); margin-top:5px; }
-  .countdown-sep{ font-size:20px; font-weight:800; color:rgba(234,241,251,0.25); }
+  .countdown-label{ display:block; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:rgba(234,241,251,0.62); margin-top:7px; }
+  .countdown-sep{ font-size:20px; font-weight:800; color:rgba(234,241,251,0.2); }
   @media (max-width:480px){
     .countdown-banner{ padding:20px; }
     .countdown-clock{ width:100%; justify-content:space-between; gap:8px; }
