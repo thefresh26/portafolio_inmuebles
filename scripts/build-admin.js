@@ -293,12 +293,12 @@ const TEMPLATE_HEAD = `<!doctype html>
   /* Orbes suaves que laten a los lados, para que el margen de la pantalla
      nunca se sienta vacio en viewports angostos (celular). */
   body::before, body::after{
-    content:""; position:fixed; top:38%; width:240px; height:240px; border-radius:50%;
-    filter:blur(70px); pointer-events:none; z-index:0;
+    content:""; position:fixed; top:38%; width:420px; height:420px; border-radius:50%;
+    filter:blur(90px); pointer-events:none; z-index:0;
     animation: sideGlowPulse 6.5s ease-in-out infinite;
   }
-  body::before{ left:-120px; background:rgba(26,168,221,0.4); }
-  body::after{ right:-120px; top:64%; background:rgba(245,166,35,0.35); animation-delay:3.1s; }
+  body::before{ left:-220px; background:rgba(26,168,221,0.45); }
+  body::after{ right:-220px; top:64%; background:rgba(245,166,35,0.4); animation-delay:3.1s; }
   @keyframes sideGlowPulse{
     0%,100%{ transform:scale(1); opacity:.55; }
     50%{ transform:scale(1.25); opacity:1; }
