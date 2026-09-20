@@ -24,7 +24,18 @@
     --azul:#1aa8dd;
   }
   *{box-sizing:border-box;}
-  html, body{ overflow-x:hidden; max-width:100%; }
+  /* Importante: overflow-x SOLO en html, nunca tambien en body -- ponerlo en
+     los dos convierte a body en un contenedor de scroll "fantasma" (nunca
+     llega a desplazarse el solo, pero rompe el position:sticky de .topbar,
+     que terminaba viajando con el contenido en vez de quedarse fija). */
+  html{ overflow-x:hidden; max-width:100%; }
+  body{ max-width:100%; }
+  html{
+    scroll-behavior: smooth;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Edge/IE viejo */
+  }
+  html::-webkit-scrollbar{ display:none; width:0; height:0; } /* Chrome, Safari, Edge nuevo */
   body{
     margin:0;
     background:#0a1628;
@@ -268,6 +279,55 @@
   }
   @media (max-width:480px){
     .countdown-box{ min-width:0; flex:1; padding:8px 6px; }
+  }
+
+  /* Buscador rapido: con tantos inmuebles en la cuadricula, filtra por
+     ciudad, nombre, tipo o FMI sin tener que hacer scroll manual. Se queda
+     pegado justo debajo de la topbar (sticky, top = alto de la topbar). */
+  .filter-bar{
+    position:sticky; z-index:9;
+    top:73px;
+    max-width:1200px; margin:0 auto; padding:14px 24px;
+    display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+    background:rgba(10,22,40,0.92); backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(234,241,251,0.08);
+  }
+  .filter-input-wrap{
+    position:relative; flex:1 1 260px; min-width:200px; max-width:420px;
+  }
+  .filter-input-wrap svg{
+    position:absolute; left:13px; top:50%; transform:translateY(-50%);
+    color:rgba(234,241,251,0.4); pointer-events:none;
+  }
+  .filter-input{
+    width:100%; padding:10px 14px 10px 38px; border-radius:999px;
+    background:rgba(234,241,251,0.06); border:1.5px solid rgba(234,241,251,0.14);
+    color:var(--manila); font-family:inherit; font-size:13.5px;
+    transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .filter-input::placeholder{ color:rgba(234,241,251,0.4); }
+  .filter-input:focus{
+    outline:none; border-color:var(--azul); background:rgba(234,241,251,0.09);
+    box-shadow:0 0 0 3px rgba(26,168,221,0.2);
+  }
+  .filter-clear{
+    position:absolute; right:6px; top:50%; transform:translateY(-50%);
+    width:22px; height:22px; border-radius:999px; border:none; cursor:pointer;
+    background:rgba(234,241,251,0.1); color:var(--manila);
+    display:none; align-items:center; justify-content:center; font-size:13px; line-height:1;
+  }
+  .filter-clear:hover{ background:rgba(234,241,251,0.18); }
+  .filter-count{
+    font-size:12px; color:rgba(234,241,251,0.55); white-space:nowrap;
+  }
+  .filter-count b{ color:var(--manila); font-weight:700; }
+  .no-results{
+    display:none; max-width:1200px; margin:0 auto; padding:48px 24px; text-align:center;
+    color:rgba(234,241,251,0.6); font-size:14px;
+  }
+  @media (max-width:600px){
+    .filter-bar{ top:64px; padding:12px 16px; }
+    .filter-input-wrap{ max-width:none; }
   }
 
   .grid{
@@ -536,7 +596,17 @@
 
   </div>
 
-  <div class="grid">
+  <div class="filter-bar">
+    <div class="filter-input-wrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="search" id="filtroInmuebles" class="filter-input" placeholder="Buscar por ciudad, tipo, nombre o FMI..." autocomplete="off" />
+      <button type="button" class="filter-clear" id="filtroLimpiar" aria-label="Limpiar búsqueda">✕</button>
+    </div>
+    <span class="filter-count" id="filtroConteo"></span>
+  </div>
+  <p class="no-results" id="filtroSinResultados">Ningún inmueble coincide con esa búsqueda.</p>
+
+  <div class="grid" id="gridInmuebles">
       <a class="tile" href="https://subasta-web.onrender.com/host?fmi=510&amp;nombre=Lote+con+construcci%C3%B3n&amp;ciudad=Bogot%C3%A1+D.C.&amp;area=5226.15&amp;avaluo=47332239056&amp;imagen=https%3A%2F%2Fportafolio-inmuebles.onrender.com%2Fimages%2F510.jpg" style="animation-delay:0ms; --glow-delay:0ms">
         <img src="../images/510.jpg" alt="Lote con construcción" loading="lazy" />
         <div class="scrim"></div>
@@ -1235,6 +1305,69 @@
         setInterval(tick, 1000);
       }
 
+    })();
+
+    // Buscador rapido del catalogo: filtra las tarjetas ya renderizadas por
+    // ciudad, nombre/tipo o FMI, sin llamar al servidor -- son pocas decenas
+    // de inmuebles, filtrar en el cliente es instantaneo.
+    (function () {
+      var input = document.getElementById("filtroInmuebles");
+      var clearBtn = document.getElementById("filtroLimpiar");
+      var conteo = document.getElementById("filtroConteo");
+      var sinResultados = document.getElementById("filtroSinResultados");
+      var grid = document.getElementById("gridInmuebles");
+      if (!input || !grid) return;
+
+      var tiles = Array.prototype.slice.call(grid.querySelectorAll(".tile"));
+      var total = tiles.length;
+
+      function normalizar(s) {
+        return (s || "")
+          .toString()
+          .toLowerCase()
+          .normalize("NFD")
+          .replace(/[̀-ͯ]/g, "");
+      }
+
+      var indice = tiles.map(function (tile) {
+        var loc = tile.querySelector(".loc");
+        var nombre = tile.querySelector(".nombre");
+        var highlight = tile.querySelector(".highlight");
+        var fmi = tile.querySelector(".fmi-badge");
+        return {
+          tile: tile,
+          texto: normalizar(
+            [loc, nombre, highlight, fmi].map(function (el) { return el ? el.textContent : ""; }).join(" ")
+          ),
+        };
+      });
+
+      function aplicarFiltro() {
+        var q = normalizar(input.value.trim());
+        clearBtn.style.display = q ? "flex" : "none";
+        if (!q) {
+          indice.forEach(function (item) { item.tile.style.display = ""; });
+          conteo.innerHTML = "<b>" + total + "</b> inmuebles";
+          sinResultados.style.display = "none";
+          return;
+        }
+        var visibles = 0;
+        indice.forEach(function (item) {
+          var coincide = item.texto.indexOf(q) !== -1;
+          item.tile.style.display = coincide ? "" : "none";
+          if (coincide) visibles++;
+        });
+        conteo.innerHTML = "<b>" + visibles + "</b> de " + total + " inmuebles";
+        sinResultados.style.display = visibles === 0 ? "block" : "none";
+      }
+
+      input.addEventListener("input", aplicarFiltro);
+      clearBtn.addEventListener("click", function () {
+        input.value = "";
+        aplicarFiltro();
+        input.focus();
+      });
+      aplicarFiltro();
     })();
   </script>
 
