@@ -60,6 +60,17 @@ function formatoCompacto(valor: number): string {
   return valor.toString();
 }
 
+// Área y avalúo con el mismo formato que el portafolio público (punto de
+// miles, coma decimal en el área) para que el presentador vea el mismo
+// numero que ya le mostraron al cliente antes de subastar.
+function formatoArea(m2: number): string {
+  return `${m2.toLocaleString("es-CO", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} m²`;
+}
+
+function formatoMoneda(valor: number): string {
+  return `$ ${valor.toLocaleString("es-CO")}`;
+}
+
 type PiezaConfeti = { id: number; left: number; delay: number; duracion: number; rot: number; color: string };
 
 const CONFETTI_COLORES = ["bg-oro", "bg-azul", "bg-esmeralda", "bg-manila"];
@@ -591,41 +602,55 @@ export default function Host() {
 
   return (
     <div className="min-h-screen bg-escenario text-manila font-body flex flex-col">
-      {/* ---------- Header: barra flotante minimalista ---------- */}
-      <div className="flex flex-wrap items-center justify-between gap-4 px-6 lg:px-10 pt-6 pb-4">
-        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-manila/70">Subasta Activa</p>
-        <div className="flex items-center gap-2.5">
-          <button
-            type="button"
-            className="bg-manila text-archivo px-4 py-2 rounded-full text-sm font-display font-bold shadow-md transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-            onClick={() => window.open("/screen", "_blank")}
-          >
-            Abrir pantalla proyector
-          </button>
-          <button
-            type="button"
-            className="bg-manila/10 border border-manila/25 text-manila px-3.5 py-2 rounded-full text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-            onClick={() => setShowAdminForm(true)}
-          >
-            + Nuevo administrador
-          </button>
-          <button
-            type="button"
-            className="bg-manila/10 border border-manila/25 text-manila px-3.5 py-2 rounded-full text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
-            onClick={() => {
-              window.location.href = "https://portafolio-inmuebles.onrender.com/admin/";
-            }}
-          >
-            Ir a la página
-          </button>
-          <div className="w-px h-5 bg-manila/20" />
-          <button
-            type="button"
-            className="text-manila/60 px-2 py-2 text-sm transition-transform duration-150 ease-out hover:scale-105 active:scale-95 hover:text-manila/90"
-            onClick={logout}
-          >
-            Cerrar sesión
-          </button>
+      {/* ---------- Header: topbar fija, con blur, a tono con el panel interno del portafolio ---------- */}
+      <div className="sticky top-0 z-20 backdrop-blur-md bg-archivo/85 border-b border-manila/10">
+        <div className="flex flex-wrap items-center justify-between gap-4 px-6 lg:px-10 py-3.5">
+          <div className="flex items-center gap-2.5">
+            <BrandMark className="w-7 h-7" />
+            <p className="font-display font-bold text-manila tracking-tight">Subasta Activa</p>
+            <span
+              className={`ml-1.5 hidden sm:inline-flex w-2 h-2 rounded-full ${connected ? "bg-esmeralda live-pulse" : "bg-manila/30"}`}
+              aria-hidden="true"
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              className="bg-gradient-to-r from-azul to-navy3 text-manila px-4 py-2 rounded-full text-sm font-display font-bold shadow-md shadow-azul/20 transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+              onClick={() => window.open("/screen", "_blank")}
+            >
+              Abrir pantalla proyector
+            </button>
+            <button
+              type="button"
+              className="bg-manila/10 border border-manila/20 text-manila px-3.5 py-2 rounded-full text-sm transition-all duration-150 ease-out hover:scale-105 hover:bg-manila/15 active:scale-95"
+              onClick={() => setShowAdminForm(true)}
+            >
+              + Nuevo administrador
+            </button>
+            <button
+              type="button"
+              className="bg-manila/10 border border-manila/20 text-manila px-3.5 py-2 rounded-full text-sm transition-all duration-150 ease-out hover:scale-105 hover:bg-manila/15 active:scale-95"
+              onClick={() => {
+                window.location.href = "https://portafolio-inmuebles.onrender.com/admin/";
+              }}
+            >
+              Ir a la página
+            </button>
+            <div className="w-px h-5 bg-manila/15" />
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 text-manila/60 px-2.5 py-2 rounded-lg text-sm transition-all duration-150 ease-out hover:bg-sello/15 hover:text-manila active:scale-95"
+              onClick={logout}
+            >
+              Cerrar sesión
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="w-3.5 h-3.5" aria-hidden="true">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <path d="M16 17l5-5-5-5" />
+                <path d="M21 12H9" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -729,19 +754,48 @@ export default function Host() {
                   </span>
                 </div>
                 <p className="font-display text-2xl sm:text-3xl font-bold">{state.rondaActual.propiedad.nombre}</p>
-                {state.rondaActual.propiedad.ciudad && (
-                  <p className="opacity-70 text-sm mt-1">{state.rondaActual.propiedad.ciudad}</p>
-                )}
+                <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5 text-xs sm:text-sm text-manila/70">
+                  {state.rondaActual.propiedad.ciudad && (
+                    <span className="text-azul font-semibold uppercase tracking-wide text-[11px]">
+                      {state.rondaActual.propiedad.ciudad}
+                    </span>
+                  )}
+                  <span className="text-manila/25">·</span>
+                  <span>{formatoArea(state.rondaActual.propiedad.areaM2)}</span>
+                </div>
+                <div className="mt-3">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-manila/50">Avalúo</p>
+                  <p className="font-display text-xl sm:text-2xl font-extrabold text-oro">
+                    {formatoMoneda(state.rondaActual.propiedad.avaluo)}
+                  </p>
+                </div>
               </div>
             ) : propiedadPendiente ? (
               <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
                 <div className="text-left">
                   <p className="text-oro font-display text-xs font-bold uppercase tracking-[0.2em] mb-2">Lote listo para subastar</p>
                   <p className="font-display text-2xl sm:text-3xl font-bold">{propiedadPendiente.nombre}</p>
+                  <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 mt-1.5 text-xs sm:text-sm text-manila/70">
+                    {propiedadPendiente.ciudad && (
+                      <span className="text-azul font-semibold uppercase tracking-wide text-[11px]">
+                        {propiedadPendiente.ciudad}
+                      </span>
+                    )}
+                    <span className="text-manila/25">·</span>
+                    <span>{formatoArea(propiedadPendiente.areaM2)}</span>
+                    <span className="text-manila/25">·</span>
+                    <span className="font-mono text-manila/55">FMI {propiedadPendiente.matriculaInmobiliaria}</span>
+                  </div>
+                  <div className="mt-3">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.08em] text-manila/50">Avalúo · subasta desde</p>
+                    <p className="font-display text-2xl sm:text-3xl font-extrabold text-oro">
+                      {formatoMoneda(propiedadPendiente.avaluo)}
+                    </p>
+                  </div>
                 </div>
                 <button
                   type="button"
-                  className="bg-gradient-to-r from-azul to-navy3 text-manila px-6 py-3 rounded-lg font-display font-bold shadow-lg shadow-black/30 shrink-0 transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                  className="cta-brillo bg-gradient-to-r from-azul to-navy3 text-manila px-6 py-3 rounded-lg font-display font-bold shadow-lg shadow-black/30 shrink-0 transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
                   onClick={() => {
                     send({ t: "host:arm", propertyId: propiedadPendiente.id });
                     rondaSectionRef.current?.requestFullscreen?.();
@@ -965,30 +1019,39 @@ export default function Host() {
 
       <div className="px-6 lg:px-10 pb-6 lg:pb-8 flex flex-col flex-1">
         {/* ---------- Franja de estado ---------- */}
-        <div className="flex flex-wrap items-center gap-2 py-4 mt-2 mb-6 text-sm text-manila/70 border-b border-manila/10">
-          <span className="w-1.5 h-1.5 rounded-full bg-manila/50 shrink-0" />
+        <div className="flex flex-wrap items-center gap-2.5 py-4 mt-2 mb-6 text-sm text-manila/70 border-b border-manila/10">
+          <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${connected ? "bg-esmeralda live-pulse" : "bg-manila/40"}`} />
           <span className="font-mono text-[11px] font-semibold uppercase tracking-wide text-manila/90">{state?.estado ?? "-"}</span>
           <span className="text-manila/25">·</span>
           <span>{state?.jugadores.length ?? 0} jugadores</span>
         </div>
 
-        {/* ---------- Historial / Jugadores / Guía rápida: tres columnas, sin tarjetas ---------- */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-0 lg:divide-x divide-manila/10">
+        {/* ---------- Historial / Jugadores / Guía rápida: tarjetas a tono con el panel interno del portafolio ---------- */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-5 pb-2">
           {(() => {
             const filtrarPorFmi = Boolean(fmiParam);
             const historialMostrado = filtrarPorFmi
               ? (state?.historial ?? []).filter((r) => r.propiedad.matriculaInmobiliaria === fmiParam)
               : state?.historial ?? [];
             return (
-              <div className="lg:pr-8">
-                <div className="flex items-center justify-between mb-3">
-                  <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-oro">Historial de subastas</h2>
+              <div className="relative overflow-hidden rounded-2xl border border-manila/10 bg-manila/[0.04] backdrop-blur-sm p-5 before:content-[''] before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-azul/80">
+                <div className="flex items-center gap-2.5 mb-4">
+                  <span className="w-[26px] h-[26px] rounded-lg bg-azul/15 text-azul flex items-center justify-center shrink-0">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5" aria-hidden="true">
+                      <path d="M3 3v5h5" />
+                      <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8" />
+                      <path d="M12 7v5l4 2" />
+                    </svg>
+                  </span>
+                  <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-manila/90 flex-1">
+                    Historial de subastas
+                  </h2>
                   <button
                     type="button"
-                    className="text-xs font-display px-2 py-1 rounded bg-manila/10 border border-manila/30 transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                    className="text-xs font-display px-2.5 py-1 rounded-full bg-manila/10 border border-manila/25 transition-transform duration-150 ease-out hover:scale-105 active:scale-95 shrink-0"
                     onClick={() => setMostrarHistorial((v) => !v)}
                   >
-                    {mostrarHistorial ? "Ocultar historial" : "Ver historial"}
+                    {mostrarHistorial ? "Ocultar" : "Ver historial"}
                   </button>
                 </div>
                 {!mostrarHistorial ? null : historialMostrado.length > 0 ? (
@@ -1050,29 +1113,49 @@ export default function Host() {
             );
           })()}
 
-          <div className="lg:px-8">
-            <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-azul mb-3">Jugadores</h2>
-            <div className="flex flex-wrap gap-3">
+          <div className="relative overflow-hidden rounded-2xl border border-manila/10 bg-manila/[0.04] backdrop-blur-sm p-5 before:content-[''] before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-oro/80">
+            <div className="flex items-center gap-2.5 mb-1">
+              <span className="w-[26px] h-[26px] rounded-lg bg-oro/15 text-oro flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5" aria-hidden="true">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+              </span>
+              <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-manila/90">Jugadores</h2>
+            </div>
+            <p className="font-display text-3xl font-extrabold text-manila tabular mb-4">{state?.jugadores.length ?? 0}</p>
+            <div className="flex flex-wrap gap-2.5">
               <button
                 type="button"
-                className="bg-manila/10 border border-manila/30 px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                className="bg-manila/10 border border-manila/25 px-4 py-2 rounded-lg text-sm font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
                 onClick={() => setShowJugadores(true)}
               >
-                Ver participantes ({state?.jugadores.length ?? 0})
+                Ver participantes
               </button>
               <button
                 type="button"
-                className="bg-sello/80 text-manila px-4 py-2 rounded font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
+                className="bg-sello/15 border border-sello/40 text-sello px-4 py-2 rounded-lg text-sm font-display transition-transform duration-150 ease-out hover:scale-105 active:scale-95"
                 onClick={reiniciarJugadores}
                 title="Expulsa a los jugadores actuales y genera un QR nuevo; el QR anterior deja de servir"
               >
-                Reiniciar jugadores (QR nuevo)
+                Reiniciar (QR nuevo)
               </button>
             </div>
           </div>
 
-          <div className="lg:pl-8">
-            <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-sello mb-3">Guía rápida</h2>
+          <div className="relative overflow-hidden rounded-2xl border border-manila/10 bg-manila/[0.04] backdrop-blur-sm p-5 before:content-[''] before:absolute before:inset-y-0 before:left-0 before:w-[3px] before:bg-sello/80">
+            <div className="flex items-center gap-2.5 mb-4">
+              <span className="w-[26px] h-[26px] rounded-lg bg-sello/15 text-sello flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-3.5 h-3.5" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 16v-4" />
+                  <path d="M12 8h.01" />
+                </svg>
+              </span>
+              <h2 className="font-display text-sm font-bold uppercase tracking-[0.06em] text-manila/90">Guía rápida</h2>
+            </div>
             <ul className="flex flex-col gap-2.5 text-sm text-manila/70">
               <li className="flex gap-2">
                 <span className="text-oro">•</span>

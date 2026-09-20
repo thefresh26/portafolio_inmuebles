@@ -14,19 +14,69 @@ body,
   height: 100%;
 }
 
+/* Scroll lento y suave en toda la app (rueda del mouse, flechas, anclas),
+   y barra de scroll oculta en los tres motores -- se sigue pudiendo
+   desplazar con rueda/touch/teclado, solo no se ve la barra. */
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Edge/IE viejo */
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#root::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge nuevo */
+  width: 0;
+  height: 0;
+}
+
+body,
+#root {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
 .tabular {
   font-variant-numeric: tabular-nums;
 }
 
-/* Fondo con profundidad para /screen y la consola de admin: resplandores
-   sutiles de oro y azul (los acentos de marca) sobre un degradado navy,
-   para que no se sienta un solo color plano. */
+/* Fondo con profundidad para /host, /screen y /play: la misma cuadricula
+   fina tipo "plano arquitectonico" + halos de marca (azul/oro) que usa el
+   panel interno del portafolio publico (portafolio_inmuebles/admin), para
+   que el juego y las herramientas del equipo se sientan una sola familia
+   visual en vez de dos productos distintos. */
 .bg-escenario {
-  background:
-    radial-gradient(ellipse 780px 520px at 4% 0%, rgba(245,166,35,0.14) 0%, rgba(245,166,35,0) 60%),
-    radial-gradient(ellipse 900px 640px at 100% 46%, rgba(26,168,221,0.16) 0%, rgba(26,168,221,0) 58%),
-    radial-gradient(ellipse 1000px 700px at 22% 100%, rgba(26,168,221,0.10) 0%, rgba(26,168,221,0) 55%),
+  background-color: #0a1628;
+  background-image:
+    linear-gradient(rgba(234, 241, 251, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(234, 241, 251, 0.05) 1px, transparent 1px),
+    radial-gradient(ellipse 780px 520px at 4% 0%, rgba(245, 166, 35, 0.14) 0%, rgba(245, 166, 35, 0) 60%),
+    radial-gradient(ellipse 900px 640px at 100% 46%, rgba(26, 168, 221, 0.16) 0%, rgba(26, 168, 221, 0) 58%),
+    radial-gradient(ellipse 1000px 700px at 22% 100%, rgba(26, 168, 221, 0.1) 0%, rgba(26, 168, 221, 0) 55%),
     linear-gradient(165deg, #123457 0%, #0b2a4a 42%, #0a2543 100%);
+  background-size: 42px 42px, 42px 42px, auto, auto, auto, auto;
+  background-repeat: repeat, repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed, fixed, scroll, scroll, scroll, scroll;
+}
+
+/* Botón principal de "Subastar para comenzar": el mismo barrido de brillo
+   diagonal que usa el CTA "Subastar" de las tarjetas del portafolio,
+   para que sea obvio que es la accion mas importante de la pantalla. */
+.cta-brillo {
+  position: relative;
+  overflow: hidden;
+  background-size: 160% 100%;
+  transition:
+    filter 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.15s ease-out,
+    background-position 0.5s ease;
+}
+
+.cta-brillo:hover {
+  filter: brightness(1.1);
+  background-position: 100% 0;
 }
 
 /* Footer animado de la consola de admin: linea shimmer dorada que recorre
