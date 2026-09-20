@@ -17,9 +17,12 @@ export default {
         azul: "#1aa8dd", // --sky-500 — acento secundario
       },
       fontFamily: {
-        // Misma tipografia que portafolio_inmuebles/index.html.
-        display: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
-        body: ["Plus Jakarta Sans", "system-ui", "sans-serif"],
+        // Manrope: misma familia geometrica/calida que Plus Jakarta Sans
+        // (no rompe el caracter de marca) pero con mejor legibilidad en
+        // textos largos y numeros -- se carga desde Google Fonts en
+        // index.html, ver ese archivo.
+        display: ["Manrope", "system-ui", "sans-serif"],
+        body: ["Manrope", "system-ui", "sans-serif"],
         mono: ["'Courier New'", "monospace"],
       },
     },

@@ -8,12 +8,13 @@
 <link rel="icon" type="image/png" href="../favicon.png">
 <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-  @font-face{font-family:'Plus Jakarta Sans';font-style:normal;font-weight:400;font-display:swap;src:url('../fonts/PlusJakartaSans-400.woff2') format('woff2');}
-  @font-face{font-family:'Plus Jakarta Sans';font-style:normal;font-weight:500;font-display:swap;src:url('../fonts/PlusJakartaSans-500.woff2') format('woff2');}
-  @font-face{font-family:'Plus Jakarta Sans';font-style:normal;font-weight:600;font-display:swap;src:url('../fonts/PlusJakartaSans-600.woff2') format('woff2');}
-  @font-face{font-family:'Plus Jakarta Sans';font-style:normal;font-weight:700;font-display:swap;src:url('../fonts/PlusJakartaSans-700.woff2') format('woff2');}
-  @font-face{font-family:'Plus Jakarta Sans';font-style:normal;font-weight:800;font-display:swap;src:url('../fonts/PlusJakartaSans-800.woff2') format('woff2');}
+  /* Manrope: misma familia geometrica/calida que la Plus Jakarta Sans de
+     antes, pero con mejor legibilidad en textos largos y numeros; se carga
+     desde Google Fonts arriba (antes se autohospedaba). */
   :root{
     --archivo:#0b2a4a;
     --navy3:#173f70;
@@ -40,10 +41,10 @@
     margin:0;
     background:#0a1628;
     color:var(--manila);
-    font-family:'Plus Jakarta Sans',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+    font-family:'Manrope',system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
     -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3{font-family:'Plus Jakarta Sans',system-ui,sans-serif; margin:0;}
+  h1,h2,h3{font-family:'Manrope',system-ui,sans-serif; margin:0;}
   p{margin:0;}
   a{color:inherit; text-decoration:none;}
   img{max-width:100%; display:block;}
